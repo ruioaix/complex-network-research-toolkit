@@ -6,6 +6,7 @@ AC_INIT([cnrt], [1.0], [xrfind@gmail.com])
 #complex network research toolkit
 AC_CONFIG_SRCDIR([toolkit/a.c])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile src/Makefile toolkit/Makefile test/Makefile])
 
 # Checks for programs.
 AC_PROG_CC
