@@ -43,39 +43,39 @@ int main(int argc, char **argv)
 	//train will contain every user and every item.
 	//but test maybe not.
 	struct LineFile *net_file = create_LineFile(netfilename, 1, 1, -1);
-	struct iiBip *seti1 = create_iiBip(net_file, 1);
-	struct iiBip *seti2 = create_iiBip(net_file, 2);
+	struct Bip *seti1 = create_Bip(net_file, 1);
+	struct Bip *seti2 = create_Bip(net_file, 2);
 	int i;
 
-	struct Metrics_iiBip *mass_result = create_MetricsiiBip();
-	struct Metrics_iiBip *heats_result = create_MetricsiiBip();
-	struct Metrics_iiBip *HNBI_result = create_MetricsiiBip();
-	struct Metrics_iiBip *RENBI_result = create_MetricsiiBip();
-	struct Metrics_iiBip *hybrid_result = create_MetricsiiBip();
+	struct Metrics_Bip *mass_result = create_MetricsBip();
+	struct Metrics_Bip *heats_result = create_MetricsBip();
+	struct Metrics_Bip *HNBI_result = create_MetricsBip();
+	struct Metrics_Bip *RENBI_result = create_MetricsBip();
+	struct Metrics_Bip *hybrid_result = create_MetricsBip();
 
 	for (i=0; i<loopNum; ++i) {
 		printf("\n");
 		struct LineFile *testfile, *trainfile;
-		divide_iiBip(seti1, seti2, 0.1, &testfile, &trainfile);
+		divide_Bip(seti1, seti2, 0.1, &testfile, &trainfile);
 
-		struct iiBip *traini1= create_iiBip(trainfile, 1);
-		struct iiBip *traini2 = create_iiBip(trainfile, 2);
-		struct iiBip *testi1 = create_iiBip(testfile, 1);
-		struct iiBip *testi2 = create_iiBip(testfile, 2);
+		struct Bip *traini1= create_Bip(trainfile, 1);
+		struct Bip *traini2 = create_Bip(trainfile, 2);
+		struct Bip *testi1 = create_Bip(testfile, 1);
+		struct Bip *testi2 = create_Bip(testfile, 2);
 		free_LineFile(trainfile);
 		free_LineFile(testfile);
 
 		//the similarity is get from traini1
-		struct LineFile *similarity = similarity_iiBip(traini1, traini2, 2);
+		struct LineFile *similarity = similarity_Bip(traini1, traini2, 2);
 		struct iidNet *trainSim = create_iidNet(similarity);
 		free_LineFile(similarity);
 
 		//recommendation
-		struct Metrics_iiBip *r1 = mass_iiBip(traini1, traini2, testi1, testi2, trainSim);
-		struct Metrics_iiBip *r11= heats_iiBip(traini1, traini2, testi1, testi2, trainSim);
-		struct Metrics_iiBip *r2 = HNBI_iiBip(traini1, traini2, testi1, testi2, trainSim, HNBI_param);
-		struct Metrics_iiBip *r3 = RENBI_iiBip(traini1, traini2, testi1, testi2, trainSim, RENBI_param);
-		struct Metrics_iiBip *r4 = hybrid_iiBip(traini1, traini2, testi1, testi2, trainSim, hybrid_param);
+		struct Metrics_Bip *r1 = mass_Bip(traini1, traini2, testi1, testi2, trainSim);
+		struct Metrics_Bip *r11= heats_Bip(traini1, traini2, testi1, testi2, trainSim);
+		struct Metrics_Bip *r2 = HNBI_Bip(traini1, traini2, testi1, testi2, trainSim, HNBI_param);
+		struct Metrics_Bip *r3 = RENBI_Bip(traini1, traini2, testi1, testi2, trainSim, RENBI_param);
+		struct Metrics_Bip *r4 = hybrid_Bip(traini1, traini2, testi1, testi2, trainSim, hybrid_param);
 
 		mass_result->R += r1->R;
 		mass_result->PL += r1->PL;
@@ -104,15 +104,15 @@ int main(int argc, char **argv)
 		hybrid_result->NL += r4->NL;
 
 		free_iidNet(trainSim);
-		free_iiBip(traini1);
-		free_iiBip(traini2);
-		free_iiBip(testi1);
-		free_iiBip(testi2);
-		free_MetricsiiBip(r1);
-		free_MetricsiiBip(r11);
-		free_MetricsiiBip(r2);
-		free_MetricsiiBip(r3);
-		free_MetricsiiBip(r4);
+		free_Bip(traini1);
+		free_Bip(traini2);
+		free_Bip(testi1);
+		free_Bip(testi2);
+		free_MetricsBip(r1);
+		free_MetricsBip(r11);
+		free_MetricsBip(r2);
+		free_MetricsBip(r3);
+		free_MetricsBip(r4);
 	}
 	
 	printf("RESULT:\n");
@@ -123,13 +123,13 @@ int main(int argc, char **argv)
 	printf("\theats\tloopNum: %d, R: %f, PL: %f, IL: %f, HL: %f, NL: %f\n", loopNum, heats_result->R/loopNum, heats_result->PL/loopNum, heats_result->IL/loopNum, heats_result->HL/loopNum, heats_result->NL/loopNum);
 
 	free_LineFile(net_file);
-	free_iiBip(seti1);
-	free_iiBip(seti2);
-	free_MetricsiiBip(mass_result);
-	free_MetricsiiBip(heats_result);
-	free_MetricsiiBip(HNBI_result);
-	free_MetricsiiBip(RENBI_result);
-	free_MetricsiiBip(hybrid_result);
+	free_Bip(seti1);
+	free_Bip(seti2);
+	free_MetricsBip(mass_result);
+	free_MetricsBip(heats_result);
+	free_MetricsBip(HNBI_result);
+	free_MetricsBip(RENBI_result);
+	free_MetricsBip(hybrid_result);
 
 	print_time();
 	return 0;
