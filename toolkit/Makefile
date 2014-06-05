@@ -13,17 +13,15 @@ $(toolkits) : % : %.o $(libcnrt)
 	$(LINK.o) $^ $(extralibs) -o $@
 
 COMPILE.c += $(headers)
-#%.o : %.c
-#	$(COMPILE.c) $(headers) $<
 
 ifneq ($(MAKECMDGOALS),clean)
-include $(subst .c,.d,$(sources))
+-include $(subst .c,.d,$(sources))
 endif
 
 %.d : %.c
-	$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$;                      \
+	@$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$;                      \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;     \
 	rm -f $@.$$$$
 
 clean :
-	$(RM) *.o *.d $(toolkits)
+	@$(RM) *.o *.d $(toolkits)

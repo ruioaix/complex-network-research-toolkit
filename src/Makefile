@@ -9,12 +9,12 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 %.d : %.c
-	$(CC) -M $(CPPFLAGS) $< > $@.$$$$;                      \
+	@$(CC) -M $(CPPFLAGS) $< > $@.$$$$;                      \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;     \
 	rm -f $@.$$$$
 
 libcnrt.a : $(subst .c,.o,$(sources))
-	$(AR) $(ARFLAGS) $@ $?
+	@$(AR) $(ARFLAGS) $@ $?
 
 clean :
-	$(RM) *.d *.o libcnrt.a
+	@$(RM) *.d *.o libcnrt.a

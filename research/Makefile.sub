@@ -15,16 +15,16 @@ $(execu) : % : %.o $(common_o) $(libcnrt)
 	$(LINK.o) $^ $(extralibs) -o $@
 
 %.o : %.c
-	$(COMPILE.c) $(headers) $<
+	$(COMPILE.c) $(headers) $< -o $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(subst .c,.d,$(sources))
 endif
 
 %.d : %.c
-	$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$;                      \
+	@$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$;                      \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;     \
 	rm -f $@.$$$$
 
 clean :
-	$(RM) *.o *.d $(execu)
+	@$(RM) *.o *.d $(execu)
