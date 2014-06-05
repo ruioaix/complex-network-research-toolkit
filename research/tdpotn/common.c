@@ -1,4 +1,4 @@
-#include "tdpotn.h"
+#include "common.h"
 #include "base.h"
 #include "dataset.h"
 #include "math.h"

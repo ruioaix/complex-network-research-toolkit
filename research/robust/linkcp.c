@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "robust.h"
+#include "common.h"
 
 static int find_lid_from_i12(int id, int neigh, struct i3Net *i12_lid) {
 	if (id > i12_lid->maxId) return -1;

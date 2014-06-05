@@ -3,7 +3,7 @@
 #include "iinet.h"
 #include "spath.h"
 #include "mtprand.h"
-#include "tdpotn.h"
+#include "common.h"
 
 /**
  * default: ./tdpotn-base 50 1 1 5 1.0 0

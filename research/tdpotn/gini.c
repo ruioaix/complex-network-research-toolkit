@@ -6,7 +6,7 @@
 #include "spath.h"
 #include "mtprand.h"
 #include "assert.h"
-#include "tdpotn.h"
+#include "common.h"
 
 /**
  * default: ./tdpotn-base 50 1 1 5 1.0 0
