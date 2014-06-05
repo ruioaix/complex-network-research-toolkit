@@ -7,10 +7,10 @@ dirsname := $(patsubst %/,%,$(dirs))
 all : $(dirsname)
 
 $(dirsname) :
-	@$(MAKE) -C $@ -f ../Makefile.sub all
+	@$(MAKE) -C $@ -f ../Makefile.sub.mk all
 
 clean :
 	@for d in $(dirsname); \
 		do \
-		$(MAKE) -C $$d -f ../Makefile.sub clean;\
+		$(MAKE) -C $$d -f ../Makefile.sub.mk clean;\
 		done
