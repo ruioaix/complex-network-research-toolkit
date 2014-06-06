@@ -28,6 +28,7 @@ int main (int argc, char **argv) {
 	tdpotn_argcv(argc, argv, &L, &seed, &D_12, &limitN, &theta, &lambda);
 
 	set_seed_MTPR(seed);
+	double coupling = -1, gini = -1;
 
 	int kk;
 	for (kk = 0; kk < 41; ++kk) {
@@ -42,11 +43,11 @@ int main (int argc, char **argv) {
 
 		double avesp;
 		avesp_spath03_Net(base, air, &avesp);
-		printf("result: lamba: %f, alpha: %f, avesp: %f\n", lambda, alpha, avesp);
+		printf("D_12: %d\tN: %d\tseed: %d\tlimitN: %d\ttheta: %f\tlambda: %f\talpha: %f\tasp: %f\tcoupling: %f\tgini: %f\n", \
+				D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_iiNet(base);
 		free_iidNet(air);
-
 	}
 
 	print_time();

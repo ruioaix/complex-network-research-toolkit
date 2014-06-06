@@ -33,6 +33,8 @@ int main (int argc, char **argv) {
 
 	set_seed_MTPR(seed);
 
+	double coupling = -1;
+
 	int kk;
 	for (kk = 0; kk < 41; ++kk) {
 		double alpha = kk * 0.1;
@@ -59,7 +61,9 @@ int main (int argc, char **argv) {
 		double avesp;
 		double gini;
 		gini_spath06_Net(base, all, &avesp, &gini);
-		printf("result: \t%f\t%f\t%f\n", alpha, avesp, gini);
+		printf("D_12: %d\tN: %d\tseed: %d\tlimitN: %d\ttheta: %f\tlambda: %f\talpha: %f\tasp: %f\tcoupling: %f\tgini: %f\n", \
+				D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
+
 		free_iiNet(base);
 		free_iidNet(all);
 	}

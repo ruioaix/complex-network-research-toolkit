@@ -1,0 +1,25 @@
+tdpotn has three parameters: alpha, theta, lambda.
+	alpha is used to define the probablity of a egde with certain length being choosed. probablity = length^(-alpha), [0-4]
+	theta is used to define the cost of an edge. by default the cost of an edge is the length of the edge. that means theta is default to be 1. now the cost is length^theta, [0.5-2]
+	lambda is used to define the actual length ot the new edges, by default, the actual length is 1 (that means lambda is default to be 0) but now it is length^lambda, [0-1].
+
+tdpotn has three targets needed to be calculated: average shortest path, coupling, gini.
+
+now, I have 3 programs in this folder.
+they are basic.c, coupling.c, gini.c.
+
+though wair.c, I will get:
+	different asp-alpha curve under varied theta, while lambda=0.
+	different asp-alpha curve under varied lambda, while theta=1.
+	optimal asp - theta curve.
+	optimal alpha - theta curve.
+	optimal asp - lambda curve.
+	optimal alpha - lambda curve.
+
+though coupling.c, I want to get:
+	different coupling-alpha curve under varied theta, while lambda=0.
+	optimal coupling - theta curve.
+
+though gini.c, I want to get:
+	different gini-alpha curve under varied theta, while lambda=0.
+	optimal gini - theta curve.

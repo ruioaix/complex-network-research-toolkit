@@ -28,5 +28,11 @@ tdpotn-*
 score-*
 test-*
 robust-*
+research/tdpotn/coupling
+research/tdpotn/gini
+research/tdpotn/use
+research/tdpotn/wair
+src/libcnrt.a
+
 
 tags

@@ -12,6 +12,8 @@ resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 #sources := $(subst .c,,$(sources))
 #sources := $(subst /,-,$(sources))
 
+tdpotn :
+
 .PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname)
 
 all : $(tlkt) $(resh) $(src)
@@ -20,7 +22,7 @@ $(resh) $(tlkt) : $(src)
 	@$(MAKE) -C $@ all
 
 $(resh_dirsname) : $(src)
-	$(MAKE) -C $(resh) $@
+	@$(MAKE) -C $(resh) $@
 
 $(src) :
 	@$(MAKE) -C $@ all
