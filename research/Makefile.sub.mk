@@ -1,5 +1,6 @@
 sources := $(filter-out common.c,$(wildcard *.c))
 execu := $(notdir $(basename $(sources)))
+topexecu := $(addprefix ../../$(notdir $(CURDIR))-,$(execu))
 common_s := $(wildcard common.c)
 common_o := $(subst .c,.o,$(common_s))
 
@@ -11,8 +12,10 @@ extralibs := -lm
 
 all : $(execu) 
 
+
 $(execu) : % : %.o $(common_o) $(libcnrt) 
 	$(LINK.o) $^ $(extralibs) -o $@
+	cp $@ $(patsubst %,../../$(notdir $(CURDIR))-%,$@)
 
 %.o : %.c
 	$(COMPILE.c) $(headers) $< -o $@
@@ -27,4 +30,4 @@ endif
 	rm -f $@.$$$$
 
 clean :
-	@$(RM) *.o *.d $(execu)
+	@$(RM) *.o *.d $(execu) $(topexecu)

@@ -1,5 +1,6 @@
 sources := $(wildcard *.c)
 toolkits := $(notdir $(basename $(sources)))
+topexec := $(addprefix ../toolkit-,$(toolkits))
 
 headers := -I ../src
 libcnrt := ../src/libcnrt.a
@@ -11,6 +12,7 @@ all : $(toolkits)
 
 $(toolkits) : % : %.o $(libcnrt)
 	$(LINK.o) $^ $(extralibs) -o $@
+	cp $@ $(patsubst %,../toolkit-%,$@)
 
 COMPILE.c += $(headers)
 
@@ -24,4 +26,4 @@ endif
 	rm -f $@.$$$$
 
 clean :
-	@$(RM) *.o *.d $(toolkits)
+	@$(RM) *.o *.d $(toolkits) $(topexec)
