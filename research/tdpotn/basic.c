@@ -6,8 +6,8 @@
 #include "common.h"
 
 /**
- * default: ./tdpotn-base 50 1 1 5 1.0 0
- * N = 50, for 1d ring, it's the idNum. for 2d lattice, it's the height&width of lattice; for example, if N = 50, the nodes of lattice is 2500.
+ * default: ./tdpotn-basic 50 1 1 5 1.0 0
+ * L = 50, for 1d ring, it's the idNum. for 2d lattice, it's the height&width of lattice; for example, if L = 50, the nodes of lattice is 2500.
  * seed = 1, it's the seed for PRNG.
  * D_12 = 1, 1 means 1d, 2 means 2d.
  * limitN = 5, the constrain for this research, C = limitN * nodeNum.

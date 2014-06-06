@@ -9,17 +9,17 @@
 void tdpotn_argcv(int argc, char **argv, int *L, int *seed, int *D_12, int *limitN, double *theta, double *lambda) {
 	if (argc == 7) {
 		char *p;
-		*L = strtol(argv[1], &p, 10);
-		*seed = strtol(argv[2], &p, 10);
-		*D_12 = strtol(argv[3], &p, 10);
+		*D_12 = strtol(argv[1], &p, 10);
+		*L = strtol(argv[2], &p, 10);
+		*seed = strtol(argv[3], &p, 10);
 		*limitN = strtol(argv[4], &p, 10);
 		*theta = strtod(argv[5], &p);
 		*lambda = strtod(argv[6], &p);
 	}
 	else if (argc == 1) {
+		*D_12 = 1;
 		*L = 50;
 		*seed = 1;
-		*D_12 = 1;
 		*limitN = 5;
 		*theta = 1;
 		*lambda = 0;
