@@ -30,9 +30,21 @@ test-*
 robust-*
 research/tdpotn/coupling
 research/tdpotn/gini
-research/tdpotn/use
-research/tdpotn/wair
+research/tdpotn/basic
 src/libcnrt.a
+research/onion/BR
+research/onion/hs
+research/onion/topk
+research/robust/linkcp
+research/score/3methods
+research/score/rank
+toolkit-bippaper
+toolkit-dsinfo
+toolkit-serial
+toolkit/bippaper
+toolkit/dsinfo
+toolkit/serial
+
 
 
 tags
