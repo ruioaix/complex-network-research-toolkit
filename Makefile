@@ -6,6 +6,12 @@ resh_sources := $(wildcard $(resh)/*/*.c)
 resh_dirs := $(sort $(dir $(resh_sources)))
 resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 
+#sources := $(filter-out $(resh)/*/common.c,$(resh_sources))
+#sources := $(subst $(resh)/,,$(sources))
+#sources += $(wildcard $(tlkt)/*.c)
+#sources := $(subst .c,,$(sources))
+#sources := $(subst /,-,$(sources))
+
 .PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname)
 
 all : $(tlkt) $(resh) $(src)
