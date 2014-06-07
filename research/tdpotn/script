@@ -1,0 +1,15 @@
+#!/bin/bash
+# this script is used to submit tasks to the cluster's queue. 
+# the file should include all the paper wants.
+
+D_12=1
+L=50
+seed=1
+limitN=5
+theta=1.0
+lambda=0
+alpha=0
+loopnum=100
+
+#first theta
+
