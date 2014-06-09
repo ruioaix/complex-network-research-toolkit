@@ -39,6 +39,7 @@ int main (int argc, char **argv) {
 		free_LineFile(baself);
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 		struct iidNet *air = create_iidNet(airlf);
+		print1l("%s =>> create iidnet, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", __func__, air->maxId, air->minId, air->idNum, air->edgesNum, air->countMax, air->countMin);
 		free_LineFile(airlf);
 
 		double avesp;

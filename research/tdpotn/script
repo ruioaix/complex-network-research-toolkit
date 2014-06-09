@@ -2,7 +2,17 @@
 # this script is used to submit tasks to the cluster's queue. 
 # the file should include all the paper wants.
 
-cluster_output_dir=cluster_output
+qdel -u xiaor
+currentTask=$(qstat -cb | grep xiaor | wc -l)
+while [ $currentTask -ne 0 ]
+do
+	echo "current running task Num: $currentTask"
+	echo "wait 2s.."
+	sleep 2s
+	currentTask=$(qstat -cb | grep xiaor | wc -l)
+done
+
+cluster_output_dir=./cluster_output/
 if [ -d $cluster_output_dir ]; then
 	rm -r $cluster_output_dir
 	mkdir $cluster_output_dir
@@ -39,8 +49,7 @@ else
 	mkdir $theta_result_dir
 fi
 
-theta_exec_name=./tdpont-basic
-script_result_filename=theta_"$d12"_"$L"_"$theta"_"$seed"
+theta_exec_name=./tdpotn-basic
 
 for d12 in 1 2
 do 
@@ -59,21 +68,26 @@ do
 		do
 			for seed in {1..100}
 			do
-				currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
-				echo "current running task: $currentTask"
-				if [ "$currentTask" = "" ]; then
-					currentTask=0;
-				fi
-				while [ $currentTask -ge 10 ]
+				#currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
+				currentTask=$(qstat -cb | grep xiaor | wc -l)
+				echo "current running task Num: $currentTask"
+				while [ $currentTask -ge 50 ]
 				do
+					echo "wait 20s.."
 					sleep 20s
+					#currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
+					currentTask=$(qstat -cb | grep xiaor | wc -l)
+					if [ "$currentTask" = "" ]; then
+						currentTask=0;
+					fi
+					echo "current running task Num: $currentTask"
 				done
-
+				
+				script_result_filename=theta_"$d12"_"$L"_"$theta"_"$seed"
 				theta_exec_script=$theta_script_dir/$script_result_filename
 				theta_result_file=$theta_result_dir/$script_result_filename
 				echo "$theta_exec_name $d12 $L $seed $limitN $theta $lambda |tee  $theta_result_file" > $theta_exec_script
-				qsub -cwd $theta_exec_script -o $cluster_output -e $cluster_output 
-
+				qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $theta_exec_script 
 				sleep 1s
 			done
 		done

@@ -25,6 +25,7 @@ void free_iidNet(struct iidNet *net) {
 }
 
 struct iidNet *create_iidNet(const struct LineFile * const lf) {
+	print2l("%s =>> begin......\n", __func__);
 	if (lf == NULL) return NULL;
 	if (lf->i1 == NULL || lf->i2 == NULL || lf->d1 == NULL) return NULL;
 
@@ -106,7 +107,7 @@ struct iidNet *create_iidNet(const struct LineFile * const lf) {
 	net->count=count;
 	net->edges=edges;
 	net->d = d;
-	printf("create %s iidnet =>> Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", lf->filename, maxId, minId, idNum, linesNum, countMax, countMin); fflush(stdout);
+	print2l("%s =>> ......end.\n", __func__);
 	return net;
 }
 
