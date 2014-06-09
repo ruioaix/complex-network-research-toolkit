@@ -2,14 +2,80 @@
 # this script is used to submit tasks to the cluster's queue. 
 # the file should include all the paper wants.
 
+cluster_output_dir=cluster_output
+if [ -d $cluster_output_dir ]; then
+	rm -r $cluster_output_dir
+	mkdir $cluster_output_dir
+else
+	mkdir $cluster_output_dir
+fi
+
 D_12=1
 L=50
 seed=1
 limitN=5
 theta=1.0
 lambda=0
-alpha=0
-loopnum=100
+
+lambda_script_dir=lambda
+
 
 #first theta
+lambda=0
 
+theta_script_dir="theta_scrpit"
+if [ -d $theta_script_dir ]; then
+	rm -r $theta_script_dir
+	mkdir $theta_script_dir
+else
+	mkdir $theta_script_dir
+fi
+
+theta_result_dir=theta_result
+if [ -d $theta_result_dir ]; then
+	rm -r $theta_result_dir
+	mkdir $theta_result_dir
+else
+	mkdir $theta_result_dir
+fi
+
+theta_exec_name=./tdpont-basic
+script_result_filename=theta_"$d12"_"$L"_"$theta"_"$seed"
+
+for d12 in 1 2
+do 
+	if [ $d12  = 1 ]; then
+		L1=5000
+		L2=10000
+		L3=20000
+	else
+		L1=2500
+		L2=10000
+		L3=40000
+	fi
+	for L in $L1 $L2 $L3
+	do
+		for theta in {1..32}
+		do
+			for seed in {1..100}
+			do
+				currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
+				echo "current running task: $currentTask"
+				if [ "$currentTask" = "" ]; then
+					currentTask=0;
+				fi
+				while [ $currentTask -ge 10 ]
+				do
+					sleep 20s
+				done
+
+				theta_exec_script=$theta_script_dir/$script_result_filename
+				theta_result_file=$theta_result_dir/$script_result_filename
+				echo "$theta_exec_name $d12 $L $seed $limitN $theta $lambda |tee  $theta_result_file" > $theta_exec_script
+				qsub -cwd $theta_exec_script -o $cluster_output -e $cluster_output 
+
+				sleep 1s
+			done
+		done
+	done
+done
