@@ -14,7 +14,7 @@ resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 
 tdpotn :
 
-.PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname)
+.PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname) dist
 
 all : $(tlkt) $(resh) $(src)
 
@@ -28,7 +28,11 @@ $(src) :
 	@$(MAKE) -C $@ all
 
 clean :
+	@$(RM) cnrt.tar.gz
 	@for d in $(src) $(tlkt) $(resh); \
 		do \
 		$(MAKE) -C $$d clean; \
 		done
+
+dist : clean
+	tar zcvf cnrt.tar.gz $(src) $(resh) Makefile
