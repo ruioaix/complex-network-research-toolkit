@@ -64,8 +64,9 @@ do
 	fi
 	for L in $L1 $L2 $L3
 	do
-		for theta in {1..32}
+		for theta in {1..31}
 		do
+			theta_float=$(awk "BEGIN{print $theta / 20 + 0.45 }")
 			for seed in {1..100}
 			do
 				#currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
@@ -83,10 +84,10 @@ do
 					echo "current running task Num: $currentTask"
 				done
 				
-				script_result_filename=theta_"$d12"_"$L"_"$theta"_"$seed"
+				script_result_filename=theta_"$d12"_"$L"_"$theta_float"_"$seed"
 				theta_exec_script=$theta_script_dir/$script_result_filename
 				theta_result_file=$theta_result_dir/$script_result_filename
-				echo "$theta_exec_name $d12 $L $seed $limitN $theta $lambda |tee  $theta_result_file" > $theta_exec_script
+				echo "$theta_exec_name $d12 $L $seed $limitN $theta_float $lambda |tee  $theta_result_file" > $theta_exec_script
 				qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $theta_exec_script 
 				sleep 1s
 			done
@@ -128,8 +129,9 @@ do
 	fi
 	for L in $L1 $L2 $L3
 	do
-		for lambda in {1..32}
+		for lambda in {1..21}
 		do
+			lambda_float=$(awk "BEGIN{print $lambda / 20 - 0.05 }")
 			for seed in {1..100}
 			do
 				#currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
@@ -147,10 +149,10 @@ do
 					echo "current running task Num: $currentTask"
 				done
 				
-				script_result_filename=lambda_"$d12"_"$L"_"$lambda"_"$seed"
+				script_result_filename=lambda_"$d12"_"$L"_"$lambda_float"_"$seed"
 				lambda_exec_script=$lambda_script_dir/$script_result_filename
 				lambda_result_file=$lambda_result_dir/$script_result_filename
-				echo "$lambda_exec_name $d12 $L $seed $limitN $lambda $lambda |tee  $lambda_result_file" > $lambda_exec_script
+				echo "$lambda_exec_name $d12 $L $seed $limitN $theta $lambda_float |tee  $lambda_result_file" > $lambda_exec_script
 				qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $lambda_exec_script 
 				sleep 1s
 			done
