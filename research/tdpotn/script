@@ -30,7 +30,7 @@ lambda=0
 lambda_script_dir=lambda
 
 
-#first theta
+#########################################################################################################first theta
 lambda=0
 
 theta_script_dir="theta_scrpit"
@@ -88,6 +88,70 @@ do
 				theta_result_file=$theta_result_dir/$script_result_filename
 				echo "$theta_exec_name $d12 $L $seed $limitN $theta $lambda |tee  $theta_result_file" > $theta_exec_script
 				qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $theta_exec_script 
+				sleep 1s
+			done
+		done
+	done
+done
+
+#########################################################################################################first lambda
+theta=1
+
+lambda_script_dir="lambda_scrpit"
+if [ -d $lambda_script_dir ]; then
+	rm -r $lambda_script_dir
+	mkdir $lambda_script_dir
+else
+	mkdir $lambda_script_dir
+fi
+
+lambda_result_dir=lambda_result
+if [ -d $lambda_result_dir ]; then
+	rm -r $lambda_result_dir
+	mkdir $lambda_result_dir
+else
+	mkdir $lambda_result_dir
+fi
+
+lambda_exec_name=./tdpotn-basic
+
+for d12 in 1 2
+do 
+	if [ $d12  = 1 ]; then
+		L1=5000
+		L2=10000
+		L3=20000
+	else
+		L1=2500
+		L2=10000
+		L3=40000
+	fi
+	for L in $L1 $L2 $L3
+	do
+		for lambda in {1..32}
+		do
+			for seed in {1..100}
+			do
+				#currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
+				currentTask=$(qstat -cb | grep xiaor | wc -l)
+				echo "current running task Num: $currentTask"
+				while [ $currentTask -ge 50 ]
+				do
+					echo "wait 20s.."
+					sleep 20s
+					#currentTask=$(qquota | awk '/slots/ {print $2}' | awk -F= '{print $2}' | awk -F/ '{print $1}')
+					currentTask=$(qstat -cb | grep xiaor | wc -l)
+					if [ "$currentTask" = "" ]; then
+						currentTask=0;
+					fi
+					echo "current running task Num: $currentTask"
+				done
+				
+				script_result_filename=lambda_"$d12"_"$L"_"$lambda"_"$seed"
+				lambda_exec_script=$lambda_script_dir/$script_result_filename
+				lambda_result_file=$lambda_result_dir/$script_result_filename
+				echo "$lambda_exec_name $d12 $L $seed $limitN $lambda $lambda |tee  $lambda_result_file" > $lambda_exec_script
+				qsub -cwd -o $cluster_output_dir -e $cluster_output_dir $lambda_exec_script 
 				sleep 1s
 			done
 		done
