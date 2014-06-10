@@ -61,8 +61,7 @@ int main (int argc, char **argv) {
 		double avesp;
 		double gini;
 		gini_spath06_Net(base, all, &avesp, &gini);
-		printf("D_12: %d\tN: %d\tseed: %d\tlimitN: %d\ttheta: %f\tlambda: %f\talpha: %f\tasp: %f\tcoupling: %f\tgini: %f\n", \
-				D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
+		tdpotn_print(D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_iiNet(base);
 		free_iidNet(all);

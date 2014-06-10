@@ -164,3 +164,8 @@ struct LineFile *tdpotn_create_air(struct iiNet * net, double alpha, int limitN,
 	return lf;
 	/********************************************************************************************************/
 }
+
+void tdpotn_print(int D_12, int N, int seed, int limitN, double theta, double lambda, double alpha, double avesp, double coupling, double gini) {
+	printf("D_12: %d\tN: %d\tseed: %d\tlimitN: %d\ttheta: %f\tlambda: %f\talpha: %f\tasp: %f\tcoupling: %f\tgini: %f\n", \
+			D_12, N, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
+}

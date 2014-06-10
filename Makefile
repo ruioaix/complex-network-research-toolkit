@@ -35,4 +35,4 @@ clean :
 		done
 
 dist : clean
-	tar zcvf cnrt.tar.gz $(src) $(resh) Makefile
+	tar zcvf cnrt.tar.gz $(src) $(resh) $(tlkt) Makefile .git

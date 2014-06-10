@@ -39,13 +39,13 @@ int main (int argc, char **argv) {
 		free_LineFile(baself);
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 		struct iidNet *air = create_iidNet(airlf);
-		print1l("%s =>> create iidnet, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", __func__, air->maxId, air->minId, air->idNum, air->edgesNum, air->countMax, air->countMin);
+		print1l("%s =>> create iidnet air, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", \
+				__func__, air->maxId, air->minId, air->idNum, air->edgesNum, air->countMax, air->countMin);
 		free_LineFile(airlf);
 
 		double avesp;
 		avesp_spath03_Net(base, air, &avesp);
-		printf("D_12: %d\tN: %d\tseed: %d\tlimitN: %d\ttheta: %f\tlambda: %f\talpha: %f\tasp: %f\tcoupling: %f\tgini: %f\n", \
-				D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
+		tdpotn_print(D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_iiNet(base);
 		free_iidNet(air);

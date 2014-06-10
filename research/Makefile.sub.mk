@@ -21,7 +21,7 @@ $(execu) : % : %.o $(common_o) $(libcnrt)
 	$(COMPILE.c) $(headers) $< -o $@
 
 ifneq ($(MAKECMDGOALS),clean)
--include $(subst .c,.d,$(sources))
+-include $(subst .c,.d,$(sources) $(common_s))
 endif
 
 %.d : %.c
