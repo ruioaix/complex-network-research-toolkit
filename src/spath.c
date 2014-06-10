@@ -607,6 +607,7 @@ void coupling_spath05_iiNet(struct iiNet *net, struct iiNet *air, double *coupli
 	int i,j;
 	int STEP_END = -1;
 	*avesp = 0;
+	*coupling =0;
 	for (i=0; i<net->maxId + 1; ++i) {
 		for (j=0; j<net->maxId + 1; ++j) {
 			sp[j] = 0;

@@ -8,7 +8,7 @@ tdpotn has three targets needed to be calculated: average shortest path, couplin
 now, I have 3 programs in this folder.
 they are basic.c, coupling.c, gini.c.
 
-though wair.c, I will get:
+though basic.c, I will get:
 	different asp-alpha curve under varied theta, while lambda=0.
 	different asp-alpha curve under varied lambda, while theta=1.
 	optimal asp - theta curve.
@@ -23,3 +23,20 @@ though coupling.c, I want to get:
 though gini.c, I want to get:
 	different gini-alpha curve under varied theta, while lambda=0.
 	optimal gini - theta curve.
+
+run:
+	./tdpotn-basic    D_12 N seed limitN theta lambda
+	./tdpotn-coupling D_12 N seed limitN theta lambda
+	./tdpotn-gini     D_12 N seed limitN theta lambda
+	D_12=1, ring; D_12=2, lattice.
+	N is the number of nodes. 
+		if D_12=1 && N=200, then a ring with 200 nodes.
+		if D_12=2 && N=400, then a lattice with 20 width and 20 heigth.
+		if D_12=2 && N=500, then an error will occur, because 500 is not a Square number.
+	seed is PRNG's seed.
+	limitN: C = limitN*N.
+	theta: (above)
+	theta: (above)
+
+example:
+	./tdpotn-basic 2 30 1 5 1 0
