@@ -45,7 +45,7 @@ int main (int argc, char **argv) {
 
 		double avesp;
 		avesp_spath03_Net(base, air, &avesp);
-		tdpotn_print(D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
+		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_iiNet(base);
 		free_iidNet(air);

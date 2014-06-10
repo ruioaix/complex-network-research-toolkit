@@ -44,7 +44,7 @@ int main (int argc, char **argv) {
 
 		double coupling, avesp;
 		coupling_spath05_iiNet(base, air, &coupling, &avesp);
-		tdpotn_print(D_12, base->maxId, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
+		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_iiNet(base);
 		free_iiNet(air);

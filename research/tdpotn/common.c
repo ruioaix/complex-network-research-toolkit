@@ -27,6 +27,21 @@ void tdpotn_argcv(int argc, char **argv, int *L, int *seed, int *D_12, int *limi
 	else {
 		isError("wrong args");
 	}
+	if (*D_12 == 2) {
+		int ll = sqrt(*L);
+		if (ll*ll == *L) {
+			*L = ll;	
+		}
+		else if ((ll+1)*(ll+1) == *L) {
+			*L = ll + 1;
+		}
+		else if ((ll-1)*(ll-1) == *L) {
+			*L = ll - 1;
+		}
+		else {
+			isError("wrong L");
+		}
+	}
 }
 
 struct LineFile * tdpotn_lf(int L, int D_12) {
