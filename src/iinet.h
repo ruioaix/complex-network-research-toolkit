@@ -3,6 +3,22 @@
 
 #include "linefile.h"
 
+struct netAttr_i{
+	int sign;
+	int value;
+};
+
+struct netAttr_d{
+	int sign;
+	double value;
+};
+
+struct netAttr_l{
+	int sign;
+	long value;
+};
+
+
 struct iiNet{
 	//these four will be right when net is initially created.
 	//but when nodes or links are added or deleted, it's non-efficient to keep 
@@ -10,8 +26,8 @@ struct iiNet{
 	//so sometimes, they are wrong.
 	int maxId;
 	int minId;
-	long countMax;
-	long countMin;
+	struct netAttr_l countMax;
+	struct netAttr_l countMin;
 
 	//these four is always right.
 	int idNum;

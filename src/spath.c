@@ -111,7 +111,7 @@ int *spath01_1A_iiNet(struct iiNet *net, int originId) {
 	spath01_core_iiNet(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
 	free(left);
 	free(right);
-	return sp;	
+	return sp;
 }
 int *spath01_step_1A_iiNet(struct iiNet *net, int originId, int step, int *Num) {
 	if (originId<net->minId || originId>net->maxId) {
