@@ -184,3 +184,23 @@ void tdpotn_print(int D_12, int N, int seed, int limitN, double theta, double la
 	printf("D_12: %d\tN: %d\tseed: %d\tlimitN: %d\ttheta: %f\tlambda: %f\talpha: %f\tasp: %f\tcoupling: %f\tgini: %f\n", \
 			D_12, N, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 }
+
+void tdpotn_writenettofile_ii_iid(struct iiNet *base, struct iidNet *air, char *filename) {
+	FILE *fp = fopen(filename, "w");
+	fileError(fp, "tdpotn_writenettofile_ii_iid open error: %s\n", filename);
+	int i;
+	long j;
+	for (i = 0; i < base->maxId + 1; ++i) {
+		for (j = 0; j < base->count[i]; ++j) {
+			if (i < base->edges[i][j]) 
+				fprintf(fp, "%d\t%d\t%f\n", i, base->edges[i][j], 1.0);
+		}
+	}
+	for (i = 0; i < air->maxId + 1; ++i) {
+		for (j = 0; j < air->count[i]; ++j) {
+			if (i < air->edges[i][j]) 
+				fprintf(fp, "%d\t%d\t%f\n", i, air->edges[i][j], air->d[i][j]);
+		}
+	}
+	fclose(fp);
+}

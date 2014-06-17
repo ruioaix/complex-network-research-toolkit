@@ -43,6 +43,8 @@ int main (int argc, char **argv) {
 				__func__, air->maxId, air->minId, air->idNum, air->edgesNum, air->countMax, air->countMin);
 		free_LineFile(airlf);
 
+		tdpotn_writenettofile_ii_iid(base, air, "tnet");
+
 		double avesp;
 		avesp_spath03_Net(base, air, &avesp);
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
