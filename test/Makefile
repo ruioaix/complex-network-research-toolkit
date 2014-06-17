@@ -1,18 +1,18 @@
 sources := $(wildcard *.c)
-exec_bname := $(notdir $(basename $(sources)))
-topexec := $(addprefix ../check-,$(exec_bname))
+libsources := $(filter-out main.c,$(wildcard *.c))
+libobj := $(subst .c,.o,$(libsources))
+exec := test
 
 headers := -I ../src
 libcnrt := ../src/libcnrt.a
 extralibs := -lm -lcheck
 
-.PHONY : all clean
+.PHONY : all clean 
 
-all : $(exec_bname)
+all : $(exec)
 
-$(exec_bname) : % : %.o $(libcnrt)
+$(exec) : main.o $(libobj) $(libcnrt)
 	$(LINK.o) $^ $(extralibs) -o $@
-	cp $@ $(patsubst %,../check-%,$@)
 
 COMPILE.c += $(headers)
 
@@ -21,9 +21,9 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 %.d : %.c
-	@$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$;                      \
+	$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$;                      \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;     \
 	rm -f $@.$$$$
 
 clean :
-	@$(RM) *.o *.d $(exec_bname) $(topexec)
+	@$(RM) *.o *.d $(exec_bname) 

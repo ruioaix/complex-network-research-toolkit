@@ -1,7 +1,7 @@
 src := src
 resh := research
 tlkt := toolkit
-check := check
+checkdir := test
 
 resh_sources := $(wildcard $(resh)/*/*.c)
 resh_dirs := $(sort $(dir $(resh_sources)))
@@ -15,11 +15,13 @@ resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 
 #tdpotn :
 
-.PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname) $(check) dist
+.PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname) $(checkdir) dist check
 
-all : $(tlkt) $(resh) $(src) $(check)
+all : $(tlkt) $(resh) $(src) $(checkdir)
 
-$(resh) $(tlkt) $(check) : $(src)
+check : 
+
+$(resh) $(tlkt) $(checkdir) : $(src)
 	@$(MAKE) -C $@ all
 
 $(resh_dirsname) : $(src)
@@ -30,10 +32,10 @@ $(src) :
 
 clean :
 	@$(RM) cnrt.tar.gz
-	@for d in $(src) $(tlkt) $(resh) $(check); \
+	@for d in $(src) $(tlkt) $(resh) $(checkdir); \
 		do \
 		$(MAKE) -C $$d clean; \
 		done
 
 dist : clean
-	tar zcvf cnrt.tar.gz $(src) $(resh) $(tlkt) $(check) Makefile .git
+	tar zcvf cnrt.tar.gz $(src) $(resh) $(tlkt) $(checkdir) Makefile .git
