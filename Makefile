@@ -29,7 +29,7 @@ $(src) :
 	@$(MAKE) -C $@ all
 
 clean :
-	@$(RM) cnrt.tar.gz
+	@$(RM) cnrt.tar.gz *.log
 	@for d in $(src) $(tlkt) $(resh) $(checkdir); \
 		do \
 		$(MAKE) -C $$d clean; \
