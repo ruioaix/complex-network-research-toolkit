@@ -1,5 +1,5 @@
-#ifndef CN_IINET_H
-#define CN_IINET_H
+#ifndef CNRT_IINET_H
+#define CNRT_IINET_H
 
 #include "linefile.h"
 

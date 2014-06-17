@@ -31,7 +31,7 @@ int main (int argc, char **argv) {
 	double coupling = -1, gini = -1;
 
 	int kk=0;
-	//for (kk = 0; kk < 41; ++kk) {
+	for (kk = 0; kk < 41; ++kk) {
 		double alpha = kk * 0.1;
 
 		struct LineFile *baself = tdpotn_lf(L, D_12);
@@ -51,7 +51,7 @@ int main (int argc, char **argv) {
 
 		free_iiNet(base);
 		free_iidNet(air);
-	//}
+	}
 
 	print_time();
 	return 0;

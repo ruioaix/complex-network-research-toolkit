@@ -381,21 +381,21 @@ void avesp_spath03_Net(struct iiNet *net, struct iidNet *air, double *avesp) {
 			}
 		}
 		spath03_core_Net(sp, gs, blist, nlist, bNum, nNum, &left, &right, &lNum, &rNum, net, air, &STEP_END);
-		int co = 0;
-		double avess = 0;
+		//int co = 0;
+		//double avess = 0;
 		for (j = 0; j < net->maxId + 1; ++j) {
 			//fprintf(fp, "sp: %d\t%d\t%f\n", i, j, sp[j]);
-			if (i==0 && sp[j]>0) {
-				printf("%d, %f\n", j, sp[j]);
-			}
+			//if (i==0 && sp[j]>0) {
+			//	printf("%d, %f\n", j, sp[j]);
+			//}
 			if (sp[j] > 0) {
 				*avesp += sp[j];
 				++cc;
-				avess += sp[j];
-				++co;
+				//avess += sp[j];
+				//++co;
 			}
 		}
-		if (i==0) printf("i: %d, co: %d, ave: %f, avesp: %f\n", i, co, avess, avess/co);
+		//if (i==0) printf("i: %d, co: %d, ave: %f, avesp: %f\n", i, co, avess, avess/co);
 	}
 	//fclose(fp);
 
