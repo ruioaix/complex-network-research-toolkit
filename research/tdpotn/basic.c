@@ -30,8 +30,8 @@ int main (int argc, char **argv) {
 	set_seed_MTPR(seed);
 	double coupling = -1, gini = -1;
 
-	int kk;
-	for (kk = 0; kk < 41; ++kk) {
+	int kk=0;
+	//for (kk = 0; kk < 41; ++kk) {
 		double alpha = kk * 0.1;
 
 		struct LineFile *baself = tdpotn_lf(L, D_12);
@@ -43,7 +43,7 @@ int main (int argc, char **argv) {
 				__func__, air->maxId, air->minId, air->idNum, air->edgesNum, air->countMax, air->countMin);
 		free_LineFile(airlf);
 
-		tdpotn_writenettofile_ii_iid(base, air, "tnet");
+		tdpotn_writenettofile_ii_iid(base, air, "tnet", "wtnet");
 
 		double avesp;
 		avesp_spath03_Net(base, air, &avesp);
@@ -51,7 +51,7 @@ int main (int argc, char **argv) {
 
 		free_iiNet(base);
 		free_iidNet(air);
-	}
+	//}
 
 	print_time();
 	return 0;
