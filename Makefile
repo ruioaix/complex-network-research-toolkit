@@ -19,8 +19,6 @@ resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 
 all : $(tlkt) $(resh) $(src) $(checkdir)
 
-check : 
-
 $(resh) $(tlkt) $(checkdir) : $(src)
 	@$(MAKE) -C $@ all
 

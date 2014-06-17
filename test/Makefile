@@ -26,4 +26,4 @@ endif
 	rm -f $@.$$$$
 
 clean :
-	@$(RM) *.o *.d $(exec_bname) 
+	@$(RM) *.o *.d $(exec) 
