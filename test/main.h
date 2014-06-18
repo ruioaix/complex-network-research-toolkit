@@ -4,5 +4,6 @@
 #include <check.h>
 Suite *dataset_suite(void);
 Suite *linefile_suite(void);
+Suite *utilities_suite(void);
 
 #endif
