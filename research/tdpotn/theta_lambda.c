@@ -41,7 +41,7 @@ int main (int argc, char **argv) {
 		double alpha = kk * 0.1;
 
 		struct LineFile *baself = tdpotn_lf(D_12, N);
-		struct Net *base = create_Net(baself);
+		struct Net *base = create_undirected_Net(baself);
 		free_LineFile(baself);
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 		struct iidNet *air = create_iidNet(airlf);
