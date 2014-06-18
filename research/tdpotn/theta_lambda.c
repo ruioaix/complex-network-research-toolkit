@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "base.h"
 #include "net.h"
-#include "shortestpath.h"
+//#include "shortestpath.h"
 #include "mtprand.h"
 #include "common.h"
 
@@ -31,7 +31,7 @@ int main (int argc, char **argv) {
 
 	int D_12, N, seed, limitN;
 	double theta, lambda;
-	tdpotn_argcv(argc, argv, &N, &seed, &D_12, &limitN, &theta, &lambda);
+	tdpotn_argcv(argc, argv, &D_12, &N, &seed, &limitN, &theta, &lambda);
 
 	set_seed_MTPR(seed);
 	double coupling = -1, gini = -1;
@@ -40,8 +40,8 @@ int main (int argc, char **argv) {
 	for (kk = 0; kk < 41; ++kk) {
 		double alpha = kk * 0.1;
 
-		struct LineFile *baself = tdpotn_lf(N, D_12);
-		struct iiNet *base = create_iiNet(baself);
+		struct LineFile *baself = tdpotn_lf(D_12, N);
+		struct Net *base = create_Net(baself);
 		free_LineFile(baself);
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 		struct iidNet *air = create_iidNet(airlf);

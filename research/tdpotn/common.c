@@ -6,11 +6,11 @@
 #include <stdlib.h>
 #include "spath.h"
 
-void tdpotn_argcv(int argc, char **argv, int *L, int *seed, int *D_12, int *limitN, double *theta, double *lambda) {
+void tdpotn_argcv(int argc, char **argv, int *D_12, int *N, int *seed, int *limitN, double *theta, double *lambda) {
 	if (argc == 7) {
 		char *p;
 		*D_12 = strtol(argv[1], &p, 10);
-		*L = strtol(argv[2], &p, 10);
+		*N = strtol(argv[2], &p, 10);
 		*seed = strtol(argv[3], &p, 10);
 		*limitN = strtol(argv[4], &p, 10);
 		*theta = strtod(argv[5], &p);
@@ -18,7 +18,7 @@ void tdpotn_argcv(int argc, char **argv, int *L, int *seed, int *D_12, int *limi
 	}
 	else if (argc == 1) {
 		*D_12 = 1;
-		*L = 50;
+		*N = 50;
 		*seed = 1;
 		*limitN = 5;
 		*theta = 1;
@@ -27,30 +27,15 @@ void tdpotn_argcv(int argc, char **argv, int *L, int *seed, int *D_12, int *limi
 	else {
 		isError("wrong args");
 	}
-	if (*D_12 == 2) {
-		int ll = sqrt(*L);
-		if (ll*ll == *L) {
-			*L = ll;	
-		}
-		else if ((ll+1)*(ll+1) == *L) {
-			*L = ll + 1;
-		}
-		else if ((ll-1)*(ll-1) == *L) {
-			*L = ll - 1;
-		}
-		else {
-			isError("wrong L");
-		}
-	}
 }
 
-struct LineFile * tdpotn_lf(int L, int D_12) {
+struct LineFile * tdpotn_lf(int D_12, int N) {
 	struct LineFile *file;
 	if (1 == D_12) {
-		file = line1d_DS(L, CYCLE, NON_DIRECT);
+		file = line1d_DS(N, CYCLE, NON_DIRECT);
 	}
 	else if (2 == D_12) {
-		file = lattice2d_DS(L, CYCLE, NON_DIRECT);
+		file = lattice2d_DS(N, CYCLE, NON_DIRECT);
 	}
 	else {
 		isError("wrong D_12 type");

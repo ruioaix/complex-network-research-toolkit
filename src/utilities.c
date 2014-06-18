@@ -85,7 +85,7 @@ static int bad255[512] = {
 	0,0
 };
 
-int check_square(long long x) {
+int isSquareNum(long long x) {
 	// Quickfail
 	if(x < 0 || (x&2) || ((x&7) == 5) || ((x&11) == 8)) return 0;
 	if(x == 0) return 1;

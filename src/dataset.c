@@ -1,4 +1,5 @@
 #include "base.h"
+#include "utilities.h"
 #include "dataset.h"
 #include "mtprand.h"
 #include <stdlib.h>
@@ -22,9 +23,11 @@ static char *DIRECTNETC[2] = {"DIRECT", "NON_DIRECT"};
  * 	non_cycle, 		direct: L*(L-1)*4
  * 	non_cycle,	non_direct: L*(L-1)*2
  */
-struct LineFile * lattice2d_DS(int L, enum CICLENET cc, enum DIRECTNET dd) {
+struct LineFile * lattice2d_DS(int N, enum CICLENET cc, enum DIRECTNET dd) {
 	print2l("%s =>> begin......\n", __func__);
-	if (L<2) isError("%s =>> L too small.\n", __func__);
+	if (N<4) isError("%s =>> L too small.\n", __func__);
+	if (!isSquareNum(N)) isError("%s =>> you want a lattice, but %d is not a square number.", __func__, N);
+	int L = sqrt(N);
 
 	struct LineFile *file = create_LineFile(NULL);
 	long linesNum = (L-1)*L*2;

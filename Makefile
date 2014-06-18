@@ -13,7 +13,7 @@ resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 #sources := $(subst .c,,$(sources))
 #sources := $(subst /,-,$(sources))
 
-#tdpotn :
+tdpotn :
 
 .PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname) $(checkdir) dist check
 
