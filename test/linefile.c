@@ -2,7 +2,8 @@
 #include "linefile.h"
 #include "mtprand.h"
 #include "base.h"
-#include "stdlib.h"
+#include <stdlib.h>
+#include <math.h>
 
 START_TEST (test_linefile_create)
 {
@@ -34,9 +35,10 @@ START_TEST (test_linefile_create)
 	FILE *fp = fopen(filename, "w");
 	fileError(fp, "xx");
 	for (i = 0; i < linesNum; ++i) {
+		//if (i==3323) printf("%.32f\t%.19f\t", da[0][i], da[0][i]);
 		for (j = 0; j < 9; ++j) {
 			fprintf(fp, "%d\t", ia[j][i]);
-			fprintf(fp, "%f\t", da[j][i]);
+			fprintf(fp, "%.19f\t", da[j][i]);
 			fprintf(fp, "%s\t", sa[j][i]);
 		}
 		fprintf(fp, "\n");
@@ -54,7 +56,7 @@ START_TEST (test_linefile_create)
 			1, 2, 3, \
 			1, 2, 3, -1);
 	
-	double TE = 0.0000001;
+	double TE = 0.00000000000000001;
 	for (i = 0; i < linesNum; ++i) {
 		ck_assert_int_eq(lf->i1[i] ,ia[0][i]);
 		ck_assert_int_eq(lf->i2[i] ,ia[1][i]);
@@ -66,15 +68,16 @@ START_TEST (test_linefile_create)
 		ck_assert_int_eq(lf->i8[i] ,ia[7][i]);
 		ck_assert_int_eq(lf->i9[i] ,ia[8][i]);
 
-		ck_assert(abs(lf->d1[i] -da[0][i]) < TE);
-		ck_assert(abs(lf->d2[i] -da[1][i]) < TE);
-		ck_assert(abs(lf->d3[i] -da[2][i]) < TE);
-		ck_assert(abs(lf->d4[i] -da[3][i]) < TE);
-		ck_assert(abs(lf->d5[i] -da[4][i]) < TE);
-		ck_assert(abs(lf->d6[i] -da[5][i]) < TE);
-		ck_assert(abs(lf->d7[i] -da[6][i]) < TE);
-		ck_assert(abs(lf->d8[i] -da[7][i]) < TE);
-		ck_assert(abs(lf->d9[i] -da[8][i]) < TE);
+		ck_assert(fabs(lf->d1[i] -da[0][i]) < TE);
+		//if (i==3323) printf("%.32f\t%.32f\n", lf->d1[i], da[0][i]);
+		ck_assert(fabs(lf->d2[i] -da[1][i]) < TE);
+		ck_assert(fabs(lf->d3[i] -da[2][i]) < TE);
+		ck_assert(fabs(lf->d4[i] -da[3][i]) < TE);
+		ck_assert(fabs(lf->d5[i] -da[4][i]) < TE);
+		ck_assert(fabs(lf->d6[i] -da[5][i]) < TE);
+		ck_assert(fabs(lf->d7[i] -da[6][i]) < TE);
+		ck_assert(fabs(lf->d8[i] -da[7][i]) < TE);
+		ck_assert(fabs(lf->d9[i] -da[8][i]) < TE);
 
 		ck_assert_str_eq(lf->s1[i] ,sa[0][i]);
 		ck_assert_str_eq(lf->s2[i] ,sa[1][i]);
