@@ -10,7 +10,7 @@
 #define LINE_LENGTH 2000
 #define LINES_READIN 1000
 
-//put i/d/c/l/ccx 's address into i/d/c/l/cclist
+//put i/d/sx 's address into i/d/slist
 static void set_list_LineFile(struct LineFile *lf) {
 	print4l("%s =>> begin......\n", __func__);
 	lf->ilist[0] = &(lf->i1);
@@ -33,35 +33,15 @@ static void set_list_LineFile(struct LineFile *lf) {
 	lf->dlist[7] = &(lf->d8);
 	lf->dlist[8] = &(lf->d9);
 
-	lf->clist[0] = &(lf->c1);
-	lf->clist[1] = &(lf->c2);
-	lf->clist[2] = &(lf->c3);
-	lf->clist[3] = &(lf->c4);
-	lf->clist[4] = &(lf->c5);
-	lf->clist[5] = &(lf->c6);
-	lf->clist[6] = &(lf->c7);
-	lf->clist[7] = &(lf->c8);
-	lf->clist[8] = &(lf->c9);
-
-	lf->llist[0] = &(lf->l1);
-	lf->llist[1] = &(lf->l2);
-	lf->llist[2] = &(lf->l3);
-	lf->llist[3] = &(lf->l4);
-	lf->llist[4] = &(lf->l5);
-	lf->llist[5] = &(lf->l6);
-	lf->llist[6] = &(lf->l7);
-	lf->llist[7] = &(lf->l8);
-	lf->llist[8] = &(lf->l9);
-
-	lf->cclist[0] = &(lf->cc1);
-	lf->cclist[1] = &(lf->cc2);
-	lf->cclist[2] = &(lf->cc3);
-	lf->cclist[3] = &(lf->cc4);
-	lf->cclist[4] = &(lf->cc5);
-	lf->cclist[5] = &(lf->cc6);
-	lf->cclist[6] = &(lf->cc7);
-	lf->cclist[7] = &(lf->cc8);
-	lf->cclist[8] = &(lf->cc9);
+	lf->slist[0] = &(lf->s1);
+	lf->slist[1] = &(lf->s2);
+	lf->slist[2] = &(lf->s3);
+	lf->slist[3] = &(lf->s4);
+	lf->slist[4] = &(lf->s5);
+	lf->slist[5] = &(lf->s6);
+	lf->slist[6] = &(lf->s7);
+	lf->slist[7] = &(lf->s8);
+	lf->slist[8] = &(lf->s9);
 	print4l("%s =>> ......end.\n", __func__);
 }
 //create an empty but completive LineFile.
@@ -74,14 +54,10 @@ static struct LineFile *init_LineFile(void) {
 
 	lf->iNum = 9;
 	lf->dNum = 9;
-	lf->cNum = 9;
-	lf->lNum = 9;
-	lf->ccNum = 9;
+	lf->sNum = 9;
 	lf->ilist = smalloc(lf->iNum*sizeof(int **));
-	lf->dlist = smalloc(lf->dNum*sizeof(void **));
-	lf->clist = smalloc(lf->cNum*sizeof(void **));
-	lf->llist = smalloc(lf->lNum*sizeof(void **));
-	lf->cclist = smalloc(lf->ccNum*sizeof(void ***));
+	lf->dlist = smalloc(lf->dNum*sizeof(double **));
+	lf->slist = smalloc(lf->sNum*sizeof(char ***));
 
 	set_list_LineFile(lf);
 
@@ -92,14 +68,8 @@ static struct LineFile *init_LineFile(void) {
 	for (i = 0; i < lf->dNum; ++i) {
 		*(lf->dlist[i]) = NULL;
 	}
-	for (i = 0; i < lf->cNum; ++i) {
-		*(lf->clist[i]) = NULL;
-	}
-	for (i = 0; i < lf->lNum; ++i) {
-		*(lf->llist[i]) = NULL;
-	}
-	for (i = 0; i < lf->ccNum; ++i) {
-		*(lf->cclist[i]) = NULL;
+	for (i = 0; i < lf->sNum; ++i) {
+		*(lf->slist[i]) = NULL;
 	}
 	print4l("%s =>> ......end.\n", __func__);
 	return lf;
@@ -109,14 +79,10 @@ static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
 	print4l("%s =>> begin......\n", __func__);
 	int ii = 0;
 	int di = 0;
-	int ci = 0;
-	int li = 0;
-	int cci = 0;
+	int si = 0;
 	int ***ilist = lf->ilist;
 	double ***dlist = lf->dlist;
-	char ***clist = lf->clist;
-	long ***llist = lf->llist;
-	char ****cclist = lf->cclist;
+	char ****slist = lf->slist;
 	int i;
 	for (i = 0; i < vn; ++i) {
 		int type = typelist[i];
@@ -138,27 +104,11 @@ static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
 				}
 				break;
 			case 3:
-				if (ci < lf->cNum) {
-					*(clist[ci++]) = smalloc(LINES_STEP * sizeof(char));
+				if (si < lf->sNum) {
+					*(slist[si++]) = smalloc(LINES_STEP * sizeof(char *));
 				}
 				else {
-					isError("%s =>> climit too small.", __func__);
-				}
-				break;
-			case 4:
-				if (li < lf->lNum) {
-					*(llist[li++]) = smalloc(LINES_STEP * sizeof(long));
-				}
-				else {
-					isError("%s =>> llimit too small.", __func__);
-				}
-				break;
-			case 5:
-				if (cci < lf->ccNum) {
-					*(cclist[cci++]) = smalloc(LINES_STEP * sizeof(char *));
-				}
-				else {
-					isError("%s =>> cclimit too small.", __func__);
+					isError("%s =>> slimit too small.", __func__);
 				}
 				break;
 			default:
@@ -174,9 +124,7 @@ static void add_memory_LineFile(struct LineFile *lf) {
 	print4l("%s =>> begin......\n", __func__);
 	int ***ilist = lf->ilist;
 	double ***dlist = lf->dlist;
-	char ***clist = lf->clist;
-	long ***llist = lf->llist;
-	char ****cclist = lf->cclist;
+	char ****slist = lf->slist;
 	int i;
 	for (i=0; i<lf->iNum; ++i) {
 		if (*(ilist[i]) != NULL) {
@@ -188,19 +136,9 @@ static void add_memory_LineFile(struct LineFile *lf) {
 			*(dlist[i]) = srealloc(*(dlist[i]), (size_t)(lf->memNum + LINES_STEP)*sizeof(double));
 		}
 	}
-	for (i=0; i<lf->cNum; ++i) {
-		if (*(clist[i]) != NULL) {
-			*(clist[i]) = srealloc(*(clist[i]), (size_t)(lf->memNum + LINES_STEP)*sizeof(char));
-		}
-	}
-	for (i=0; i<lf->lNum; ++i) {
-		if (*(llist[i]) != NULL) {
-			*(llist[i]) = srealloc(*(llist[i]), (size_t)(lf->memNum + LINES_STEP)*sizeof(long));
-		}
-	}
-	for (i=0; i<lf->ccNum; ++i) {
-		if (*(cclist[i]) != NULL) {
-			*(cclist[i]) = srealloc(*(cclist[i]), (size_t)(lf->memNum + LINES_STEP)*sizeof(void *));
+	for (i=0; i<lf->sNum; ++i) {
+		if (*(slist[i]) != NULL) {
+			*(slist[i]) = srealloc(*(slist[i]), (size_t)(lf->memNum + LINES_STEP)*sizeof(char *));
 		}
 	}
 	lf->memNum += LINES_STEP;
@@ -231,15 +169,11 @@ static void set_allparts_LineFile(char *buffer, char **allparts, int vn, int lre
 static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist, int lread, int vn, char *isok) {
 	int ***ilist = lf->ilist;
 	double ***dlist = lf->dlist;
-	char ***clist = lf->clist;
-	long ***llist = lf->llist;
-	char ****cclist = lf->cclist;
-	int IL = 0, DL = 0, CL = 0, LL = 0, CCL = 0;
+	char ****slist = lf->slist;
+	int IL = 0, DL = 0, SL = 0;
 	int *ip;
 	double *dp;
-	char *cp;
-	long *lp;
-	char **ccp;
+	char **sp;
 
 	int i,j;
 	char *pend;
@@ -278,45 +212,15 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 				}
 				break;
 			case 3:
-				cp = *(clist[CL++]);
-				for (j = 0; j < lread; ++j) {
-					if (p[j] != NULL) {
-						cp[j+lf->linesNum] = strtol(p[j], &pend, 10);
-						if (pend[0]!='\0') {
-							print1l("%s =>> wrong line: \"%s\" file, line: %ld, c%d part.\n", __func__, lf->filename, j+lf->linesNum, CL);
-							*isok = 0;
-						}
-					}
-					else {
-						cp[j+lf->linesNum] = -1;
-					}
-				}
-				break;
-			case 4:
-				lp = *(llist[LL++]);
-				for (j = 0; j < lread; ++j) {
-					if (p[j] != NULL) {
-						lp[j+lf->linesNum] = strtol(p[j], &pend, 10);
-						if (pend[0]!='\0') {
-							print1l("%s =>> wrong line: \"%s\" file, line: %ld, l%d part.\n", __func__, lf->filename, j+lf->linesNum, LL);
-							*isok = 0;
-						}
-					}
-					else {
-						lp[j+lf->linesNum] = -1;
-					}
-				}
-				break;
-			case 5:
-				ccp = *(cclist[CCL++]);
+				sp = *(slist[SL++]);
 				for (j = 0; j < lread; ++j) {
 					if (p[j] != NULL) {
 						int size = strlen(p[j]) + 1;
-						ccp[j+lf->linesNum] = smalloc(size*sizeof(char));
-						memcpy(ccp[j+lf->linesNum], p[j], size);
+						sp[j+lf->linesNum] = smalloc(size*sizeof(char));
+						memcpy(sp[j+lf->linesNum], p[j], size);
 					}
 					else {
-						ccp[j+lf->linesNum] = NULL;
+						sp[j+lf->linesNum] = NULL;
 					}
 				}
 				break;
@@ -343,14 +247,14 @@ struct LineFile *create_LineFile(char *filename, ...) {
 	}
 
 	//get typelist.
-	int argMax = lf->iNum + lf->dNum + lf->cNum + lf->lNum + lf->ccNum;
+	int argMax = lf->iNum + lf->dNum + lf->sNum;
 	int *typelist = smalloc(argMax*sizeof(int));
 	va_list vl;
 	va_start(vl, filename);
 	int vn = 0, type = -2;
 	print3l("%s =>> detected line style: ", __func__);
 	(void)typetype; //get rid of unused warning when VERBOSE_LEVEL is smaller than 3.
-	while (1 == (type = va_arg(vl, int)) || 2 == type || 3 == type || 4 == type || 5 == type) {
+	while (1 == (type = va_arg(vl, int)) || 2 == type || 3 == type) {
 		if (vn < argMax) {
 			typelist[vn++] = type;
 			print3l("%s ", typetype[type - 1]);
@@ -416,25 +320,17 @@ void free_LineFile(struct LineFile *lf) {
 	for (i = 0; i < lf->dNum; ++i) {
 		free(*(lf->dlist[i]));
 	}
-	for (i = 0; i < lf->cNum; ++i) {
-		free(*(lf->clist[i]));
-	}
-	for (i = 0; i < lf->lNum; ++i) {
-		free(*(lf->llist[i]));
-	}
-	for (i = 0; i < lf->ccNum; ++i) {
-		if (*(lf->cclist[i]) != NULL) {
+	for (i = 0; i < lf->sNum; ++i) {
+		if (*(lf->slist[i]) != NULL) {
 			for (j = 0; j < lf->linesNum; ++j) {
-				free((*(lf->cclist[i]))[j]);
+				free((*(lf->slist[i]))[j]);
 			}
 		}
-		free(*(lf->cclist[i]));
+		free(*(lf->slist[i]));
 	}
 	free(lf->ilist);
 	free(lf->dlist);
-	free(lf->clist);
-	free(lf->llist);
-	free(lf->cclist);
+	free(lf->slist);
 	free(lf);
 	print2l("%s =>> ......end.\n", __func__);
 }
@@ -450,9 +346,7 @@ void print_LineFile(struct LineFile *lf, char *filename) {
 	fileError(fp, "%s => can not \"%s\" file.\n", __func__, filename);
 	int ***ilist = lf->ilist;
 	double ***dlist = lf->dlist;
-	char ***clist = lf->clist;
-	long ***llist = lf->llist;
-	char ****cclist = lf->cclist;
+	char ****slist = lf->slist;
 	int i;
 	long j;
 	for (j = 0; j < lf->linesNum; ++j) {
@@ -466,19 +360,9 @@ void print_LineFile(struct LineFile *lf, char *filename) {
 				fprintf(fp, "%f\t", (*(dlist[i]))[j]);
 			}
 		}
-		for (i=0; i<lf->cNum; ++i) {
-			if (*(clist[i]) != NULL) {
-				fprintf(fp, "%d\t", (*(clist[i]))[j]);
-			}
-		}
-		for (i=0; i<lf->lNum; ++i) {
-			if (*(llist[i]) != NULL) {
-				fprintf(fp, "%ld\t", (*(llist[i]))[j]);
-			}
-		}
-		for (i=0; i<lf->ccNum; ++i) {
-			if (*(cclist[i]) != NULL) {
-				fprintf(fp, "%s\t", (*(cclist[i]))[j]);
+		for (i=0; i<lf->sNum; ++i) {
+			if (*(slist[i]) != NULL) {
+				fprintf(fp, "%s\t", (*(slist[i]))[j]);
 			}
 		}
 		fprintf(fp, "\n");
@@ -500,19 +384,13 @@ struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
 
 	int ***ilist = lf->ilist;
 	double ***dlist = lf->dlist;
-	char ***clist = lf->clist;
-	long ***llist = lf->llist;
-	char ****cclist = lf->cclist;
+	char ****slist = lf->slist;
 	int ***ilist1 = lf1->ilist;
 	double ***dlist1 = lf1->dlist;
-	char ***clist1 = lf1->clist;
-	long ***llist1 = lf1->llist;
-	char ****cclist1 = lf1->cclist;
+	char ****slist1 = lf1->slist;
 	int ***ilist2 = lf2->ilist;
 	double ***dlist2 = lf2->dlist;
-	char ***clist2 = lf2->clist;
-	long ***llist2 = lf2->llist;
-	char ****cclist2 = lf2->cclist;
+	char ****slist2 = lf2->slist;
 
 	lf->linesNum = lf1->linesNum + lf2->linesNum;
 
@@ -550,53 +428,21 @@ struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
 			isError("%s =>> lf1 and lf2 have different double Structures, can not add lf1 with lf2.\n", __func__);
 		}
 	}
-	for (i=0; i<lf->cNum; ++i) {
-		if (*(clist1[i]) != NULL && *(clist2[i]) != NULL) {
-			*(clist[i]) = smalloc((lf->linesNum)*sizeof(char));
+	for (i=0; i<lf->sNum; ++i) {
+		if (*(slist1[i]) != NULL && *(slist2[i]) != NULL) {
+			*(slist[i]) = smalloc((lf->linesNum)*sizeof(char *));
 			for (j = 0; j < lf1->linesNum; ++j) {
-				(*(clist[i]))[j] = (*(clist1[i]))[j];
+				int size = strlen((*(slist1[i]))[j]) + 1;
+				(*(slist[i]))[j] = smalloc(size*sizeof(char));
+				memcpy((*(slist[i]))[j], (*(slist1[i]))[j], size*sizeof(char));
 			}
 			for (j = 0; j < lf2->linesNum; ++j) {
-				(*(clist[i]))[j+lf1->linesNum] = (*(clist2[i]))[j];
+				int size = strlen((*(slist2[i]))[j]) + 1;
+				(*(slist[i]))[j+lf1->linesNum] = smalloc(size*sizeof(char));
+				memcpy((*(slist[i]))[j+lf1->linesNum], (*(slist2[i]))[j], size*sizeof(char));
 			}
 		}
-		else if (*(clist1[i]) == NULL && *(clist2[i]) == NULL) {
-		}
-		else {
-			isError("%s =>> lf1 and lf2 have different char Structures, can not add lf1 with lf2.\n", __func__);
-		}
-	}
-	for (i=0; i<lf->lNum; ++i) {
-		if (*(llist1[i]) != NULL && *(llist2[i]) != NULL) {
-			*(llist[i]) = smalloc((lf->linesNum)*sizeof(long));
-			for (j = 0; j < lf1->linesNum; ++j) {
-				(*(llist[i]))[j] = (*(llist1[i]))[j];
-			}
-			for (j = 0; j < lf2->linesNum; ++j) {
-				(*(llist[i]))[j+lf1->linesNum] = (*(llist2[i]))[j];
-			}
-		}
-		else if (*(llist1[i]) == NULL && *(llist2[i]) == NULL) {
-		}
-		else {
-			isError("%s =>> lf1 and lf2 have different long Structures, can not add lf1 with lf2.\n", __func__);
-		}
-	}
-	for (i=0; i<lf->ccNum; ++i) {
-		if (*(cclist1[i]) != NULL && *(cclist2[i]) != NULL) {
-			*(cclist[i]) = smalloc((lf->linesNum)*sizeof(void *));
-			for (j = 0; j < lf1->linesNum; ++j) {
-				int size = strlen((*(cclist1[i]))[j]) + 1;
-				(*(cclist[i]))[j] = smalloc(size*sizeof(char));
-				memcpy((*(cclist[i]))[j], (*(cclist1[i]))[j], size*sizeof(char));
-			}
-			for (j = 0; j < lf2->linesNum; ++j) {
-				int size = strlen((*(cclist2[i]))[j]) + 1;
-				(*(cclist[i]))[j+lf1->linesNum] = smalloc(size*sizeof(char));
-				memcpy((*(cclist[i]))[j+lf1->linesNum], (*(cclist2[i]))[j], size*sizeof(char));
-			}
-		}
-		else if (*(cclist1[i]) == NULL && *(cclist2[i]) == NULL) {
+		else if (*(slist1[i]) == NULL && *(slist2[i]) == NULL) {
 		}
 		else {
 			isError("%s =>> lf1 and lf2 have different c-string Structures, can not add lf1 with lf2.\n", __func__);
@@ -619,16 +465,12 @@ struct LineFile *clone_LineFile(struct LineFile *lf) {
 
 	int ***ilist 	= 	lf->ilist;
 	double ***dlist = 	lf->dlist;
-	char ***clist 	= 	lf->clist;
-	long ***llist 	= 	lf->llist;
-	char ****cclist = 	lf->cclist;
+	char ****slist = 	lf->slist;
 
 	struct LineFile *newlf = init_LineFile();
 	int ***ilist_n = 	newlf->ilist;
 	double ***dlist_n = 	newlf->dlist;
-	char ***clist_n = 	newlf->clist;
-	long ***llist_n = 	newlf->llist;
-	char ****cclist_n = 	newlf->cclist;
+	char ****slist_n = 	newlf->slist;
 
 	newlf->linesNum = lf->linesNum;
 
@@ -650,29 +492,13 @@ struct LineFile *clone_LineFile(struct LineFile *lf) {
 			}
 		}
 	}
-	for (i=0; i<lf->cNum; ++i) {
-		if (*(clist[i]) != NULL) {
-			*(clist_n[i]) = smalloc((lf->linesNum)*sizeof(char));
+	for (i=0; i<lf->sNum; ++i) {
+		if (*(slist[i]) != NULL) {
+			*(slist_n[i]) = smalloc((lf->linesNum)*sizeof(char *));
 			for (j = 0; j < lf->linesNum; ++j) {
-				(*(clist_n[i]))[j] = (*(clist[i]))[j];
-			}
-		}
-	}
-	for (i=0; i<lf->lNum; ++i) {
-		if (*(llist[i]) != NULL) {
-			*(llist_n[i]) = smalloc((lf->linesNum)*sizeof(long));
-			for (j = 0; j < lf->linesNum; ++j) {
-				(*(llist_n[i]))[j] = (*(llist[i]))[j];
-			}
-		}
-	}
-	for (i=0; i<lf->ccNum; ++i) {
-		if (*(cclist[i]) != NULL) {
-			*(cclist_n[i]) = smalloc((lf->linesNum)*sizeof(void *));
-			for (j = 0; j < lf->linesNum; ++j) {
-				int size = strlen((*(cclist[i]))[j]) + 1;
-				(*(cclist_n[i]))[j] = smalloc(size*sizeof(char));
-				memcpy((*(cclist_n[i]))[j], (*(cclist[i]))[j], size*sizeof(char));
+				int size = strlen((*(slist[i]))[j]) + 1;
+				(*(slist_n[i]))[j] = smalloc(size*sizeof(char));
+				memcpy((*(slist_n[i]))[j], (*(slist[i]))[j], size*sizeof(char));
 			}
 		}
 	}

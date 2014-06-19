@@ -26,10 +26,8 @@ struct LineFile {
 	//private
 	int ***ilist;
 	double ***dlist;
-	char ***clist;
-	long ***llist;
-	char ****cclist;
-	int iNum, dNum, cNum, ccNum, lNum;
+	char ****slist;
+	int iNum, dNum, sNum;
 
 	//public
 	int *i1; int *i2; int *i3; int *i4; int *i5;
@@ -37,13 +35,9 @@ struct LineFile {
 	double *d1; double *d2; double *d3;
 	double *d4; double *d5; double *d6;
 	double *d7; double *d8; double *d9;
-	char *c1; char *c2; char *c3; char *c4; char *c5;
-	char *c6; char *c7; char *c8; char *c9;
-	long *l1; long *l2; long *l3; long *l4; long *l5;
-	long *l6; long *l7; long *l8; long *l9;
-	char **cc1; char **cc2; char **cc3;
-	char **cc4; char **cc5; char **cc6;
-	char **cc7; char **cc8; char **cc9;
+	char **s1; char **s2; char **s3;
+	char **s4; char **s5; char **s6;
+	char **s7; char **s8; char **s9;
 
 	long linesNum;
 	long memNum;
@@ -62,9 +56,7 @@ struct LineFile {
  *
  * "1" means int.
  * "2" means double.
- * "3" means char.
- * "4" means long.
- * "5" means char *(string).
+ * "3" means char *(string).
  * "-1" means guard.
  *
  * if the first argument is "NULL", or

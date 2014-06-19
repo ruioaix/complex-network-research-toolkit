@@ -13,11 +13,11 @@ resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 #sources := $(subst .c,,$(sources))
 #sources := $(subst /,-,$(sources))
 
-tdpotn :
+test :
 
 .PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname) $(checkdir) dist check
 
-all : $(tlkt) $(resh) $(src) $(checkdir)
+all : $(src) $(checkdir) $(tlkt) $(resh) 
 
 $(resh) $(tlkt) $(checkdir) : $(src)
 	@$(MAKE) -C $@ all

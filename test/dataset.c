@@ -20,7 +20,7 @@ END_TEST
 
 START_TEST (test_dataset_lattice)
 {
-	struct LineFile *lattice = lattice2d_DS(100, CYCLE, NON_DIRECT);
+	struct LineFile *lattice = lattice2d_DS(10000, CYCLE, NON_DIRECT);
 	struct iiNet *net = create_iiNet(lattice);
 	ck_assert_int_eq(lattice->linesNum, 20000);
 	ck_assert_int_eq(net->idNum, 10000);

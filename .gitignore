@@ -45,6 +45,7 @@ toolkit-serial
 toolkit/bippaper
 toolkit/dsinfo
 toolkit/serial
+test/test
 
 cnrt.tar.gz
 tags
