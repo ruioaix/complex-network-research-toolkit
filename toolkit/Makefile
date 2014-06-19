@@ -14,7 +14,7 @@ $(toolkits) : % : %.o $(libcnrt)
 	$(LINK.o) $^ $(extralibs) -o $@
 	cp $@ $(patsubst %,../toolkit-%,$@)
 
-COMPILE.c += $(headers)
+COMPILE.c += $(headers) -std=c99 -g -Wall -Wunused 
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(subst .c,.d,$(sources))

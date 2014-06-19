@@ -1,18 +1,16 @@
 #ifndef CNRT_NET_H
 #define CNRT_NET_H
 
+#include "base.h"
 #include "linefile.h"
 
 enum NET_STATUS {
 	NS_NON_VALID, NS_VALID,
 	NS_DIRECTED, NS_UNDIRECTED,
-	NS_DUPPAIRS, NS_NON_DUPPAIRS, NS_NOTSURE_DUPPAIRS,
-	NS_CNNTNESS, NS_NON_CNNTNESS, NS_NOTSURE_CNNTNESS
-};
-
-struct netOption_i{
-	enum NET_STATUS sign;
-	int value;
+	NS_WEIGHTED, NS_UNWEIGHTED,
+	NS_DUPPAIRS, NS_NON_DUPPAIRS, 
+	NS_CNNTNESS, NS_NON_CNNTNESS, 
+	NS_NOTSURE
 };
 
 struct netOption_d{
@@ -20,34 +18,14 @@ struct netOption_d{
 	double value;
 };
 
-struct netOption_l{
+struct netOption_edge{
 	enum NET_STATUS sign;
-	long value;
+	edge_t value;
 };
 
-struct netOption_lp{
+struct netOption_edge_pp{
 	enum NET_STATUS sign;
-	long *p;
-};
-
-struct netOption_ip{
-	enum NET_STATUS sign;
-	int *p;
-};
-
-struct netOption_dp{
-	enum NET_STATUS sign;
-	double *p;
-};
-
-struct netOption_lpp{
-	enum NET_STATUS sign;
-	long **pp;
-}
-
-struct netOption_dpp{
-	enum NET_STATUS sign;
-	double **pp;
+	edge_t **pp;
 };
 
 /*
@@ -58,52 +36,91 @@ struct netOption_dpp{
  * 		may be time-greedy(computing-complex)
  * 		may be difficult to maintain when modifying the net.
  * and they will not used by me frequently.
+ *
+ * if net is directed, 
+ * 		diffence between degree&indegree, edges&inedges, weight&inweight is obvious.
+ * if net is undirected,
+ * 		degree == indegree, edges == inedges, weight == inweight.
+ *
+ * when net is undirected, each edge is stored twice, but edges&inedges point to the same address.
+ * 		an edge between 34 and 22, there are edges[34][x] = 22 and edges[22][y] = 34. 
+ * 		but inedges is point to the same memory block of edges.
+ *
+ * when net is directed, each edge is stored only once in edges, and  stored another time in inedges.
+ * 		an edge frome 34 to 22, there is edges[34][x] = 22, but edges[22][y] = 34 maybe not existed.
+ * 		but inedge[22][z] = 34 must be existed.
+ *
+ * so actually, the memory consumed by directed net is not quite different from that by undirected net.
+ * 		
  */
 struct Net{
 	//the number of vertices.
-	int idNum;
+	vertex_t idNum;
 	//the maximum and minimum id of the vertices.
 	//the scope of ids is [0, ∞), but the minId doesn't have to be 0.
 	//"maxId - minId + 1" doen't have to be "idNum", hole is acceptable.
-	int maxId;
-	int minId;
+	vertex_t maxId;
+	vertex_t minId;
 	//the number of edges.
-	long edgesNum;
+	edge_t edgesNum;
 	//degree[11] means the degree of the vertex whose id is 11.
-	long *degree;
-	long *indegree;
+	edge_t *degree;
+	edge_t *indegree;
 	//edges[23][2] means the id of the third neighbour of the vertex whose id is 23.
 	//edges[23] doesn't have to be a sorted array.
-	int **edges;
-	int **inedges;
+	vertex_t **edges;
+	vertex_t **inedges;
+	//same structure to edges.
+	double **weight;
+	double **inweight;
 	
-	//direct == NATTR_UNDIRECTED, undirect.
-	//direct == NATTR_DIRECTED, direct.
+	//directStatus == NS_UNDIRECTED, undirect.
+	//directStatus == NS_DIRECTED, direct.
 	enum NET_STATUS directStatus;
-	//connectness == NATTR_NON_CNNTNESS, not fully connected.
-	//connectness == NATTR_CNNTNESS, fully connected.
-	//connectness == NATTR_NOTSURE_CNNTNESS, not sure whether the net is fully connected or not.
+	//weightStatus == NS_UNWEIGHTED, unweighted.
+	//weightStatus == NS_WEIGHTED, weighted.
+	enum NET_STATUS weightStatus;
+	//connectnessStatus == NS_NON_CNNTNESS, not fully connected.
+	//connectnessStatus == NS_CNNTNESS, fully connected.
+	//connectnessStatus == NS_NOTSURE_CNNTNESS, not sure whether the net is fully connected or not.
 	enum NET_STATUS connectnessStatus;
-	//duplicatepairs == NATTR_NON_DUPPAIRS, no duplicatepairs.
-	//duplicatepairs == NATTR_DUPPAIRS, has duplicatepairs.
-	//duplicatepairs == NATTR_NOTSURE_DUPPAIRS, not sure whether there are any duplicate pairs or not.
+	//duplicatepairsStatus == NS_NON_DUPPAIRS, no duplicatepairs.
+	//duplicatepairsStatus == NS_DUPPAIRS, has duplicatepairs.
+	//duplicatepairsStatus == NS_NOTSURE_DUPPAIRS, not sure whether there are any duplicate pairs or not.
 	enum NET_STATUS duplicatepairsStatus;
 
-	//if degreeMax.sign == NATTR_VALID, then degreeMax.value is valid.
-	//if degreeMax.sign == NATTR_NON_VALID, then degreeMax.value can not be used.
-	struct netOption_l degreeMax;
-	struct netOption_l degreeMin;
-	struct netOption_l indegreeMax;
-	struct netOption_l indegreeMin;
+	//if degreeMax.sign == NS_VALID, then degreeMax.value is valid.
+	//if degreeMax.sign == NS_NON_VALID, then degreeMax.value can not be used.
+	struct netOption_edge degreeMax;
+	struct netOption_edge degreeMin;
+	struct netOption_edge indegreeMax;
+	struct netOption_edge indegreeMin;
 	struct netOption_d avesp;
-	struct netOption_dpp weight;
+
+	//be careful with this option. it's a matrix: (maxId + 1)^2 * sizeof(edge_t) BYTE.
+	//this option should be used when you have quite sufficient memory space and you want to find a edge ASAP.
+	//e.g. if you want to find a edge's weight, the edge is from 23 to 77.
+	//		then the value of edgesMatrix.pp[23][77] is 55; 
+	//		then the value of weight.pp[23][55] is 43.23;
+	//		then 43.23 is the weight of the edge.
+	//		if edgesMatrix.pp[23][77] is -1, it means there is no edge from 23 to 77.
+	struct netOption_edge_pp edgesMatrix;
 };
 
 //free net, net itself is dynamically allocated.
 void free_Net(struct Net *net);
 //LineFile is another core structure, more basic.
+/*
+ * create_Net is undirected and unweighted.
+ * create_directed_Net is directed and unweighted.
+ * create_weighted_Net is undirected and weighted.
+ * create_directed_weighted_Net is directed and weighted.
+ */
+struct Net *create_Net(struct LineFile * file);
 struct Net *create_directed_Net(struct LineFile * file);
-struct Net *create_undirected_Net(struct LineFile * file);
+struct Net *create_weighted_Net(struct LineFile * file, double *weight);
+struct Net *create_directed_weighted_Net(struct LineFile * file, double *weight);
+
 /*
 struct Net *read_direct_Net(char *netfilename);
 struct Net *read_undirect_Net(char *netfilename);

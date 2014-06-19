@@ -8,6 +8,8 @@ ifneq ($(MAKECMDGOALS),clean)
 -include $(subst .c,.d,$(sources))
 endif
 
+COMPILE.c += -std=c99 -g -Wall -Wunused 
+
 %.d : %.c
 	@$(CC) -M $(CPPFLAGS) $< > $@.$$$$;                      \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;     \

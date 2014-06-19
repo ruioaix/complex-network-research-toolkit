@@ -17,8 +17,7 @@ $(execu) : % : %.o $(common_o) $(libcnrt)
 	$(LINK.o) $^ $(extralibs) -o $@
 	cp $@ $(patsubst %,../../$(notdir $(CURDIR))-%,$@)
 
-%.o : %.c
-	$(COMPILE.c) $(headers) $< -o $@
+COMPILE.c += $(headers) -std=c99 -g -Wall -Wunused 
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(subst .c,.d,$(sources) $(common_s))
