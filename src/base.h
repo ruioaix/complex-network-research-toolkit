@@ -21,7 +21,6 @@ VERBOSE_LEVEL_3 means output the content of print1l&print2l&print3l. output all 
 VERBOSE_LEVEL_N means output the content of print1l&print2l&print3l&printnl. 
 	printnl often in loop, so the output will be in huge size.
 later maybe we have print4l.*/
-
 /********************************************************************************************************/
 
 /********assert should be used very offen.***************************************************************/

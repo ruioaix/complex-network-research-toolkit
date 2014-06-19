@@ -11,28 +11,30 @@
 void free_Net(struct Net *net) {
 	print2l("%s =>> begin......\n", __func__);
 	//free degree&indegree.
-	free(net->degree);
-	free(net->indegree);
+	free(net->degree); net->degree = NULL;
+	free(net->indegree); net->indegree = NULL;
 
 	//free edges&inedges.
 	int i=0;
 	for(i=0; i<net->maxId+1; ++i) {
-		free(net->edges[i]);
-		free(net->inedges[i]);
+		free(net->edges[i]); net->edges[i] = NULL;
+		free(net->inedges[i]); net->inedges[i] = NULL;
 	}
-	free(net->edges);
-	free(net->inedges);
+	free(net->edges); net->edges = NULL;
+	free(net->inedges); net->inedges = NULL;
 	
 	//free weight
 	if (net->weight.sign == NS_VALID) {
 		for(i=0; i<net->maxId+1; ++i) {
 			free(net->weight.pp[i]);
+			net->weight.pp[i] = NULL;
 		}
 		free(net->weight.pp);
+		net->weight.pp = NULL;
 	}
 
 	//free net
-	free(net);
+	free(net); net = NULL;
 	print2l("%s =>> ......end.\n", __func__);
 }
 

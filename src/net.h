@@ -40,6 +40,11 @@ struct netOption_dp{
 	double *p;
 };
 
+struct netOption_lpp{
+	enum NET_STATUS sign;
+	long **pp;
+}
+
 struct netOption_dpp{
 	enum NET_STATUS sign;
 	double **pp;
@@ -48,25 +53,18 @@ struct netOption_dpp{
 /*
  * there are a lot of options, some optins may seem important and should not be only an option.
  * the reason I put them in options is :
+ * 		may be not existed by default.
  * 		may be memory-greedy 
  * 		may be time-greedy(computing-complex)
- * 		may be difficult to maintain in some cases.
+ * 		may be difficult to maintain when modifying the net.
  * and they will not used by me frequently.
  */
 struct Net{
-	//if degreeMax.sign == NATTR_VALID, then degreeMax.value is valid.
-	//if degreeMax.sign == NATTR_NON_VALID, then degreeMax.value can not be used.
-	struct netOption_l degreeMax;
-	struct netOption_l degreeMin;
-	struct netOption_l indegreeMax;
-	struct netOption_l indegreeMin;
-	struct netOption_d avesp;
-	struct netOption_dpp weight;
-
 	//the number of vertices.
 	int idNum;
 	//the maximum and minimum id of the vertices.
 	//the scope of ids is [0, ∞), but the minId doesn't have to be 0.
+	//"maxId - minId + 1" doen't have to be "idNum", hole is acceptable.
 	int maxId;
 	int minId;
 	//the number of edges.
@@ -90,6 +88,15 @@ struct Net{
 	//duplicatepairs == NATTR_DUPPAIRS, has duplicatepairs.
 	//duplicatepairs == NATTR_NOTSURE_DUPPAIRS, not sure whether there are any duplicate pairs or not.
 	enum NET_STATUS duplicatepairsStatus;
+
+	//if degreeMax.sign == NATTR_VALID, then degreeMax.value is valid.
+	//if degreeMax.sign == NATTR_NON_VALID, then degreeMax.value can not be used.
+	struct netOption_l degreeMax;
+	struct netOption_l degreeMin;
+	struct netOption_l indegreeMax;
+	struct netOption_l indegreeMin;
+	struct netOption_d avesp;
+	struct netOption_dpp weight;
 };
 
 //free net, net itself is dynamically allocated.
