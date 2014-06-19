@@ -4,8 +4,9 @@
  *
  * Author: RuiXiao <xrfind@gmail.com>
  */
-#ifndef CN_BASE_H
-#define CN_BASE_H
+#ifndef CNRT_BASE_H
+#define CNRT_BASE_H
+
 /****************Configuration Section*******************************************************************/
 //#define NDEBUG
 #define VERBOSE_LEVEL_0 //no output, should be used when you can make sure the program is right, and what you want is only the result output.
