@@ -37,3 +37,7 @@ clean :
 
 dist : clean
 	tar zcvf cnrt.tar.gz $(src) $(resh) $(tlkt) $(checkdir) Makefile .git
+
+check : $(checkdir)
+	@./test/test
+

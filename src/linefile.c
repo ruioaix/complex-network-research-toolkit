@@ -506,5 +506,5 @@ struct LineFile *clone_LineFile(struct LineFile *lf) {
 	newlf->memNum = newlf->linesNum;
 	newlf->filename = "clone_linefile";
 	print2l("%s =>> ......end.\n", __func__);
-	return lf;
+	return newlf;
 }

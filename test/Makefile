@@ -5,7 +5,7 @@ exec := test
 
 headers := -I ../src
 libcnrt := ../src/libcnrt.a
-extralibs := -lm -lcheck
+extralibs := -lm -lcheck -lssl -lcrypto
 
 .PHONY : all clean 
 

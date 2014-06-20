@@ -4,8 +4,8 @@
 int main(void) {
 
 	SRunner *sr;
-   	sr = srunner_create(dataset_suite());
-	srunner_add_suite(sr, linefile_suite());
+   	sr = srunner_create(linefile_suite());
+	srunner_add_suite(sr, dataset_suite());
 	srunner_add_suite(sr, utilities_suite());
 
 	srunner_set_log (sr, "test.log");
