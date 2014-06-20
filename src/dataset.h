@@ -8,7 +8,7 @@
 #include "linefile.h"
 
 enum DS_STATUS {
-	DS_CYCLE, DS_NON_CYCLE
+	DS_CYCLE, DS_NON_CYCLE,
 	DS_DIRECT, DS_NON_DIRECT
 };
 

@@ -292,8 +292,8 @@ struct Net *create_Net(struct LineFile * lf) {
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
-			degree, NULL, \
-			edges, NULL, \
+			degree, degree, \
+			edges, edges, \
 			NULL, NULL, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
@@ -369,9 +369,9 @@ struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
-			degree, NULL, \
-			edges, NULL, \
-			weight, NULL, \
+			degree, degree, \
+			edges, edges, \
+			weight, weight, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
 			NS_NON_VALID, -1, \
@@ -653,3 +653,41 @@ void verify_fullyConnected_iiNet(struct iiNet *net) {
 	print2l("%s =>> ......end.\n", __func__);
 }
 */
+
+void set_edgesMatrix_Net(struct Net *net) {
+	vertex_t maxId = net->maxId;
+	edge_t *em_onetime = scalloc((maxId + 1) * (maxId + 1), sizeof(edge_t));
+	edge_t **em = smalloc((maxId + 1) * sizeof(edge_t *));
+	vertex_t i;
+	em[0] = em_onetime;
+	for (i = 1; i < maxId + 1; ++i) {
+		em[i] = em_onetime + (maxId + 1)*i;
+	}
+	edge_t j;
+	if (net->directStatus == NS_UNDIRECTED) {
+		for (i = 0; i < maxId + 1; ++i) {
+			for (j = 0; j < net->degree[i]; ++j) {
+				vertex_t x = i;
+				vertex_t y = net->edges[i][j];
+				em[x][y] = j;
+			}
+		}
+	}
+	else if (net->directStatus == NS_DIRECTED) {
+		for (i = 0; i < maxId + 1; ++i) {
+			for (j = 0; j < net->degree[i]; ++j) {
+				vertex_t x = i;
+				vertex_t y = net->edges[i][j];
+				em[x][y] = j;
+			}
+		}
+		for (i = 0; i < maxId + 1; ++i) {
+			for (j = 0; j < net->indegree[i]; ++j) {
+				vertex_t x = i;
+				vertex_t y = net->inedges[i][j];
+				em[x][y] = j;
+			}
+		}
+	}
+	
+}

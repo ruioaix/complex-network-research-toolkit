@@ -32,13 +32,13 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 
 	struct LineFile *file = create_LineFile(NULL);
 	long linesNum = (L-1)*L*2;
-	if (cc == CYCLE && L != 2) {
+	if (cc == DS_CYCLE && L != 2) {
 		linesNum += 2*L;
 	}
-	if (dd == DIRECT) {
+	if (dd == DS_DIRECT) {
 		linesNum *= 2;
 	}
-	(void)CICLENETC; (void)DIRECTNETC; //get rid of unused warning when VERBOSE_LEVEL is smaller than 3.
+	(void)DS_CYCLE_S; (void)DS_DIRECT_S; //get rid of unused warning when VERBOSE_LEVEL is smaller than 3.
 	print3l("%s =>> Generate 2D Lattice, %s, %s, L: %d, linesNum: %ld\n", __func__, CICLENETC[cc], DIRECTNETC[dd], L, linesNum);
 
 	int *i1 = malloc(linesNum * sizeof(int));
@@ -52,7 +52,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 			i1[k]=id;
 			i2[k]=id-1;	
 			++k;
-			if (dd == DIRECT) {
+			if (dd == DS_DIRECT) {
 				i2[k]=id;
 				i1[k]=id-1;	
 				++k;
@@ -60,7 +60,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 			i1[k]=id;
 			i2[k]=id-L;
 			++k;
-			if (dd == DIRECT) {
+			if (dd == DS_DIRECT) {
 				i2[k]=id;
 				i1[k]=id-L;
 				++k;
@@ -71,7 +71,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 		i1[k] = i;
 		i2[k] = i-1;
 		++k;
-		if (dd == DIRECT) {
+		if (dd == DS_DIRECT) {
 			i2[k] = i;
 			i1[k] = i-1;
 			++k;
@@ -79,18 +79,18 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 		i1[k] = i*L;
 		i2[k] = i*L-L;
 		++k;
-		if (dd == DIRECT) {
+		if (dd == DS_DIRECT) {
 			i2[k] = i*L;
 			i1[k] = i*L-L;
 			++k;
 		}
 	}
-	if (cc == CYCLE && L != 2) {
+	if (cc == DS_CYCLE && L != 2) {
 		for (i=0; i<L; ++i) {
 			i1[k] = i;
 			i2[k] = i+(L-1)*L;
 			++k;
-			if (dd == DIRECT) {
+			if (dd == DS_DIRECT) {
 				i2[k] = i;
 				i1[k] = i+(L-1)*L;
 				++k;
@@ -98,7 +98,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 			i1[k] = i*L;
 			i2[k] = i*L+L-1;
 			++k;
-			if (dd == DIRECT) {
+			if (dd == DS_DIRECT) {
 				i2[k] = i*L;
 				i1[k] = i*L+L-1;
 				++k;
@@ -131,17 +131,17 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
  * 	non_cycle,	non_direct: N-1
  * 
  */
-struct LineFile * line1d_DS(int N, enum CICLENET cc, enum DIRECTNET dd) {
+struct LineFile * line1d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 	print2l("%s =>> begin......\n", __func__);
 	if (N<2) isError("%s =>> N too small.\n", __func__);
 	
 	struct LineFile *file = create_LineFile(NULL);
 
 	long linesNum = N-1;
-	if (cc == CYCLE && N != 2) {
+	if (cc == DS_CYCLE && N != 2) {
 		linesNum += 1;
 	}
-	if (dd == DIRECT) {
+	if (dd == DS_DIRECT) {
 		linesNum *= 2;
 	}
 
@@ -154,17 +154,17 @@ struct LineFile * line1d_DS(int N, enum CICLENET cc, enum DIRECTNET dd) {
 		i1[k] = i;
 		i2[k] = i-1;
 		++k;
-		if (dd == DIRECT) {
+		if (dd == DS_DIRECT) {
 			i2[k] = i;
 			i1[k] = i-1;
 			++k;
 		}
 	}
-	if (cc == CYCLE && N != 2) {
+	if (cc == DS_CYCLE && N != 2) {
 		i1[k] = 0;
 		i2[k] = N - 1;
 		++k;
-		if (dd == DIRECT) {
+		if (dd == DS_DIRECT) {
 			i2[k] = 0;
 			i1[k] = N - 1;
 			++k;

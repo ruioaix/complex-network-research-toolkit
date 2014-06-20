@@ -126,6 +126,8 @@ struct Net *create_directed_Net(struct LineFile * file);
 struct Net *create_weighted_Net(struct LineFile * file, double *weight);
 struct Net *create_directed_weighted_Net(struct LineFile * file, double *weight);
 
+void set_edgesMatrix_Net(struct Net *net);
+
 /*
 struct Net *read_direct_Net(char *netfilename);
 struct Net *read_undirect_Net(char *netfilename);
