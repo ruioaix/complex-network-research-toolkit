@@ -1,3 +1,4 @@
+#include <check.h>
 #include "main.h"
 #include <stdlib.h>
 
@@ -7,6 +8,7 @@ int main(void) {
    	sr = srunner_create(linefile_suite());
 	srunner_add_suite(sr, dataset_suite());
 	srunner_add_suite(sr, utilities_suite());
+	srunner_add_suite(sr, net_suite());
 
 	srunner_set_log (sr, "test.log");
 	srunner_run_all(sr, CK_VERBOSE);

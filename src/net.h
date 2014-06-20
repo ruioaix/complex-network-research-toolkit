@@ -1,8 +1,13 @@
 #ifndef CNRT_NET_H
 #define CNRT_NET_H
 
-#include "base.h"
 #include "linefile.h"
+
+typedef int vertex_t;
+#define VERTEX_T_MAX INT_MAX 
+typedef int edge_t;
+#define EDGE_T_MAX INT_MAX
+
 
 enum NET_STATUS {
 	NS_NON_VALID, NS_VALID,

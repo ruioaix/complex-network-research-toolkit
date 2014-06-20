@@ -2,9 +2,11 @@
 #include "dataset.h"
 #include "iinet.h"
 
+#define VERTICES_NUM 10000
+
 START_TEST (test_dataset_ring)
 {
-	struct LineFile *ring = line1d_DS(100, CYCLE, NON_DIRECT);
+	struct LineFile *ring = line1d_DS(VERTICES_NUM, DS_NON_CYCLE, DS_NON_DIRECT);
 	struct iiNet *net = create_iiNet(ring);
 	ck_assert_int_eq(ring->linesNum, 100);
 	ck_assert_int_eq(net->idNum, 100);

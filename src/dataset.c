@@ -6,11 +6,12 @@
 #include <assert.h>
 #include <math.h>
 
-static char *CICLENETC[2] = {"CYCLE", "NON_CYCLE"};
-static char *DIRECTNETC[2] = {"DIRECT", "NON_DIRECT"};
+static char *DS_CYCLE_S[2] = {"CYCLE", "NON_CYCLE"};
+static char *DS_DIRECT_S[2] = {"DIRECT", "NON_DIRECT"};
 
 /**
- * for 2d lattices, L is the size of Height and Width of the lattice, L must > 1.
+ * for 2d lattices, N is the number of vertex and N must be a square number, at least 4.
+ * L is the size of Height and Width of the lattice, N = L*L, L is at least 2.
  * L = 2 is a special case. total linesNum:
  * 		cycle,		direct: 8
  * 		cycle,	non_direct: 4
@@ -23,7 +24,7 @@ static char *DIRECTNETC[2] = {"DIRECT", "NON_DIRECT"};
  * 	non_cycle, 		direct: L*(L-1)*4
  * 	non_cycle,	non_direct: L*(L-1)*2
  */
-struct LineFile * lattice2d_DS(int N, enum CICLENET cc, enum DIRECTNET dd) {
+struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 	print2l("%s =>> begin......\n", __func__);
 	if (N<4) isError("%s =>> L too small.\n", __func__);
 	if (!isSquareNum(N)) isError("%s =>> you want a lattice, but %d is not a square number.", __func__, N);
