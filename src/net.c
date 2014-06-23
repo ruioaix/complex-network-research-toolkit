@@ -261,10 +261,10 @@ static void create_Net_undirected_edges_weight(struct LineFile *lf, vertex_t max
 	for(j=0; j<lf->linesNum; ++j) {
 		vertex_t i1 =lf->i1[j];
 		vertex_t i2 =lf->i2[j];
-		double w = wgt[j];
 		(*edges)[i1][count[i1]] = i2;
 		(*edges)[i2][count[i2]] = i1;
 		if (wgt != NULL) {
+			double w = wgt[j];
 			(*weight)[i1][count[i1]] = w;
 			(*weight)[i2][count[i2]] = w;
 		}
@@ -294,8 +294,8 @@ struct Net *create_Net(struct LineFile * lf) {
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
-			degree, degree, \
-			edges, edges, \
+			degree, NULL, \
+			edges, NULL, \
 			NULL, NULL, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
@@ -371,9 +371,9 @@ struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
-			degree, degree, \
-			edges, edges, \
-			weight, weight, \
+			degree, NULL, \
+			edges, NULL, \
+			weight, NULL, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
 			NS_NON_VALID, -1, \
@@ -669,26 +669,12 @@ void set_edgesMatrix_Net(struct Net *net) {
 	for (j = 0; j < (maxId + 1)*(maxId + 1); ++j) {
 		em_onetime[j] = -1;
 	}
-	if (net->directStatus == NS_UNDIRECTED) {
-		for (i = 0; i < maxId + 1; ++i) {
-			for (j = 0; j < net->degree[i]; ++j) {
-				vertex_t x = i;
-				vertex_t y = net->edges[i][j];
-				em[x][y] = j;
-			}
+	for (i = 0; i < maxId + 1; ++i) {
+		for (j = 0; j < net->degree[i]; ++j) {
+			vertex_t x = i;
+			vertex_t y = net->edges[i][j];
+			em[x][y] = j;
 		}
-	}
-	else if (net->directStatus == NS_DIRECTED) {
-		for (i = 0; i < maxId + 1; ++i) {
-			for (j = 0; j < net->degree[i]; ++j) {
-				vertex_t x = i;
-				vertex_t y = net->edges[i][j];
-				em[x][y] = j;
-			}
-		}
-	}
-	else {
-		isError("set_edgesMatrix_Net");
 	}
 	net->edgesMatrix.pp = em;
 	net->edgesMatrix.sign = NS_VALID;

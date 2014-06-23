@@ -5,9 +5,10 @@
 int main(void) {
 
 	SRunner *sr;
-   	sr = srunner_create(net_suite());
-	//srunner_add_suite(sr, dataset_suite());
-	//srunner_add_suite(sr, utilities_suite());
+   	sr = srunner_create(net_line1d_suite());
+	srunner_add_suite(sr, net_lattice2d_suite());
+	srunner_add_suite(sr, utilities_suite());
+	srunner_add_suite(sr, linefile_suite());
 
 	srunner_set_log (sr, "test.log");
 	srunner_run_all(sr, CK_VERBOSE);
