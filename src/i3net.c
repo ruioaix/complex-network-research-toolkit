@@ -10,7 +10,7 @@
 #include <limits.h>
 
 void free_i3Net(struct i3Net *net) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (!net) return;
 	int i=0;
 	for(i=0; i<net->maxId+1; ++i) {
@@ -23,11 +23,11 @@ void free_i3Net(struct i3Net *net) {
 	free(net->edges);
 	free(net->i3);
 	free(net);
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 }
 
 struct i3Net *create_i3Net(const struct LineFile * const lf) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (lf == NULL) return NULL;
 	if (lf->i1 == NULL || lf->i2 == NULL || lf->i3 == NULL) return NULL;
 
@@ -109,7 +109,7 @@ struct i3Net *create_i3Net(const struct LineFile * const lf) {
 	net->count=count;
 	net->edges=edges;
 	net->i3 = ii3;
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 	return net;
 }
 

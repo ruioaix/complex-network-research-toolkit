@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 void free_Net(struct Net *net) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	//free degree&indegree.
 	free(net->degree); 
 	if (net->directStatus == NS_DIRECTED) {
@@ -53,7 +53,7 @@ void free_Net(struct Net *net) {
 
 	//free net
 	free(net); net = NULL;
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 }
 
 static struct Net *create_Net_init(edge_t edgesNum, \
@@ -275,22 +275,22 @@ static void create_Net_undirected_edges_weight(struct LineFile *lf, vertex_t max
 }
 
 struct Net *create_Net(struct LineFile * lf) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	create_Net_basic_lf_check(lf);
 
 	vertex_t maxId, minId;
 	create_Net_maxId_minId(lf, &maxId, &minId);
-	print3l("%s =>> get maxId: %d, minId: %d\n", __func__, maxId, minId);
+	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	vertex_t idNum;
 	edge_t *degree;
 	create_Net_undirect_degree_idNum(lf, maxId, &degree, &idNum);
-	print3l("%s =>> get degree, idNum: %d.\n", __func__, idNum);
+	printgf("get degree, idNum: %d.\n", idNum);
 
 	edge_t degreeMax, degreeMin;
 	vertex_t **edges;
 	create_Net_undirected_edges_weight(lf, maxId, degree, NULL, &edges, NULL, &degreeMax, &degreeMin);
-	print3l("%s =>> get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin);
+	printgf("get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", degreeMax, degreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -305,30 +305,30 @@ struct Net *create_Net(struct LineFile * lf) {
 			NS_UNWEIGHTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
-	print3l("%s =>> return Net.\n", __func__);
-	print2l("%s =>> ......end.\n", __func__);
+	printgf("return Net.\n");
+	printgfe();
 	return net;
 }
 
 struct Net *create_directed_Net(struct LineFile * lf) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	create_Net_basic_lf_check(lf);
 
 	vertex_t maxId, minId;
 	create_Net_maxId_minId(lf, &maxId, &minId);
-	print3l("%s =>> get maxId: %d, minId: %d\n", __func__, maxId, minId);
+	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	vertex_t idNum;
 	edge_t *degree, *indegree;
 	create_Net_direct_degree_idNum(lf, maxId, &degree, &indegree, &idNum);
-	print3l("%s =>> get degree, idNum: %d.\n", __func__, idNum);
+	printgf("get degree, idNum: %d.\n", idNum);
 
 	edge_t degreeMax, degreeMin;
 	edge_t indegreeMax, indegreeMin;
 	vertex_t **edges, **inedges;
 	create_Net_directed_edges_weight(lf, maxId, degree, indegree, NULL, \
 			&edges, &inedges, NULL, NULL, &degreeMax, &degreeMin, &indegreeMax, &indegreeMin);
-	print3l("%s =>> get degreeMax: %d, degreeMin: %d, indegreeMax: %d, indegreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin, indegreeMax, indegreeMin);
+	printgf("get degreeMax: %d, degreeMin: %d, indegreeMax: %d, indegreeMin: %d; and alloc memory and fill edges.\n", degreeMax, degreeMin, indegreeMax, indegreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -344,30 +344,30 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 
-	print3l("%s =>> return Net.\n", __func__);
-	print2l("%s =>> ......end.\n", __func__);
+	printgf("return Net.\n");
+	printgfe();
 	return net;
 }
 
 struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	create_Net_basic_lf_check(lf);
 	if (wgt == NULL) isError("%s =>> weight is NULL.\n", __func__);
 
 	vertex_t maxId, minId;
 	create_Net_maxId_minId(lf, &maxId, &minId);
-	print3l("%s =>> get maxId: %d, minId: %d\n", __func__, maxId, minId);
+	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	vertex_t idNum;
 	edge_t *degree;
 	create_Net_undirect_degree_idNum(lf, maxId, &degree, &idNum);
-	print3l("%s =>> get degree, idNum: %d.\n", __func__, idNum);
+	printgf("get degree, idNum: %d.\n", idNum);
 
 	edge_t degreeMax, degreeMin;
 	vertex_t **edges;
 	double **weight;
 	create_Net_undirected_edges_weight(lf, maxId, degree, wgt, &edges, &weight, &degreeMax, &degreeMin);
-	print3l("%s =>> get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin);
+	printgf("get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", degreeMax, degreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -382,24 +382,24 @@ struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
 			NS_WEIGHTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
-	print3l("%s =>> return Net.\n", __func__);
-	print2l("%s =>> ......end.\n", __func__);
+	printgf("return Net.\n");
+	printgfe();
 	return net;
 }
 
 struct Net *create_directed_weighted_Net(struct LineFile * lf, double *wgt) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfe();
 	create_Net_basic_lf_check(lf);
 	if (wgt == NULL) isError("%s =>> weight is NULL.\n", __func__);
 
 	vertex_t maxId, minId;
 	create_Net_maxId_minId(lf, &maxId, &minId);
-	print3l("%s =>> get maxId: %d, minId: %d\n", __func__, maxId, minId);
+	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	vertex_t idNum;
 	edge_t *degree, *indegree;
 	create_Net_direct_degree_idNum(lf, maxId, &degree, &indegree, &idNum);
-	print3l("%s =>> get degree, idNum: %d.\n", __func__, idNum);
+	printgf("get degree, idNum: %d.\n", idNum);
 
 	edge_t degreeMax, degreeMin;
 	edge_t indegreeMax, indegreeMin;
@@ -407,7 +407,7 @@ struct Net *create_directed_weighted_Net(struct LineFile * lf, double *wgt) {
 	double **weight, **inweight;
 	create_Net_directed_edges_weight(lf, maxId, degree, indegree, wgt, \
 			&edges, &inedges, &weight, &inweight, &degreeMax, &degreeMin, &indegreeMax, &indegreeMin);
-	print3l("%s =>> get degreeMax: %d, degreeMin: %d, indegreeMax: %d, indegreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin, indegreeMax, indegreeMin);
+	printgf("get degreeMax: %d, degreeMin: %d, indegreeMax: %d, indegreeMin: %d; and alloc memory and fill edges.\n", degreeMax, degreeMin, indegreeMax, indegreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -422,8 +422,8 @@ struct Net *create_directed_weighted_Net(struct LineFile * lf, double *wgt) {
 			NS_WEIGHTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
-	print3l("%s =>> return Net.\n", __func__);
-	print2l("%s =>> ......end.\n", __func__);
+	printgf("return Net.\n");
+	printgfe();
 	return net;
 }
 

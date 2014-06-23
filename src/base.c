@@ -5,11 +5,11 @@
 void print_time(void) {
 	time_t t=time(NULL); 
 	(void)t;
-	print1l("time =>> %s", ctime(&t)); 
+	printm("time: %s", ctime(&t)); 
 	fflush(stdout);
 }
 void print_label(int i) {
-	print1l("xxxx==%d==xxxx\n", i);
+	printm("xxxx==%d==xxxx\n", i);
 	fflush(stdout);
 }
 /********************************************************************************************************/
@@ -91,9 +91,9 @@ void *realloc_safe(void *p, size_t size, const char *funcname, const char *filen
 #include <limits.h>
 #include <stdint.h>
 void prerequisite(void) {
-	print1l("%s =>> sizeof(int): %zd; INT_MAX: %d, 0x%X\n", __func__, sizeof(int), INT_MAX, (unsigned)INT_MAX);
-	print1l("%s =>> sizeof(long): %zd; LONG_MAC: %ld, 0x%lX\n", __func__, sizeof(long), LONG_MAX, (unsigned long)LONG_MAX);
-	print1l("%s =>> sizeof(size_t): %zd; SIZE_MAX: %zu, 0x%zX\n", __func__, sizeof(size_t), SIZE_MAX, SIZE_MAX);
+	printm("%s =>> sizeof(int): %zd; INT_MAX: %d, 0x%X\n", __func__, sizeof(int), INT_MAX, (unsigned)INT_MAX);
+	printm("%s =>> sizeof(long): %zd; LONG_MAC: %ld, 0x%lX\n", __func__, sizeof(long), LONG_MAX, (unsigned long)LONG_MAX);
+	printm("%s =>> sizeof(size_t): %zd; SIZE_MAX: %zu, 0x%zX\n", __func__, sizeof(size_t), SIZE_MAX, SIZE_MAX);
 	sizeof(int) < 4 ? isError("%s =>> sizeof int too small.\n", __func__):1;
 	sizeof(long) < 4 ? isError("%s =>> sizeof long too small.\n", __func__):1;
 	sizeof(size_t) < 4 || sizeof(size_t) < sizeof(int) ? isError("%s =>> sizeof size_t too small.\n", __func__):1;

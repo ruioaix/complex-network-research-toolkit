@@ -25,7 +25,7 @@ static char *DS_DIRECT_S[2] = {"DIRECT", "NON_DIRECT"};
  * 	non_cycle,	non_direct: L*(L-1)*2
  */
 struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (N<4) isError("%s =>> L too small.\n", __func__);
 	if (!isSquareNum(N)) isError("%s =>> you want a lattice, but %d is not a square number.", __func__, N);
 	int L = sqrt(N);
@@ -39,7 +39,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 		linesNum *= 2;
 	}
 	(void)DS_CYCLE_S; (void)DS_DIRECT_S; //get rid of unused warning when VERBOSE_LEVEL is smaller than 3.
-	print3l("%s =>> Generate 2D Lattice, %s, %s, L: %d, linesNum: %ld\n", __func__, DS_CYCLE_S[cc], DS_DIRECT_S[dd], L, linesNum);
+	printgf("Generate 2D Lattice, %s, %s, L: %d, linesNum: %ld\n", DS_CYCLE_S[cc], DS_DIRECT_S[dd], L, linesNum);
 
 	int *i1 = malloc(linesNum * sizeof(int));
 	int *i2 = malloc(linesNum * sizeof(int));
@@ -111,7 +111,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 	file->i2 = i2;
 	file->linesNum = linesNum;
 	file->memNum = linesNum;
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 	return file;
 }
 
@@ -132,7 +132,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
  * 
  */
 struct LineFile * line1d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (N<2) isError("%s =>> N too small.\n", __func__);
 	
 	struct LineFile *file = create_LineFile(NULL);
@@ -177,12 +177,12 @@ struct LineFile * line1d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 	file->i2 = i2;
 	file->linesNum = linesNum;
 	file->memNum = linesNum;
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 	return file;
 }
 
 void parts45_DS(char *filename, long linesNum, int in, int dn, int cn, int ln, int ccn) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	FILE *fp = fopen(filename, "w");
 	fileError(fp, "parts45_DS");
 	long i;
@@ -207,7 +207,7 @@ void parts45_DS(char *filename, long linesNum, int in, int dn, int cn, int ln, i
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 }
 
 /**
@@ -219,7 +219,7 @@ void parts45_DS(char *filename, long linesNum, int in, int dn, int cn, int ln, i
  *
  */
 struct LineFile *ER_DS(int N, int seed) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (N < 10) {
 		isError("ER_DS N is too small");
 	}
@@ -252,8 +252,8 @@ struct LineFile *ER_DS(int N, int seed) {
 	lf->linesNum = linesNum;
 	lf->memNum = memNum;
 	lf->filename = "ER random network";
-	print3l("%s =>> Generate ER random network, N: %d, linesNum: %ld, memNum: %ld\n", __func__, N, linesNum, memNum);
-	print2l("%s =>> ......end.\n", __func__);
+	printgf("Generate ER random network, N: %d, linesNum: %ld, memNum: %ld\n", N, linesNum, memNum);
+	printgfe();
 	return lf;
 }
 
@@ -269,7 +269,7 @@ struct LineFile *ER_DS(int N, int seed) {
  *
  */
 struct LineFile *SF_DS(int N, int seed, int MM0) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (N < 10) {
 		isError("SF_DS N is too small");
 	}
@@ -336,7 +336,7 @@ struct LineFile *SF_DS(int N, int seed, int MM0) {
 	lf->linesNum = linesNum;
 	lf->memNum = memNum;
 	lf->filename = "ER random network";
-	print3l("%s =>> Generate SF network, N: %d, linesNum: %ld, memNum: %ld.\n", __func__, N, linesNum, memNum);fflush(stdout);
-	print2l("%s =>> ......end.\n", __func__);
+	printgf("Generate SF network, N: %d, linesNum: %ld, memNum: %ld.\n", N, linesNum, memNum);fflush(stdout);
+	printgfe();
 	return lf;
 }

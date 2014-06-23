@@ -9,19 +9,21 @@
 
 /****************Configuration Section*******************************************************************/
 //#define NDEBUG
-#define VERBOSE_LEVEL_0 //no output, should be used when you can make sure the program is right, and what you want is only the result output.
-//#define VERBOSE_LEVEL_1 //describe the logic of main.
-//#define VERBOSE_LEVEL_2 //except above, additionally, describe all global function's calls.
-//#define VERBOSE_LEVEL_3 //except above, additionally, describe all logic in each call of global function.
-//#define VERBOSE_LEVEL_4 //except above, additionally, describe all static function's calls.
-//#define VERBOSE_LEVEL_N //printing logic in loop!!! too much...
-/*VERBOSE_LEVEL_0 means no-output, this only should be used when you can make sure the program is right,
-VERBOSE_LEVEL_1 means only output the content of print1l. output the information of program running.
-VERBOSE_LEVEL_2 means output the content of print1l&print2l. output somehow detail information.
-VERBOSE_LEVEL_3 means output the content of print1l&print2l&print3l. output all information.
-VERBOSE_LEVEL_N means output the content of print1l&print2l&print3l&printnl. 
-	printnl often in loop, so the output will be in huge size.
-later maybe we have print4l.*/
+//VERBOSE_LEVEL has 6 values now, 1, 2, 3, 4, 5, 6.
+//we have eight different print functions: 
+//		printm: only be used in main function.
+//		printgfb&printgfe: only be used at the beginning and end of the global functions.
+//		printgf: used in the global functions.
+//		printsfb&printsfe: only be used at the beginning and end of the static functions.
+//		printsf: used in the static functions.
+//		printlp: used in loop, e.g. for, while.
+//if VERBOSE_LEVEL == 1, only printm will output.
+//if VERBOSE_LEVEL == 2, printgfb&printgfe will output, too.
+//if VERBOSE_LEVEL == 3, printgf will output, too.
+//if VERBOSE_LEVEL == 4, printsfb&printsfe will output, too.
+//if VERBOSE_LEVEL == 5, printsf will output, too.
+//if VERBOSE_LEVEL == 6, printlp will output, too.
+#define VERBOSE_LEVEL 6
 /********************************************************************************************************/
 
 
@@ -69,131 +71,63 @@ void prerequisite(void);
 //print4l will be used in the static functions' begin&end position. but if static function is used in a loop, use printnl instead.
 //print5l will be used in describe the logic in static function
 //printnl will be used in loop.
-#ifdef VERBOSE_LEVEL_0
-#define print1l(format, ...) ((void)0)
-#define print2l(format, ...) ((void)0)
-#define print3l(format, ...) ((void)0)
-#define print4l(format, ...) ((void)0)
-#define print5l(format, ...) ((void)0)
-#define printnl(format, ...) ((void)0)
-#endif
+#define printm(format, ...) ((void)0)
+#define printgfb(format, ...) ((void)0)
+#define printgfe(format, ...) ((void)0)
+#define printgf(format, ...) ((void)0)
+#define printsfb(format, ...) ((void)0)
+#define printsfe(format, ...) ((void)0)
+#define printsf(format, ...) ((void)0)
+#define printlp(format, ...) ((void)0)
 
-#ifdef VERBOSE_LEVEL_1
-#define print1l(format, ...) do {\
+#if VERBOSE_LEVEL >= 1
+#undef printm
+#define printm(format, ...) do {\
 		printf("[level 1] ");\
+		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 } while(0)
-#define print2l(format, ...) ((void)0)
-#define print3l(format, ...) ((void)0)
-#define print4l(format, ...) ((void)0)
-#define print5l(format, ...) ((void)0)
-#define printnl(format, ...) ((void)0)
+#if VERBOSE_LEVEL >= 2
+#undef printgfb
+#define printgfb() do {\
+		printf("[level 2] %s =>> begin......\n", __func__);\
+} while(0)
+#undef printgfe
+#define printgfe() do {\
+		printf("[level 2] %s =>> ........end\n", __func__);\
+} while(0)
+#if VERBOSE_LEVEL >= 3
+#undef printgf
+#define printgf(format, ...) do {\
+		printf("[level 3] %s =>> ", __func__);\
+		printf(format, ##__VA_ARGS__);\
+} while(0)
+#if VERBOSE_LEVEL >= 4
+#undef printsfb
+#define printsfb() do {\
+		printf("[level 4] %s =>> begin......\n", __func__);\
+} while(0)
+#undef printsfe
+#define printsfe() do {\
+		printf("[level 4] %s =>> ........end\n", __func__);\
+} while(0)
+#if VERBOSE_LEVEL >= 5
+#undef printsf
+#define printsf(format, ...) do {\
+		printf("[level 5] %s =>> ", __func__);\
+		printf(format, ##__VA_ARGS__);\
+} while(0)
+#if VERBOSE_LEVEL >= 6
+#undef printlp
+#define printlp(format, ...) do {\
+		printf("[level 6] %s =>> ", __func__);\
+		printf(format, ##__VA_ARGS__);\
+} while(0)
 #endif
-
-#ifdef VERBOSE_LEVEL_2
-#define print1l(format, ...) do {\
-		printf("[level 1] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print2l(format, ...) do {\
-		printf("[level 2] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print3l(format, ...) ((void)0)
-#define print4l(format, ...) ((void)0)
-#define print5l(format, ...) ((void)0)
-#define printnl(format, ...) ((void)0)
 #endif
-
-#ifdef VERBOSE_LEVEL_3
-#define print1l(format, ...) do {\
-		printf("[level 1] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print2l(format, ...) do {\
-		printf("[level 2] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print3l(format, ...) do {\
-		printf("[level 3] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print4l(format, ...) ((void)0)
-#define print5l(format, ...) ((void)0)
-#define printnl(format, ...) ((void)0)
 #endif
-
-#ifdef VERBOSE_LEVEL_4
-#define print1l(format, ...) do {\
-		printf("[level 1] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print2l(format, ...) do {\
-		printf("[level 2] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print3l(format, ...) do {\
-		printf("[level 3] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print4l(format, ...) do {\
-		printf("[level 4] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print5l(format, ...) ((void)0)
-#define printnl(format, ...) ((void)0)
 #endif
-
-#ifdef VERBOSE_LEVEL_5
-#define print1l(format, ...) do {\
-		printf("[level 1] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print2l(format, ...) do {\
-		printf("[level 2] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print3l(format, ...) do {\
-		printf("[level 3] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print4l(format, ...) do {\
-		printf("[level 4] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print5l(format, ...) do {\
-		printf("[level 4] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define printnl(format, ...) ((void)0)
 #endif
-
-#ifdef VERBOSE_LEVEL_N
-#define print1l(format, ...) do {\
-		printf("[level 1] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print2l(format, ...) do {\
-		printf("[level 2] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print3l(format, ...) do {\
-		printf("[level 3] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print4l(format, ...) do {\
-		printf("[level 4] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define print5l(format, ...) do {\
-		printf("[level 4] ");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#define printnl(format, ...) do {\
-		printf("[level n] ");\
-		printf("\t");\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
 #endif
 /********************************************************************************************************/
 
