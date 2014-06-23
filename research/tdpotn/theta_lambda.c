@@ -27,6 +27,7 @@
  */
 int main (int argc, char **argv) {
 
+		/*
 	print_time();
 
 	int D_12, N, seed, limitN;
@@ -38,7 +39,6 @@ int main (int argc, char **argv) {
 
 	int kk=0;
 	for (kk = 0; kk < 41; ++kk) {
-		/*
 		double alpha = kk * 0.1;
 
 		struct LineFile *baself = tdpotn_lf(D_12, N);
@@ -58,8 +58,8 @@ int main (int argc, char **argv) {
 
 		free_iiNet(base);
 		free_iidNet(air);
-		*/
 	}
+		*/
 
 	print_time();
 	return 0;

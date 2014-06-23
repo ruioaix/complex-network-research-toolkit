@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "spath.h"
 
+/*
 void tdpotn_argcv(int argc, char **argv, int *D_12, int *N, int *seed, int *limitN, double *theta, double *lambda) {
 	if (argc == 7) {
 		char *p;
@@ -84,15 +85,12 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	int N = net->maxId + 1;
 	double limit = (double)N*limitN;
 
-	/**************get degree prossiblity, used to choose new links******************************************/
 	//the point 0 can get all kinds of degree in both cycle or non_cycle net.
 	int *sp = spath01_1A_iiNet(net, 0);
 	int *alld, alldNum; double *p_alld;
 	get_all_degree(sp, net->maxId + 1, &alld, &alldNum, &p_alld, alpha);
 	free(sp);
-	/********************************************************************************************************/
 
-	/****************get new links***************************************************************************/
 	int *id1 = malloc(limitN*N*sizeof(int));
 	int *id2 = malloc(limitN*N*sizeof(int));
 	double *weight = malloc(limitN*N*sizeof(double));
@@ -149,9 +147,7 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	free(p_alld);
 	free(alld);
 	printgf("badluck: %d, NumofAddedLinks: %d\n", badluck, idNum);
-	/********************************************************************************************************/
 
-	/*******create a air struct LineFile ********************************************************************/
 	struct LineFile *lf = create_LineFile(NULL);
 	lf->i1 = id1;
 	lf->i2 = id2;
@@ -162,7 +158,6 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 
 	printgfe();
 	return lf;
-	/********************************************************************************************************/
 }
 
 void tdpotn_print(int D_12, int N, int seed, int limitN, double theta, double lambda, double alpha, double avesp, double coupling, double gini) {
@@ -196,3 +191,4 @@ void tdpotn_writenettofile_ii_iid(struct iiNet *base, struct iidNet *air, char *
 	fclose(fp);
 	fclose(fp1);
 }
+*/

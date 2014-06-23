@@ -32,6 +32,7 @@ robust-*
 research/tdpotn/coupling
 research/tdpotn/gini
 research/tdpotn/basic
+research/tdpotn/theta_lambda
 src/libcnrt.a
 research/onion/BR
 research/onion/hs
