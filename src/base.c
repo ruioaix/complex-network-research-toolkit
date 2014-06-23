@@ -30,13 +30,11 @@ void fileError(FILE *fp, char* format, ...) {
 		exit(EXIT_FAILURE);
 	}
 }
-void isError(char *format, ...) {
+void iserror(char *format, ...) {
 	fflush(stdout);
 	va_list args;
 	va_start(args, format);
-	fprintf(stderr, "[ERROR]:\n\t");
 	vfprintf(stderr, format, args);
-	fprintf(stderr, "\n\n");
 	va_end(args);
 	exit(EXIT_FAILURE);
 }
@@ -88,14 +86,14 @@ void *realloc_safe(void *p, size_t size, const char *funcname, const char *filen
 /********************************************************************************************************/
 
 /********************************************************************************************************/
-#include <limits.h>
-#include <stdint.h>
-void prerequisite(void) {
-	printm("%s =>> sizeof(int): %zd; INT_MAX: %d, 0x%X\n", __func__, sizeof(int), INT_MAX, (unsigned)INT_MAX);
-	printm("%s =>> sizeof(long): %zd; LONG_MAC: %ld, 0x%lX\n", __func__, sizeof(long), LONG_MAX, (unsigned long)LONG_MAX);
-	printm("%s =>> sizeof(size_t): %zd; SIZE_MAX: %zu, 0x%zX\n", __func__, sizeof(size_t), SIZE_MAX, SIZE_MAX);
-	sizeof(int) < 4 ? isError("%s =>> sizeof int too small.\n", __func__):1;
-	sizeof(long) < 4 ? isError("%s =>> sizeof long too small.\n", __func__):1;
-	sizeof(size_t) < 4 || sizeof(size_t) < sizeof(int) ? isError("%s =>> sizeof size_t too small.\n", __func__):1;
-}
+//#include <limits.h>
+//#include <stdint.h>
+//void prerequisite(void) {
+//	printm("%s =>> sizeof(int): %zd; INT_MAX: %d, 0x%X\n", __func__, sizeof(int), INT_MAX, (unsigned)INT_MAX);
+//	printm("%s =>> sizeof(long): %zd; LONG_MAC: %ld, 0x%lX\n", __func__, sizeof(long), LONG_MAX, (unsigned long)LONG_MAX);
+//	printm("%s =>> sizeof(size_t): %zd; SIZE_MAX: %zu, 0x%zX\n", __func__, sizeof(size_t), SIZE_MAX, SIZE_MAX);
+//	sizeof(int) < 4 ? isError("%s =>> sizeof int too small.\n", __func__):1;
+//	sizeof(long) < 4 ? isError("%s =>> sizeof long too small.\n", __func__):1;
+//	sizeof(size_t) < 4 || sizeof(size_t) < sizeof(int) ? isError("%s =>> sizeof size_t too small.\n", __func__):1;
+//}
 /********************************************************************************************************/

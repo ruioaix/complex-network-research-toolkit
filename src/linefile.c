@@ -304,7 +304,9 @@ struct LineFile *create_LineFile(char *filename, ...) {
 	free(buffer);
 	free(allparts);
 
-	isok == 0 ? isError("%s =>> file \"%s\" has some non-valid lines.", __func__, filename):1;
+	if (isok == 0 ) {
+		isError("%s =>> file \"%s\" has some non-valid lines.", __func__, filename);
+	} 
 
 	printgfe();
 	return lf;

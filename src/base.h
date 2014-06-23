@@ -39,7 +39,12 @@ void print_label(int i);
 /*******use everywhere.**********************************************************************************/
 #include <stdio.h> //for FILE, perror, fprintf, stderr
 void fileError(FILE *fp, char* format, ...);
-void isError(char *format, ...);
+void iserror(char *format, ...);
+#define isError(format, ...) do {\
+		fprintf(stderr, "[ERROR]:\n\t%s ==> ", __func__);\
+		iserror(format, ##__VA_ARGS__);\
+		fprintf(stderr, "\n");\
+} while(0)
 /********************************************************************************************************/
 
 /*******some time, I use*********************************************************************************/
