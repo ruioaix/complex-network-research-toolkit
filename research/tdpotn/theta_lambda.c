@@ -20,7 +20,7 @@
  * 		theta decide the cost of building a new edges in air, 
  * 		if theta < 1, the cost of long edges is not so much, 
  * 		else the cost of long edges is much more expensive than short.
- * lambda = 1, this decide the effect of a air edge. 
+ * lambda = 0, this decide the effect of a air edge. 
  * 		if lambda = 0, all air edges's weight is 1, it's the best experience.
  * 		if lambda = 1, all air edges has no advance to base net. it's the worst experience.
  * 		actural lambda is only used here.
@@ -41,7 +41,7 @@ int main (int argc, char **argv) {
 		double alpha = kk * 0.1;
 
 		struct LineFile *baself = tdpotn_lf(D_12, N);
-		struct Net *base = create_undirected_Net(baself);
+		struct Net *base = create_Net(baself);
 		free_LineFile(baself);
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 		struct iidNet *air = create_iidNet(airlf);

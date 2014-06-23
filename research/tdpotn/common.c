@@ -32,10 +32,10 @@ void tdpotn_argcv(int argc, char **argv, int *D_12, int *N, int *seed, int *limi
 struct LineFile * tdpotn_lf(int D_12, int N) {
 	struct LineFile *file;
 	if (1 == D_12) {
-		file = line1d_DS(N, CYCLE, NON_DIRECT);
+		file = line1d_DS(N, DS_CYCLE, DS_NON_DIRECT);
 	}
 	else if (2 == D_12) {
-		file = lattice2d_DS(N, CYCLE, NON_DIRECT);
+		file = lattice2d_DS(N, DS_CYCLE, DS_NON_DIRECT);
 	}
 	else {
 		isError("wrong D_12 type");
@@ -78,7 +78,7 @@ static void get_all_degree(int *sp, int N, int **alld, int *alldNum, double **p_
 }
 
 struct LineFile *tdpotn_create_air(struct iiNet * net, double alpha, int limitN, double theta, double lambda) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (theta < 0.5) isError("theta should be [0.5, +00)");
 
 	int N = net->maxId + 1;
@@ -148,7 +148,7 @@ struct LineFile *tdpotn_create_air(struct iiNet * net, double alpha, int limitN,
 	free(hash3);
 	free(p_alld);
 	free(alld);
-	print3l("badluck: %d, NumofAddedLinks: %d\n", badluck, idNum);
+	printgf("badluck: %d, NumofAddedLinks: %d\n", badluck, idNum);
 	/********************************************************************************************************/
 
 	/*******create a air struct LineFile ********************************************************************/
@@ -160,7 +160,7 @@ struct LineFile *tdpotn_create_air(struct iiNet * net, double alpha, int limitN,
 	lf->memNum = limitN*N*sizeof(int);
 	lf->filename = "air";
 
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 	return lf;
 	/********************************************************************************************************/
 }
