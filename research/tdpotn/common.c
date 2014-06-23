@@ -77,7 +77,7 @@ static void get_all_degree(int *sp, int N, int **alld, int *alldNum, double **p_
 	}
 }
 
-struct LineFile *tdpotn_create_air(struct iiNet * net, double alpha, int limitN, double theta, double lambda) {
+struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, double theta, double lambda) {
 	printgfb();
 	if (theta < 0.5) isError("theta should be [0.5, +00)");
 
