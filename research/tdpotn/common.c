@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include "spath.h"
 
-/*
 void tdpotn_argcv(int argc, char **argv, int *D_12, int *N, int *seed, int *limitN, double *theta, double *lambda) {
 	if (argc == 7) {
 		char *p;
@@ -86,7 +85,7 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	double limit = (double)N*limitN;
 
 	//the point 0 can get all kinds of degree in both cycle or non_cycle net.
-	int *sp = spath01_1A_iiNet(net, 0);
+	int *sp = spath01_1A_Net(net, 0);
 	int *alld, alldNum; double *p_alld;
 	get_all_degree(sp, net->maxId + 1, &alld, &alldNum, &p_alld, alpha);
 	free(sp);
@@ -117,7 +116,7 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 		}
 		int i1 = get_i31_MTPR()%(net->maxId + 1);
 		int lNum;
-		int *left = spath01_step_1A_iiNet(net, i1, splength, &lNum);
+		int *left = spath01_step_1A_Net(net, i1, splength, &lNum);
 		if (lNum > 0) {
 			int random = get_i31_MTPR()%lNum;
 			int i2 = left[random];
@@ -160,6 +159,7 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	return lf;
 }
 
+/*
 void tdpotn_print(int D_12, int N, int seed, int limitN, double theta, double lambda, double alpha, double avesp, double coupling, double gini) {
 	printf("D_12: %d\tN: %d\tseed: %d\tlimitN: %d\ttheta: %f\tlambda: %f\talpha: %f\tasp: %f\tcoupling: %f\tgini: %f\n", \
 			D_12, N, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);

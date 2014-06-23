@@ -8,6 +8,48 @@
 #include "limits.h"
 
 #define EPS 0.0000001
+//this spath01 is for unweighted and undirected net.
+static void spath01_core_Net(int *sp, int **left, int **right, int *lNum, int *rNum, struct Net *net, int *STEP_END) {
+	int i,j;
+	int STEP = 0;
+	while (*lNum && STEP != *STEP_END) {
+		++STEP;
+		*rNum = 0;
+
+		for (i=0; i<*lNum; ++i) {
+			int id = (*left)[i];
+			for (j=0; j<net->degree[id]; ++j) {
+				int neigh = net->edges[id][j];
+				if (!sp[neigh]) {
+					sp[neigh] = STEP;
+					(*right)[(*rNum)++] = neigh;
+				}
+			}
+		}
+		int *tmp = *left;
+		*left = *right;
+		*right = tmp;
+		*lNum = *rNum;
+	}
+}
+int *spath01_1A_Net(struct Net *net, int originId) {
+	if (originId<net->minId || originId>net->maxId) {
+		return NULL;
+	}
+	int *sp = calloc(net->maxId + 1, sizeof(int));
+	int *left = malloc((net->maxId + 1)*sizeof(int));
+	int *right = malloc((net->maxId + 1)*sizeof(int));
+	int lNum, rNum;
+	lNum = 1;
+	left[0] = originId;
+	sp[originId] = -1;
+	int STEP_END = -1;
+	spath01_core_Net(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
+	free(left);
+	free(right);
+	return sp;
+}
+/*
 
 //standard dijkstra algorithm
 static double ** dijkstra_setasp_iidNet(struct iidNet *net) {
@@ -72,47 +114,6 @@ double *dijkstra_1A_iidNet(struct iidNet *net, int nid) {
 	return sp;
 }
 
-//this spath01 is for unweighted and undirected net.
-static void spath01_core_iiNet(int *sp, int **left, int **right, int *lNum, int *rNum, struct iiNet *net, int *STEP_END) {
-	int i,j;
-	int STEP = 0;
-	while (*lNum && STEP != *STEP_END) {
-		++STEP;
-		*rNum = 0;
-
-		for (i=0; i<*lNum; ++i) {
-			int id = (*left)[i];
-			for (j=0; j<net->count[id]; ++j) {
-				int neigh = net->edges[id][j];
-				if (!sp[neigh]) {
-					sp[neigh] = STEP;
-					(*right)[(*rNum)++] = neigh;
-				}
-			}
-		}
-		int *tmp = *left;
-		*left = *right;
-		*right = tmp;
-		*lNum = *rNum;
-	}
-}
-int *spath01_1A_iiNet(struct iiNet *net, int originId) {
-	if (originId<net->minId || originId>net->maxId) {
-		return NULL;
-	}
-	int *sp = calloc(net->maxId + 1, sizeof(int));
-	int *left = malloc((net->maxId + 1)*sizeof(int));
-	int *right = malloc((net->maxId + 1)*sizeof(int));
-	int lNum, rNum;
-	lNum = 1;
-	left[0] = originId;
-	sp[originId] = -1;
-	int STEP_END = -1;
-	spath01_core_iiNet(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
-	free(left);
-	free(right);
-	return sp;
-}
 int *spath01_step_1A_iiNet(struct iiNet *net, int originId, int step, int *Num) {
 	if (originId<net->minId || originId>net->maxId) {
 		return NULL;
@@ -212,7 +213,6 @@ static void spath03_core_Net(double *sp, char *gs, int *blist, int *nlist, int b
 		*rNum = 0;
 		++STEP;
 
-		/********************************************************************************************************/
 		for (i = 0; i < nNum; ++i) {
 			int id = nlist[i];
 			if (gs[id] != 3) {
@@ -246,7 +246,6 @@ static void spath03_core_Net(double *sp, char *gs, int *blist, int *nlist, int b
 				isError("spath03_core_Net nlist");
 			}
 		}
-		/********************************************************************************************************/
 
 		for (i=0; i<*lNum; ++i) {
 			int id = (*left)[i];
@@ -830,3 +829,4 @@ void gini_spath06_Net(struct iiNet *net, struct iidNet *XE, double *avesp, doubl
 	*gini = spath06_core03_Net(XE, net);
 
 }
+*/

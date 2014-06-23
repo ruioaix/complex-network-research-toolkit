@@ -27,7 +27,6 @@
  */
 int main (int argc, char **argv) {
 
-		/*
 	print_time();
 
 	int D_12, N, seed, limitN;
@@ -44,7 +43,8 @@ int main (int argc, char **argv) {
 		struct LineFile *baself = tdpotn_lf(D_12, N);
 		struct Net *base = create_Net(baself);
 		free_LineFile(baself);
-		struct LineFile *airlf = tdpotn_create_airnet(base, alpha, limitN, theta, lambda);
+		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
+		/*
 		struct iidNet *air = create_iidNet(airlf);
 		print1l("%s =>> create iidnet air, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", \
 				__func__, air->maxId, air->minId, air->idNum, air->edgesNum, air->countMax, air->countMin);
@@ -58,8 +58,8 @@ int main (int argc, char **argv) {
 
 		free_iiNet(base);
 		free_iidNet(air);
-	}
 		*/
+	}
 
 	print_time();
 	return 0;

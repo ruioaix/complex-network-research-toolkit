@@ -1,13 +1,14 @@
 #ifndef CNRT_SPATH_H
 #define CNRT_SPATH_H
 
-#include "iinet.h"
-#include "iidnet.h"
+#include "net.h"
+//#include "iinet.h"
+//#include "iidnet.h"
 
 /*
  * standard shortest path algorithm.
  */
-double *dijkstra_1A_iidNet(struct iidNet *net, int nid);
+//double *dijkstra_1A_iidNet(struct iidNet *net, int nid);
 
 /*
  * following is some shortest-path algorithms for two very restrictive network.
@@ -27,26 +28,26 @@ double *dijkstra_1A_iidNet(struct iidNet *net, int nid);
  *         if the length of shortest path between node C and node B is 7, then 7 is in the returned array.
  *         ...
  */
-int *spath01_1A_iiNet(struct iiNet *net, int originId);
-int *spath01_step_1A_iiNet(struct iiNet *net, int originId, int step, int *Num);
-void avesp_spath01_iiNet(struct iiNet *net, double *avesp);
+int *spath01_1A_Net(struct Net *net, int originId);
+//int *spath01_step_1A_iiNet(struct iiNet *net, int originId, int step, int *Num);
+//void avesp_spath01_iiNet(struct iiNet *net, double *avesp);
 
 //this spath02 is FW algorithm for unweighted and undirected net.
-int **spath02_AA_iiNet(struct iiNet *net);
+//int **spath02_AA_iiNet(struct iiNet *net);
 
 //this spath03 is for unweighted_undirected base and weighted_undirected air network.
 //the weight of each link in air network is >= 1.0.
-void avesp_spath03_Net(struct iiNet *net, struct iidNet *air, double *avesp);
+//void avesp_spath03_Net(struct iiNet *net, struct iidNet *air, double *avesp);
 
 //this spath04 is for unweighted and undirected net.
 //to find how many shortest pathes use only base or only air or both.
-void useRate_spath04_iiNet(struct iiNet *net, struct iiNet *air, double *useRate, double *sameRate, double *cleanRate, double *avesp);
+//void useRate_spath04_iiNet(struct iiNet *net, struct iiNet *air, double *useRate, double *sameRate, double *cleanRate, double *avesp);
 
 //this spath05 is for unweighted and undirected net.
 //to find coupling of two net: base and air.
-void coupling_spath05_iiNet(struct iiNet *net, struct iiNet *air, double *coupling, double *avesp);
+//void coupling_spath05_iiNet(struct iiNet *net, struct iiNet *air, double *coupling, double *avesp);
 
 //this spath06 is for unweighted_undirected base and weighted_undirected XE network.
 //to find gini of two net: base and XE.
-void gini_spath06_Net(struct iiNet *base, struct iidNet *XE, double *avesp, double *gini);
+//void gini_spath06_Net(struct iiNet *base, struct iidNet *XE, double *avesp, double *gini);
 #endif
