@@ -92,6 +92,8 @@ static struct Net *create_Net_init(edge_t edgesNum, \
 	net->indegreeMin.sign = idmin;
 	net->indegreeMin.value = indegreeMin;
 
+	net->avesp.sign = NS_NON_VALID;
+
 	net->directStatus = directStatus;
 	net->weightStatus = weightStatus;
 	net->connectnessStatus = connectnessStatus;
@@ -145,13 +147,13 @@ static void create_Net_direct_degree_idNum(struct LineFile *lf, vertex_t maxId, 
 
 	edge_t i;
 	for(i=0; i<lf->linesNum; ++i) {
-		++degree[lf->i1[i]];
-		++indegree[lf->i2[i]];
+		++(*degree)[lf->i1[i]];
+		++(*indegree)[lf->i2[i]];
 	}
 	vertex_t j;
 	*idNum = 0;
 	for(j=0; j<maxId+1; ++j) {
-		if (degree[j]>0 || indegree[j]>0) {
+		if ((*degree)[j]>0 || (*indegree)[j]>0) {
 			++(*idNum);
 		}
 	}
@@ -212,10 +214,10 @@ static void create_Net_directed_edges_weight(struct LineFile *lf, vertex_t maxId
 	for(j=0; j<lf->linesNum; ++j) {
 		vertex_t i1 =lf->i1[j];
 		vertex_t i2 =lf->i2[j];
-		double w = wgt[j];
 		(*edges)[i1][out_count[i1]] = i2;
 		(*inedges)[i2][in_count[i2]] = i1;
 		if (wgt != NULL) {
+			double w = wgt[j];
 			(*weight)[i1][out_count[i1]] = w;
 			(*inweight)[i2][in_count[i2]] = w;
 		}
@@ -288,7 +290,7 @@ struct Net *create_Net(struct LineFile * lf) {
 	edge_t degreeMax, degreeMin;
 	vertex_t **edges;
 	create_Net_undirected_edges_weight(lf, maxId, degree, NULL, &edges, NULL, &degreeMax, &degreeMin);
-	print3l("%s =>> get degreeMax: %ld, degreeMin: %ld; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin);
+	print3l("%s =>> get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -326,7 +328,7 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 	vertex_t **edges, **inedges;
 	create_Net_directed_edges_weight(lf, maxId, degree, indegree, NULL, \
 			&edges, &inedges, NULL, NULL, &degreeMax, &degreeMin, &indegreeMax, &indegreeMin);
-	print3l("%s =>> get degreeMax: %ld, degreeMin: %ld, indegreeMax: %ld, indegreeMin: %ld; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin, indegreeMax, indegreeMin);
+	print3l("%s =>> get degreeMax: %d, degreeMin: %d, indegreeMax: %d, indegreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin, indegreeMax, indegreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -365,7 +367,7 @@ struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
 	vertex_t **edges;
 	double **weight;
 	create_Net_undirected_edges_weight(lf, maxId, degree, wgt, &edges, &weight, &degreeMax, &degreeMin);
-	print3l("%s =>> get degreeMax: %ld, degreeMin: %ld; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin);
+	print3l("%s =>> get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -405,7 +407,7 @@ struct Net *create_directed_weighted_Net(struct LineFile * lf, double *wgt) {
 	double **weight, **inweight;
 	create_Net_directed_edges_weight(lf, maxId, degree, indegree, wgt, \
 			&edges, &inedges, &weight, &inweight, &degreeMax, &degreeMin, &indegreeMax, &indegreeMin);
-	print3l("%s =>> get degreeMax: %ld, degreeMin: %ld, indegreeMax: %ld, indegreeMin: %ld; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin, indegreeMax, indegreeMin);
+	print3l("%s =>> get degreeMax: %d, degreeMin: %d, indegreeMax: %d, indegreeMin: %d; and alloc memory and fill edges.\n", __func__, degreeMax, degreeMin, indegreeMax, indegreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
@@ -664,6 +666,9 @@ void set_edgesMatrix_Net(struct Net *net) {
 		em[i] = em_onetime + (maxId + 1)*i;
 	}
 	edge_t j;
+	for (j = 0; j < (maxId + 1)*(maxId + 1); ++j) {
+		em_onetime[j] = -1;
+	}
 	if (net->directStatus == NS_UNDIRECTED) {
 		for (i = 0; i < maxId + 1; ++i) {
 			for (j = 0; j < net->degree[i]; ++j) {
@@ -681,13 +686,10 @@ void set_edgesMatrix_Net(struct Net *net) {
 				em[x][y] = j;
 			}
 		}
-		for (i = 0; i < maxId + 1; ++i) {
-			for (j = 0; j < net->indegree[i]; ++j) {
-				vertex_t x = i;
-				vertex_t y = net->inedges[i][j];
-				em[x][y] = j;
-			}
-		}
 	}
-	
+	else {
+		isError("set_edgesMatrix_Net");
+	}
+	net->edgesMatrix.pp = em;
+	net->edgesMatrix.sign = NS_VALID;
 }

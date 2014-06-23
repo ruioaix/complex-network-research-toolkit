@@ -87,11 +87,11 @@ struct Net{
 	enum NET_STATUS weightStatus;
 	//connectnessStatus == NS_NON_CNNTNESS, not fully connected.
 	//connectnessStatus == NS_CNNTNESS, fully connected.
-	//connectnessStatus == NS_NOTSURE_CNNTNESS, not sure whether the net is fully connected or not.
+	//connectnessStatus == NS_NOTSURE, not sure whether the net is fully connected or not.
 	enum NET_STATUS connectnessStatus;
 	//duplicatepairsStatus == NS_NON_DUPPAIRS, no duplicatepairs.
 	//duplicatepairsStatus == NS_DUPPAIRS, has duplicatepairs.
-	//duplicatepairsStatus == NS_NOTSURE_DUPPAIRS, not sure whether there are any duplicate pairs or not.
+	//duplicatepairsStatus == NS_NOTSURE, not sure whether there are any duplicate pairs or not.
 	enum NET_STATUS duplicatepairsStatus;
 
 	//if degreeMax.sign == NS_VALID, then degreeMax.value is valid.
@@ -100,6 +100,7 @@ struct Net{
 	struct netOption_edge degreeMin;
 	struct netOption_edge indegreeMax;
 	struct netOption_edge indegreeMin;
+	//average shortest path.
 	struct netOption_d avesp;
 
 	//be careful with this option. it's a matrix: (maxId + 1)^2 * sizeof(edge_t) BYTE.

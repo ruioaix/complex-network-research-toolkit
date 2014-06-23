@@ -39,7 +39,7 @@ struct LineFile * lattice2d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 		linesNum *= 2;
 	}
 	(void)DS_CYCLE_S; (void)DS_DIRECT_S; //get rid of unused warning when VERBOSE_LEVEL is smaller than 3.
-	print3l("%s =>> Generate 2D Lattice, %s, %s, L: %d, linesNum: %ld\n", __func__, CICLENETC[cc], DIRECTNETC[dd], L, linesNum);
+	print3l("%s =>> Generate 2D Lattice, %s, %s, L: %d, linesNum: %ld\n", __func__, DS_CYCLE_S[cc], DS_DIRECT_S[dd], L, linesNum);
 
 	int *i1 = malloc(linesNum * sizeof(int));
 	int *i2 = malloc(linesNum * sizeof(int));
