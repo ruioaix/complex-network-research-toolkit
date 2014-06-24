@@ -8,8 +8,8 @@
 #include "limits.h"
 
 #define EPS 0.0000001
-//this spath01 is for unweighted and undirected net.
 static void core_spath_1A_undirect_unweight_Net(vertex_t *sp, vertex_t **left, vertex_t **right, vertex_t *lNum, vertex_t *rNum, struct Net *net, int *STEP_END) {
+	printsfb();
 	vertex_t i,j;
 	int STEP = 0;
 	while (*lNum && STEP != *STEP_END) {
@@ -31,6 +31,7 @@ static void core_spath_1A_undirect_unweight_Net(vertex_t *sp, vertex_t **left, v
 		*right = tmp;
 		*lNum = *rNum;
 	}
+	printsfe();
 }
 
 vertex_t *spath_1A_undirect_unweight_Net(struct Net *net, vertex_t originId) {
@@ -75,6 +76,42 @@ void spath_1A_step_undirect_unweight_Net(struct Net *net, vertex_t originId, ver
 	*Num = lNum;
 	*ret = left;
 }
+
+void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp) {
+	if (net->directStatus != NS_UNDIRECTED || net->weightStatus != NS_UNWEIGHTED) {
+		isError("the net is not an undirected or not an unweighted network");
+	}
+	if (net->connectnessStatus != NS_CNNTNESS ) {
+		isError("this method can only calculate the avesp of a net which is fully connected.");
+	}
+	vertex_t *sp = malloc((net->maxId + 1)*sizeof(vertex_t));
+	vertex_t *left = malloc((net->maxId + 1)*sizeof(vertex_t));
+	vertex_t *right = malloc((net->maxId + 1)*sizeof(vertex_t));
+	vertex_t lNum, rNum;
+
+	vertex_t i,j;
+	vertex_t STEP_END = -1;
+	*avesp = 0;
+	for (i=0; i<net->maxId + 1; ++i) {
+		lNum = 1;
+		left[0] = i;
+		for (j=0; j<net->maxId + 1; ++j) {
+			sp[j] = 0;
+		}
+		sp[i] = -1;
+		core_spath_1A_undirect_unweight_Net(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
+		for (j=i+1; j<net->maxId + 1; ++j) {
+			*avesp += sp[j];
+		}
+	}
+
+	free(left);
+	free(right);
+	free(sp);
+	double EE = (double)(net->maxId + 1)*(net->maxId)/2.0;
+	*avesp /= EE;
+}
+
 /*
 
 //standard dijkstra algorithm
@@ -138,36 +175,6 @@ double *dijkstra_1A_iidNet(struct iidNet *net, int nid) {
 	free(asp);
 
 	return sp;
-}
-
-void avesp_spath01_iiNet(struct iiNet *net, double *avesp) {
-	int *sp = malloc((net->maxId + 1)*sizeof(int));
-	int *left = malloc((net->maxId + 1)*sizeof(int));
-	int *right = malloc((net->maxId + 1)*sizeof(int));
-	int lNum, rNum;
-
-	int i,j;
-	int STEP_END = -1;
-	*avesp = 0;
-	for (i=0; i<net->maxId + 1; ++i) {
-		//printf("complete: %.4f%%\r", (double)i*100/(net->maxId + 1));fflush(stdout);
-		lNum = 1;
-		left[0] = i;
-		for (j=0; j<net->maxId + 1; ++j) {
-			sp[j] = 0;
-		}
-		sp[i] = -1;
-		spath01_core_iiNet(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
-		for (j=i+1; j<net->maxId + 1; ++j) {
-			*avesp += sp[j];
-		}
-	}
-
-	free(left);
-	free(right);
-	free(sp);
-	double EE = (double)(net->maxId + 1)*(net->maxId)/2.0;
-	*avesp /= EE;
 }
 
 //this spath02 is FW algorithm for unweighted and undirected net.

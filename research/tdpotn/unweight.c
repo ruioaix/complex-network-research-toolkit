@@ -6,8 +6,8 @@
 #include "common.h"
 
 /**
- * default: ./tdpotn-theta_lambda  D_12   N    seed limitN theta lambda
- * default: ./tdpotn-theta_lambda   1    2500   1     5     1.0    0
+ * default: ./tdpotn-unweight D_12   N    seed limitN theta lambda
+ * default: ./tdpotn-unweight  1    2500   1     5     1.0    0
  *
  * D_12 = 1, 1 means 1d, 2 means 2d.
  * N = 50, N is the number of vertices; 
@@ -23,7 +23,6 @@
  * lambda = 0, this decide the effect of a air edge. 
  * 		if lambda = 0, all air edges's weight is 1, it's the best experience.
  * 		if lambda = 1, all air edges has no advance to base net. it's the worst experience.
- * 		actural lambda is only used here.
  */
 int main (int argc, char **argv) {
 
@@ -36,19 +35,24 @@ int main (int argc, char **argv) {
 	set_seed_MTPR(seed);
 	double coupling = -1, gini = -1;
 
+	struct LineFile *baself = tdpotn_lf(D_12, N);
+	struct Net *base = create_Net(baself);
+	check_duplicatepairs_Net(base);
+	if (base->duplicatepairsStatus == NS_DUPPAIRS) {
+		isError("the net has some duplicate pairs, please make the net clean");
+	}
+	free_LineFile(baself);
+
 	int kk=0;
 	for (kk = 0; kk < 41; ++kk) {
 		double alpha = kk * 0.1;
 
-		struct LineFile *baself = tdpotn_lf(D_12, N);
-		struct Net *base = create_Net(baself);
-		free_LineFile(baself);
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
-		struct Net *air = create_weighted_Net(airlf, airlf->d1);
-		printm("air: Max: %d, Min: %d, idNum: %d, edgesNum: %d", \
+		struct Net *air = create_Net(airlf);
+		printlp("air: Max: %d, Min: %d, idNum: %d, edgesNum: %d\n", \
 				air->maxId, air->minId, air->idNum, air->edgesNum);
-		if (air->degreeMax.sign == NS_VALID) printm("degreMax: %d", air->degreeMax.value);
-		if (air->degreeMin.sign == NS_VALID) printm("degreMin: %d", air->degreeMin.value);
+		if (air->degreeMax.sign == NS_VALID) printlp("degreMax: %d\n", air->degreeMax.value);
+		if (air->degreeMin.sign == NS_VALID) printlp("degreMin: %d\n", air->degreeMin.value);
 		free_LineFile(airlf);
 		double avesp=-1;
 		/*
@@ -56,10 +60,10 @@ int main (int argc, char **argv) {
 		*/
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
-		free_Net(base);
 		free_Net(air);
 	}
 
+	free_Net(base);
 	print_time();
 	return 0;
 }

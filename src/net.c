@@ -605,38 +605,6 @@ int robust_iiNet(struct iiNet *net, int *robust) {
 	return maxi;
 }
 
-void verify_duplicatePairs_iiNet(struct iiNet *net) {
-	print2l("%s =>> begin......\n", __func__);
-	long i;
-	int j,k;
-	int *place = malloc((net->maxId+1)*sizeof(int));
-	for (k=0; k<net->maxId + 1; ++k) {
-		place[k] = -1;
-	}
-	long dpairsNum=0;
-	for (j=0; j<net->maxId+1; ++j) {
-		for (i=0; i < net->count[j]; ++i) {
-			int neigh = net->edges[j][i];
-			if (place[neigh] == -1) {
-				place[neigh] = 1;
-			}
-			else {
-				print1l("%s =>> duplicate pairs %ld:\t%d\t%d\n", __func__, ++dpairsNum, j, neigh);
-			}
-		}
-		for (i = 0; i < net->count[j]; ++i) {
-			int neigh = net->edges[j][i];
-			place[neigh] = -1;
-		}
-	}
-	free(place);
-	if (dpairsNum) {
-		isError("%s =>> net has some duplicate pairs.\n", __func__);
-	}
-	print2l("%s =>> ......end.\n", __func__);
-	fflush(stdout);
-}
-
 void verify_fullyConnected_iiNet(struct iiNet *net) {
 	print2l("%s =>> begin......\n", __func__);
 	char *fg = calloc(net->maxId + 1, sizeof(char));
@@ -682,6 +650,7 @@ void set_edgesMatrix_Net(struct Net *net) {
 }
 
 void check_connectness_Net(struct Net *net) {
+	printgfb();
 	vertex_t i;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		if (net->degree[i] != 0) {
@@ -698,4 +667,47 @@ void check_connectness_Net(struct Net *net) {
 	}
 	net->connectnessStatus = NS_CNNTNESS;
 	free(sp);
+	printgfe();
+}
+
+void check_duplicatepairs_Net(struct Net *net) {
+	printgfb();
+	edge_t i;
+	vertex_t j,k;
+	vertex_t *place = malloc((net->maxId+1)*sizeof(vertex_t));
+	for (k=0; k<net->maxId + 1; ++k) {
+		place[k] = -1;
+	}
+	edge_t dpairsNum=0;
+	FILE *fp = NULL;
+	char *tmpdpfile = "/tmp/duplicatepairs";
+	for (j=0; j<net->maxId+1; ++j) {
+		for (i=0; i < net->degree[j]; ++i) {
+			vertex_t neigh = net->edges[j][i];
+			if (place[neigh] == -1) {
+				place[neigh] = 1;
+			}
+			else {
+				if (fp == NULL) {
+					fp = fopen(tmpdpfile, "w");
+					if (fp == NULL)  isError("can not open %s file.\n", tmpdpfile);
+				}
+				fprintf(fp, "duplicate pairs %d:\t%d\t%d\n", ++dpairsNum, j, neigh);
+			}
+		}
+		for (i = 0; i < net->degree[j]; ++i) {
+			int neigh = net->edges[j][i];
+			place[neigh] = -1;
+		}
+	}
+	if (fp != NULL) fclose(fp);
+	free(place);
+	if (dpairsNum) {
+		printm("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\n", tmpdpfile);
+		net->duplicatepairsStatus = NS_DUPPAIRS;
+	}
+	else {
+		net->duplicatepairsStatus = NS_NON_DUPPAIRS;
+	}
+	printgfe();
 }
