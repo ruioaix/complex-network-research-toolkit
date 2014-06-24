@@ -9,7 +9,7 @@
 
 /****************Configuration Section*******************************************************************/
 //#define NDEBUG
-//VERBOSE_LEVEL has 6 values now, 1, 2, 3, 4, 5, 6.
+//VERBOSE_LEVEL has 7 values now, 0, 1, 2, 3, 4, 5, 6.
 //we have eight different print functions: 
 //		printm: only be used in main function.
 //		printgfb&printgfe: only be used at the beginning and end of the global functions.
@@ -23,7 +23,8 @@
 //if VERBOSE_LEVEL == 4, printsfb&printsfe will output, too.
 //if VERBOSE_LEVEL == 5, printsf will output, too.
 //if VERBOSE_LEVEL == 6, printlp will output, too.
-#define VERBOSE_LEVEL 6
+//if VERBOSE_LEVEL == 0, all printxxx stop output.
+#define VERBOSE_LEVEL 5
 /********************************************************************************************************/
 
 

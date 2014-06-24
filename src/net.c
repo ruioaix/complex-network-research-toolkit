@@ -692,8 +692,10 @@ void check_connectness_Net(struct Net *net) {
 	for (i = 0; i < net->maxId + 1; ++i) {
 		if(net->degree[i] != 0 && sp[i] == 0) {
 			net->connectnessStatus = NS_NON_CNNTNESS;
+			free(sp);
 			return;
 		}
 	}
 	net->connectnessStatus = NS_CNNTNESS;
+	free(sp);
 }

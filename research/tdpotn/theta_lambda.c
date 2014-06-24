@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
 		if (air->degreeMax.sign == NS_VALID) printm("degreMax: %d", air->degreeMax.value);
 		if (air->degreeMin.sign == NS_VALID) printm("degreMin: %d", air->degreeMin.value);
 		free_LineFile(airlf);
-		double avesp;
+		double avesp=-1;
 		/*
 		avesp_spath03_Net(base, air, &avesp);
 		*/
