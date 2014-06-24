@@ -743,8 +743,6 @@ static void spath06_core02_Net(int source, int *sp, char *stage, int **left, int
 					//printf("id:%d\n", id);
 					for (j=0; j<XE->count[id]; ++j) {
 						int neigh = XE->edges[id][j];
-					//for (j=0; j<net->count[id]; ++j) {
-					//	int neigh = net->edges[id][j];
 						if (sp[neigh] == step) {
 							set_d_XE(XE, id, neigh, spall[neigh]/aij, i, source);
 							if (stage[neigh] == 0) {
