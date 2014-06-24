@@ -2,8 +2,8 @@
 #define CNRT_SPATH_H
 
 #include "net.h"
-//#include "iinet.h"
-//#include "iidnet.h"
+edge_t *spath_1A_undirect_unweight_Net(struct Net *net, vertex_t originId);
+void spath_1A_step_undirect_unweight_Net(struct Net *net, vertex_t originId, vertex_t step, vertex_t *Num, vertex_t **ret);
 
 /*
  * standard shortest path algorithm.
@@ -28,7 +28,6 @@
  *         if the length of shortest path between node C and node B is 7, then 7 is in the returned array.
  *         ...
  */
-int *spath01_1A_Net(struct Net *net, int originId);
 //int *spath01_step_1A_iiNet(struct iiNet *net, int originId, int step, int *Num);
 //void avesp_spath01_iiNet(struct iiNet *net, double *avesp);
 

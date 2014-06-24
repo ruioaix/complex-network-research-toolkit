@@ -44,21 +44,20 @@ int main (int argc, char **argv) {
 		struct Net *base = create_Net(baself);
 		free_LineFile(baself);
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
-		/*
-		struct iidNet *air = create_iidNet(airlf);
-		print1l("%s =>> create iidnet air, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", \
-				__func__, air->maxId, air->minId, air->idNum, air->edgesNum, air->countMax, air->countMin);
+		struct Net *air = create_weighted_Net(airlf, airlf->d1);
+		printm("air: Max: %d, Min: %d, idNum: %d, edgesNum: %d", \
+				air->maxId, air->minId, air->idNum, air->edgesNum);
+		if (air->degreeMax.sign == NS_VALID) printm("degreMax: %d", air->degreeMax.value);
+		if (air->degreeMin.sign == NS_VALID) printm("degreMin: %d", air->degreeMin.value);
 		free_LineFile(airlf);
-
-		tdpotn_writenettofile_ii_iid(base, air, "tnet", "wtnet");
-
 		double avesp;
+		/*
 		avesp_spath03_Net(base, air, &avesp);
+		*/
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
-		free_iiNet(base);
-		free_iidNet(air);
-		*/
+		free_Net(base);
+		free_Net(air);
 	}
 
 	print_time();

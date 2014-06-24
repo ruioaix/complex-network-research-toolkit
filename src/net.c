@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
+#include "spath.h"
 
 void free_Net(struct Net *net) {
 	printgfb();
@@ -678,4 +679,21 @@ void set_edgesMatrix_Net(struct Net *net) {
 	}
 	net->edgesMatrix.pp = em;
 	net->edgesMatrix.sign = NS_VALID;
+}
+
+void check_connectness_Net(struct Net *net) {
+	vertex_t i;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		if (net->degree[i] != 0) {
+			break;
+		}
+	}
+	edge_t * sp = spath_1A_undirect_unweight_Net(net, i);
+	for (i = 0; i < net->maxId + 1; ++i) {
+		if(net->degree[i] != 0 && sp[i] == 0) {
+			net->connectnessStatus = NS_NON_CNNTNESS;
+			return;
+		}
+	}
+	net->connectnessStatus = NS_CNNTNESS;
 }

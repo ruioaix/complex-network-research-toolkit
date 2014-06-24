@@ -9,45 +9,71 @@
 
 #define EPS 0.0000001
 //this spath01 is for unweighted and undirected net.
-static void spath01_core_Net(int *sp, int **left, int **right, int *lNum, int *rNum, struct Net *net, int *STEP_END) {
-	int i,j;
+static void core_spath_1A_undirect_unweight_Net(vertex_t *sp, vertex_t **left, vertex_t **right, vertex_t *lNum, vertex_t *rNum, struct Net *net, int *STEP_END) {
+	vertex_t i,j;
 	int STEP = 0;
 	while (*lNum && STEP != *STEP_END) {
 		++STEP;
 		*rNum = 0;
 
 		for (i=0; i<*lNum; ++i) {
-			int id = (*left)[i];
+			vertex_t id = (*left)[i];
 			for (j=0; j<net->degree[id]; ++j) {
-				int neigh = net->edges[id][j];
-				if (!sp[neigh]) {
+				vertex_t neigh = net->edges[id][j];
+				if (sp[neigh] == 0) {
 					sp[neigh] = STEP;
 					(*right)[(*rNum)++] = neigh;
 				}
 			}
 		}
-		int *tmp = *left;
+		vertex_t *tmp = *left;
 		*left = *right;
 		*right = tmp;
 		*lNum = *rNum;
 	}
 }
-int *spath01_1A_Net(struct Net *net, int originId) {
+
+vertex_t *spath_1A_undirect_unweight_Net(struct Net *net, vertex_t originId) {
 	if (originId<net->minId || originId>net->maxId) {
-		return NULL;
+		isError("originId is not a valid vertex id");
 	}
-	int *sp = calloc(net->maxId + 1, sizeof(int));
-	int *left = malloc((net->maxId + 1)*sizeof(int));
-	int *right = malloc((net->maxId + 1)*sizeof(int));
-	int lNum, rNum;
+	if (net->directStatus != NS_UNDIRECTED || net->weightStatus != NS_UNWEIGHTED) {
+		isError("the net is not an undirected or not an unweighted network");
+	}
+	vertex_t *sp = calloc(net->maxId + 1, sizeof(vertex_t));
+	vertex_t *left = malloc((net->maxId + 1)*sizeof(vertex_t));
+	vertex_t *right = malloc((net->maxId + 1)*sizeof(vertex_t));
+	vertex_t lNum, rNum;
 	lNum = 1;
 	left[0] = originId;
 	sp[originId] = -1;
 	int STEP_END = -1;
-	spath01_core_Net(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
+	core_spath_1A_undirect_unweight_Net(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
 	free(left);
 	free(right);
 	return sp;
+}
+
+void spath_1A_step_undirect_unweight_Net(struct Net *net, vertex_t originId, vertex_t step, vertex_t *Num, vertex_t **ret) {
+	if (originId<net->minId || originId>net->maxId) {
+		isError("originId is not a valid vertex id");
+	}
+	if (net->directStatus != NS_UNDIRECTED || net->weightStatus != NS_UNWEIGHTED) {
+		isError("the net is not an undirected or not an unweighted network");
+	}
+	vertex_t *sp = calloc(net->maxId + 1, sizeof(vertex_t));
+	vertex_t *left = malloc((net->maxId + 1)*sizeof(vertex_t));
+	vertex_t *right = malloc((net->maxId + 1)*sizeof(vertex_t));
+	vertex_t lNum, rNum;
+	lNum = 1;
+	left[0] = originId;
+	sp[originId] = -1;
+	vertex_t STEP_END = step;
+	core_spath_1A_undirect_unweight_Net(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
+	free(sp);
+	free(right);
+	*Num = lNum;
+	*ret = left;
 }
 /*
 
@@ -114,24 +140,6 @@ double *dijkstra_1A_iidNet(struct iidNet *net, int nid) {
 	return sp;
 }
 
-int *spath01_step_1A_iiNet(struct iiNet *net, int originId, int step, int *Num) {
-	if (originId<net->minId || originId>net->maxId) {
-		return NULL;
-	}
-	int *sp = calloc(net->maxId + 1, sizeof(int));
-	int *left = malloc((net->maxId + 1)*sizeof(int));
-	int *right = malloc((net->maxId + 1)*sizeof(int));
-	int lNum, rNum;
-	lNum = 1;
-	left[0] = originId;
-	sp[originId] = -1;
-	int STEP_END = step;
-	spath01_core_iiNet(sp, &left, &right, &lNum, &rNum, net, &STEP_END);
-	free(sp);
-	free(right);
-	*Num = lNum;
-	return left;	
-}
 void avesp_spath01_iiNet(struct iiNet *net, double *avesp) {
 	int *sp = malloc((net->maxId + 1)*sizeof(int));
 	int *left = malloc((net->maxId + 1)*sizeof(int));
