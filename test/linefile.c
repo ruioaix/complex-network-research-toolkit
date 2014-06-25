@@ -51,8 +51,7 @@ START_TEST (test_linefile_create)
 	int i,j,z;
 
 	char *filename = "/tmp/cnrt_test_linefile_create";
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "xx");
+	FILE *fp = sfopen(filename, "w");
 	for (i = 0; i < LINESNUM; ++i) {
 		//if (i==3323) printf("%.32f\t%.19f\t", da[0][i], da[0][i]);
 		for (j = 0; j < 9; ++j) {
@@ -126,8 +125,7 @@ START_TEST (test_linefile_print)
 	int i,j,z;
 
 	char *filename = "/tmp/cnrt_test_linefile_print_o";
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "xx");
+	FILE *fp = sfopen(filename, "w");
 	for (i = 0; i < LINESNUM; ++i) {
 		//if (i==3323) printf("%.32f\t%.19f\t", da[0][i], da[0][i]);
 		for (j = 0; j < 9; ++j) {

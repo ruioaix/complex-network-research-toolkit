@@ -183,8 +183,7 @@ struct LineFile * line1d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 
 void parts45_DS(char *filename, long linesNum, int in, int dn, int cn, int ln, int ccn) {
 	printgfb();
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "parts45_DS");
+	FILE *fp = sfopen(filename, "w");
 	long i;
 	int j;
 	set_timeseed_MTPR();

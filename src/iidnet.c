@@ -112,8 +112,7 @@ struct iidNet *create_iidNet(const struct LineFile * const lf) {
 }
 
 void print_iidNet(struct iidNet *net, char *filename) {
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "print_iidNet");
+	FILE *fp = sfopen(filename, "w");
 	int i;
 	long j;
 	for (i=0; i<net->maxId + 1; ++i) {

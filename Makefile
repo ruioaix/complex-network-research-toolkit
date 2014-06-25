@@ -13,6 +13,7 @@ resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 #sources := $(subst .c,,$(sources))
 #sources := $(subst /,-,$(sources))
 
+all :
 tdpotn :
 test :
 

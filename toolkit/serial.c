@@ -15,8 +15,7 @@ int main(int argc, char **argv)
 		insert_HE_HT(ht1, lf->i1[i]);	
 		insert_HE_HT(ht2, lf->i2[i]);	
 	}
-	FILE *fp = fopen(argv[2], "w");
-	fileError(fp, "main");
+	FILE *fp = sfopen(argv[2], "w");
 	for (i = 0; i < lf->linesNum; ++i) {
 		fprintf(fp, "%d\t%d\n", get_index_HT(ht1, lf->i1[i]), get_index_HT(ht2, lf->i2[i]));
 	}

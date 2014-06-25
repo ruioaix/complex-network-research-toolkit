@@ -110,7 +110,7 @@ int robust_delete_cross_linkcp(struct iiNet *net, struct CoupLink *cplk, int *ls
 }
 
 static int linkcp_iiNet(struct iiNet *net, struct CoupLink *cplk, int *lstate1) {
-	print4l("%s =>> begin......\n", __func__);
+	printsfb();
 	long linesNum = cplk->lid_i12->linesNum;
 	int *lstate = calloc(linesNum, sizeof(int));
 	memcpy(lstate, lstate1, sizeof(int)*linesNum);
@@ -121,11 +121,11 @@ static int linkcp_iiNet(struct iiNet *net, struct CoupLink *cplk, int *lstate1) 
 		oneidinRobust= robust_iiNet(net, &nodesNuminRobust);
 		cplkinRobustNum = get_cplk_set_lstate_in_maxRobust(oneidinRobust, net, lstate, cplk->i12_lid);
 		dk = robust_delete_cross_linkcp(net, cplk, lstate);
-		print1l("%s =>> cross linkcp deletion: %d, (cplkinRobustNum: %d, nodesNuminRobust: %d).\n", __func__, dk, cplkinRobustNum, nodesNuminRobust);
+		printm("%s =>> cross linkcp deletion: %d, (cplkinRobustNum: %d, nodesNuminRobust: %d).\n", __func__, dk, cplkinRobustNum, nodesNuminRobust);
 	}
 
 	free(lstate);
-	print4l("%s =>> ......end.\n", __func__);
+	printsfe();
 	return nodesNuminRobust;
 }
 
@@ -165,22 +165,22 @@ int main(int argc, char **argv)
 	double q;
 	int algorithm_type, pairsNum;
 	robust_argc_argv(argc, argv, &es, &N, &seed, &MM0, &kor, &q, &algorithm_type, &pairsNum);
-	print1l("%s =>> nodes Num: %d, random seed: %d, MM0: %d, q: %f, coupNum: %d.\n", __func__, N, seed, MM0, q, coupNum);
+	printm("%s =>> nodes Num: %d, random seed: %d, MM0: %d, q: %f, coupNum: %d.\n", __func__, N, seed, MM0, q, coupNum);
 	/********************************************************************************************************/
 
 	/***************create net & cplk.***************************************/
 	struct LineFile *lf = robust_ER_or_SF(es, N, seed, MM0);
 	struct iiNet *net = create_iiNet(lf);
-	print1l("%s =>> network type: %s\n", __func__, ES_S[es-1]);
-	print1l("%s =>> create network, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", __func__, net->maxId, net->minId, net->idNum, net->edgesNum, net->countMax, net->countMin);
+	printm("%s =>> network type: %s\n", __func__, ES_S[es-1]);
+	printm("%s =>> create network, Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", __func__, net->maxId, net->minId, net->idNum, net->edgesNum, net->countMax, net->countMin);
 
 	struct CoupLink *cplk = robust_get_cplk(lf, q, algorithm_type, pairsNum);
-	print1l("%s =>> create CPLKs, type: %d, pairsNum: %d, q: %f, cplkNum: %ld, netlkNum: %ld, cplkNodeNum: %d, netnodeNum: %d, gidMax: %d, gidCountMax: %d, gidCountMin: %d.\n", __func__, algorithm_type, pairsNum, q, cplk->lid_i12->linesNum, net->edgesNum, cplk->i12_lid->idNum, net->idNum, cplk->gidMax, cplk->gidCountMax, cplk->gidCountMin);
+	printm("%s =>> create CPLKs, type: %d, pairsNum: %d, q: %f, cplkNum: %ld, netlkNum: %ld, cplkNodeNum: %d, netnodeNum: %d, gidMax: %d, gidCountMax: %d, gidCountMin: %d.\n", __func__, algorithm_type, pairsNum, q, cplk->lid_i12->linesNum, net->edgesNum, cplk->i12_lid->idNum, net->idNum, cplk->gidMax, cplk->gidCountMax, cplk->gidCountMin);
 	/********************************************************************************************************/
 	
 	/********************************************************************************************************/
 	int *dl = robust_create_deletelist(net, kor);
-	print1l("%s =>> deletelist type: %s\n", __func__, KOR_S[kor-1]);
+	printm("%s =>> deletelist type: %s\n", __func__, KOR_S[kor-1]);
 	int *lstate = scalloc(cplk->lid_i12->linesNum, sizeof(int));
 	int i;
 	for (i = 0; i < net->maxId; ++i) {
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 		long count_subthisid = net->count[subthisid];
 		int t = robust_sign_deleted_cplk(lstate, net, subthisid, cplk->lid_i12, cplk->lid_gid, cplk->gid_lids, cplk->gidCount);
 		(void)t;
-		print1l("%s =>> node \"%d\" deletion, cplk deletion: %d, nodelk deletion: %ld, now edgesNum is %ld.\n", __func__, subthisid, t, net->count[subthisid], net->edgesNum - net->count[subthisid]);
+		printm("%s =>> node \"%d\" deletion, cplk deletion: %d, nodelk deletion: %ld, now edgesNum is %ld.\n", __func__, subthisid, t, net->count[subthisid], net->edgesNum - net->count[subthisid]);
 		delete_node_iiNet(net, subthisid);
 		int robust = linkcp_iiNet(net, cplk, lstate);
 		printf("result:CQ\tp:\t%f\tsubthisid:\t%d\tcount:\t%ld\tQ(p):\t%f\tC(p):\t%f\t%d\n", (double)(i+1)/(net->maxId + 1), subthisid, count_subthisid, (double)robust/(net->maxId + 1), (double)(net->maxId - i -robust)/(net->maxId - i), robust);

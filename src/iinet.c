@@ -105,8 +105,7 @@ struct iiNet *create_iiNet(const struct LineFile * const lf) {
 
 void print_iiNet(struct iiNet *net, char *filename) {
 	printgfb();
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "print_iiNet");
+	FILE *fp = sfopen(filename, "w");
 	int i;
 	long j;
 	for (i=0; i<net->maxId + 1; ++i) {

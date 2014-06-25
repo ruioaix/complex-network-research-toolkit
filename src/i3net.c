@@ -114,8 +114,7 @@ struct i3Net *create_i3Net(const struct LineFile * const lf) {
 }
 
 void print_i3Net(struct i3Net *net, char *filename) {
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "print_i3Net");
+	FILE *fp = sfopen(filename, "w");
 	int i;
 	long j;
 	for (i=0; i<net->maxId + 1; ++i) {

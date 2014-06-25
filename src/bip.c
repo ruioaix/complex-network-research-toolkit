@@ -250,10 +250,8 @@ void verify_Bip(struct Bip *bipi1, struct Bip *bipi2) {
 	int j,k;
 	int *place = malloc((bipi2->maxId+1)*sizeof(int));
 	assert(place != NULL);
-	FILE *fp = fopen("data/duplicatePairsinNet", "w");
-	fileError(fp, "data/duplicatePairsinNet");
-	FILE *fp2 = fopen("data/NoDuplicatePairsNetFile", "w");
-	fileError(fp2, "data/NoDuplicatePairsNetFile");
+	FILE *fp = sfopen("data/duplicatePairsinNet", "w");
+	FILE *fp2 = sfopen("data/NoDuplicatePairsNetFile", "w");
 	fprintf(fp, "the following pairs are duplicate in the net file\n");
 	char sign=0;
 	for (j=0; j<bipi1->maxId+1; ++j) {
@@ -291,8 +289,7 @@ void verify_Bip(struct Bip *bipi1, struct Bip *bipi2) {
 }
 
 void print_Bip(struct Bip *bip, char *filename) {
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "print_Bip");
+	FILE *fp = sfopen(filename, "w");
 	int i;
 	long j;
 	for (i = 0; i < bip->maxId + 1; ++i) {

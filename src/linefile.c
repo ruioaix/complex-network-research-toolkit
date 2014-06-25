@@ -275,8 +275,7 @@ struct LineFile *create_LineFile(char *filename, ...) {
 	lf->filename = filename;
 
 	//check filename.
-	FILE *fp = fopen(filename, "r");
-	fileError(fp, "%s =>> can not open \"%s\" file.\n", __func__, filename);
+	FILE *fp = sfopen(filename, "r");
 
 	printgf("open \"%s\" done.\n", filename);
 
@@ -344,8 +343,7 @@ void print_LineFile(struct LineFile *lf, char *filename) {
 		printgfe();
 		return;
 	}
-	FILE *fp = fopen(filename, "w");
-	fileError(fp, "%s => can not \"%s\" file.\n", __func__, filename);
+	FILE *fp = sfopen(filename, "w");
 	int ***ilist = lf->ilist;
 	double ***dlist = lf->dlist;
 	char ****slist = lf->slist;

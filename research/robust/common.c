@@ -10,7 +10,7 @@
 #include <string.h>
 
 struct LineFile *robust_ER_or_SF(int es, int N, int seed, int MM0) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	struct LineFile *lf;
 	if (es == 1) {
 		lf = ER_DS(N, seed);
@@ -21,12 +21,12 @@ struct LineFile *robust_ER_or_SF(int es, int N, int seed, int MM0) {
 	else {
 		isError("%s =>> wrong network type\n", __func__);
 	}
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 	return lf;
 }
 
 void robust_argc_argv(int argc, char **argv, int *es, int *N, int *seed, int *MM0, int *kor, double *q, int *algorithm_type, int *pairsNum) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	if (argc == 1) {
 		*es = 2;
 		*N = 10000;
@@ -62,11 +62,11 @@ void robust_argc_argv(int argc, char **argv, int *es, int *N, int *seed, int *MM
 	else {
 		isError("%s =>> wrong arg.\n", __func__);
 	}
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 }
 
 int *robust_create_deletelist(struct iiNet *net, int kor) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	int *id, i;
 	if (kor == 1) { //k max delete first.
 		long *count = calloc(net->maxId + 1, sizeof(long));
@@ -95,16 +95,16 @@ int *robust_create_deletelist(struct iiNet *net, int kor) {
 	else {
 		isError("%s =>> wrong deletelist type.\n", __func__);
 	}
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 	return id;
 }
 
 static int *robust_set_each_link_group_algorithm01(struct LineFile *lf, double q, int **gidCounts) {
-	print4l("%s =>> begin......\n", __func__);
+	printsfb();
 	if (q<0 || q>1) isError("%s =>> invalid possiblity q value.\n", __func__);
 	
 	long cplkNum = (long)(q*lf->linesNum);
-	print5l("%s =>> number of coupling links will be %ld.\n", __func__, cplkNum);
+	printsf("number of coupling links will be %ld.\n", cplkNum);
 	
 	int * lid_gid = smalloc(lf->linesNum * sizeof(int));
 	int *gidCount = scalloc(cplkNum/2, sizeof(int));
@@ -162,16 +162,16 @@ static int *robust_set_each_link_group_algorithm01(struct LineFile *lf, double q
 	}
 		
 	*gidCounts = gidCount;
-	print4l("%s =>> ......end.\n", __func__);
+	printsfe();
 	return lid_gid;
 }
 
 static int *robust_set_each_link_group_algorithm02(struct LineFile *lf, double q, int **gidCounts, int pairsNum) {
-	print4l("%s =>> begin......\n", __func__);
+	printsfb();
 	if (q<0 || q>1 || pairsNum < 2) isError("%s =>> invalid possiblity q value or pairsNum.\n", __func__);
 	
 	long cplkNum = (long)(q*lf->linesNum);
-	print5l("%s =>> number of coupling links will be %ld.\n", __func__, cplkNum);
+	printsf("number of coupling links will be %ld.\n", cplkNum);
 	
 	int * lid_gid = smalloc(lf->linesNum * sizeof(int));
 	int *gidCount = scalloc(cplkNum/2, sizeof(int));
@@ -201,7 +201,7 @@ static int *robust_set_each_link_group_algorithm02(struct LineFile *lf, double q
 		
 	free(clean);
 	*gidCounts = gidCount;
-	print4l("%s =>> ......end.\n", __func__);
+	printsfe();
 	return lid_gid;
 }
 
@@ -256,14 +256,14 @@ static int *robust_set_each_link_group(struct LineFile *lid_i12, double q, int *
 
 
 struct CoupLink * robust_get_cplk(struct LineFile *lid_i12, double q, int algorithm_type, int pairsNum) {
-	print2l("%s =>> begin......\n", __func__);
+	printgfb();
 	int *gidCount;
 	int *lid_gid = robust_set_each_link_group(lid_i12, q, &gidCount, algorithm_type, pairsNum);
 	int gidMax, **gid_lids, gidCountMax, gidCountMin;
 	robust_set_lidi12_lidgid_gidMax_gidlids(gidCount, lid_i12, lid_gid, &gidMax, &gid_lids, &gidCountMax, &gidCountMin);
 
 	struct i3Net *i12_lid = create_i3Net(lid_i12);
-	print3l("%s =>> Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", __func__, i12_lid->maxId, i12_lid->minId, i12_lid->idNum, i12_lid->edgesNum, i12_lid->countMax, i12_lid->countMin);
+	printgf("Max: %d, Min: %d, idNum: %d, edgesNum: %ld, countMax: %ld, countMin: %ld\n", i12_lid->maxId, i12_lid->minId, i12_lid->idNum, i12_lid->edgesNum, i12_lid->countMax, i12_lid->countMin);
 	struct CoupLink *cplk = smalloc(sizeof(struct CoupLink));
 	cplk->i12_lid = i12_lid;
 	cplk->lid_i12 = lid_i12;
@@ -273,7 +273,7 @@ struct CoupLink * robust_get_cplk(struct LineFile *lid_i12, double q, int algori
 	cplk->gidCountMin = gidCountMin;
 	cplk->gidCount = gidCount;
 	cplk->gid_lids = gid_lids;
-	print2l("%s =>> ......end.\n", __func__);
+	printgfe();
 	return cplk;
 }
 
