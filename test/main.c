@@ -6,10 +6,11 @@
 int main(void) {
 
 	SRunner *sr;
-   	sr = srunner_create(net_line1d_suite());
-	srunner_add_suite(sr, net_lattice2d_suite());
-	srunner_add_suite(sr, utilities_suite());
-	srunner_add_suite(sr, linefile_suite());
+   	sr = srunner_create(spath_suite());
+	//srunner_add_suite(sr, net_line1d_suite());
+	//srunner_add_suite(sr, net_lattice2d_suite());
+	//srunner_add_suite(sr, utilities_suite());
+	//srunner_add_suite(sr, linefile_suite());
 
 
 

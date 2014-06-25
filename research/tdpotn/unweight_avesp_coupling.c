@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include "base.h"
 #include "net.h"
-//#include "shortestpath.h"
 #include "mtprand.h"
 #include "common.h"
+#include "spath.h"
 
 /**
- * default: ./tdpotn-unweight D_12   N    seed limitN theta lambda
- * default: ./tdpotn-unweight  1    2500   1     5     1.0    0
+ * default: ./tdpotn-unweight_avesp_coupling D_12   N    seed limitN theta lambda
+ * default: ./tdpotn-unweight_avesp_coupling  1    2500   1     5     1.0    0
  *
  * D_12 = 1, 1 means 1d, 2 means 2d.
  * N = 50, N is the number of vertices; 
@@ -23,6 +23,7 @@
  * lambda = 0, this decide the effect of a air edge. 
  * 		if lambda = 0, all air edges's weight is 1, it's the best experience.
  * 		if lambda = 1, all air edges has no advance to base net. it's the worst experience.
+ * 		lambda will keep 0 in this program, because net is unweighted.
  */
 int main (int argc, char **argv) {
 
@@ -33,7 +34,7 @@ int main (int argc, char **argv) {
 	tdpotn_argcv(argc, argv, &D_12, &N, &seed, &limitN, &theta, &lambda);
 
 	set_seed_MTPR(seed);
-	double coupling = -1, gini = -1;
+	double gini = -1;
 
 	struct LineFile *baself = tdpotn_lf(D_12, N);
 	struct Net *base = create_Net(baself);
@@ -54,10 +55,11 @@ int main (int argc, char **argv) {
 		if (air->degreeMax.sign == NS_VALID) printlp("degreMax: %d\n", air->degreeMax.value);
 		if (air->degreeMin.sign == NS_VALID) printlp("degreMin: %d\n", air->degreeMin.value);
 		free_LineFile(airlf);
-		double avesp=-1;
+		double avesp, coupling;
 		/*
 		avesp_spath03_Net(base, air, &avesp);
 		*/
+		spath_avesp_coupling_undirect_unweight_2_Net(base, air, &avesp, &coupling);
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_Net(air);

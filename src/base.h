@@ -24,7 +24,7 @@
 //if VERBOSE_LEVEL == 5, printsf will output, too.
 //if VERBOSE_LEVEL == 6, printlp will output, too.
 //if VERBOSE_LEVEL == 0, all printxxx stop output.
-#define VERBOSE_LEVEL 5
+#define VERBOSE_LEVEL 0
 /********************************************************************************************************/
 
 

@@ -3,7 +3,7 @@ libsources := $(filter-out main.c,$(wildcard *.c))
 libobj := $(subst .c,.o,$(libsources))
 exec := test
 
-headers := -I ../src
+headers := -I ../src 
 libcnrt := ../src/libcnrt.a
 extralibs := -lm -lcheck -lssl -lcrypto
 
@@ -11,7 +11,7 @@ extralibs := -lm -lcheck -lssl -lcrypto
 
 all : $(exec)
 
-$(exec) : main.o $(libobj) $(libcnrt)
+$(exec) : main.o $(libobj) $(libcnrt) ../research/tdpotn/common.o
 	$(LINK.o) $^ $(extralibs) -o $@
 
 COMPILE.c += $(headers)

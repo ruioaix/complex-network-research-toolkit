@@ -7,6 +7,118 @@
 #include <string.h>
 #include "limits.h"
 
+//standard dijkstra algorithm
+static double ** dijkstra_setasp_undirected_weighted_Net(struct Net *net) {
+	double *asp_onetime = malloc((net->maxId + 1) * (net->maxId + 1) * sizeof(double));
+	int i, j;
+	double **asp = smalloc((net->maxId + 1) * sizeof(double *));
+	for (i = 0; i < net->maxId + 1; ++i) {
+		asp[i] = asp_onetime + (net->maxId + 1)*i;
+	}
+	for (i = 0; i < net->maxId + 1; ++i) {
+		for (j = 0; j < net->maxId + 1; ++j) {
+			asp[i][j] = INT_MAX;
+		}
+	}
+	for (i = 0; i < net->maxId + 1; ++i) {
+		for (j = 0; j < net->degree[i]; ++j) {
+			int id = net->edges[i][j];
+			asp[i][id] = net->weight[i][j];
+		}
+	}
+	return asp;
+}
+double *dijkstra_1A_undirected_weighted_Net(struct Net *net, int nid) {
+	if (net->weightStatus == NS_UNWEIGHTED || net->directStatus == NS_DIRECTED) {
+		isError("the net should be weighted and undirected.");
+	}
+	if (nid < 0 || nid > net->maxId) {
+		isError("nid should be in [0, maxId]");
+	}
+	double **asp = dijkstra_setasp_undirected_weighted_Net(net);
+	double *sp = smalloc((net->maxId + 1) * sizeof(double));
+	char *flag = smalloc(net->maxId + 1);
+	int i;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		sp[i] = asp[nid][i];
+		flag[i] = 0;
+	}
+	flag[nid] = 1;
+	sp[nid] = -1;
+	int alreadyflag = 1;
+	while (alreadyflag != net->maxId + 1) {
+		int be = -1;
+		double min = 2.0*INT_MAX;
+		for (i = 0; i < net->maxId + 1; ++i) {
+			if (!flag[i] && min > sp[i]) {
+				min = sp[i];
+				be = i;
+			}
+		}
+		flag[be] = 1;
+		++alreadyflag;
+		for (i = 0; i < net->maxId + 1; ++i) {
+			if (!flag[i] && sp[i] > sp[be] + asp[be][i]) {
+				sp[i] = sp[be] + asp[be][i];
+			}
+		}
+	}
+	
+	free(flag);
+	free(asp[0]);
+	free(asp);
+
+	return sp;
+}
+double dijkstra_avesp_undirected_weighted_Net(struct Net *net) {
+	if (net->weightStatus == NS_UNWEIGHTED || net->directStatus == NS_DIRECTED) {
+		isError("the net should be weighted and undirected.");
+	}
+	double **asp = dijkstra_setasp_undirected_weighted_Net(net);
+	double *sp = smalloc((net->maxId + 1) * sizeof(double));
+	char *flag = smalloc(net->maxId + 1);
+
+	double avesp = 0;
+	int j;
+	for (j = 0; j < net->maxId + 1; ++j) {
+		int i;
+		for (i = 0; i < net->maxId + 1; ++i) {
+			sp[i] = asp[j][i];
+			flag[i] = 0;
+		}
+		flag[j] = 1;
+		sp[j] = -1;
+		int alreadyflag = 1;
+		while (alreadyflag != net->maxId + 1) {
+			int be = -1;
+			double min = 2.0*INT_MAX;
+			for (i = 0; i < net->maxId + 1; ++i) {
+				if (!flag[i] && min > sp[i]) {
+					min = sp[i];
+					be = i;
+				}
+			}
+			flag[be] = 1;
+			++alreadyflag;
+			for (i = 0; i < net->maxId + 1; ++i) {
+				if (!flag[i] && sp[i] > sp[be] + asp[be][i]) {
+					sp[i] = sp[be] + asp[be][i];
+				}
+			}
+		}
+
+		for (i = j+1; i < net->maxId + 1; ++i) {
+			avesp += sp[i];
+		}
+	}
+		
+	free(flag);
+	free(asp[0]);
+	free(asp);
+	double EE = (double)(net->maxId + 1)*net->maxId/2;
+	return avesp/EE;
+}
+
 #define EPS 0.0000001
 static void core_spath_1A_undirect_unweight_Net(vertex_t *sp, vertex_t **left, vertex_t **right, vertex_t *lNum, vertex_t *rNum, struct Net *net, int *STEP_END) {
 	printsfb();
@@ -112,70 +224,116 @@ void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp) {
 	*avesp /= EE;
 }
 
+//to find coupling of two net: base and air.
+static void core_spath_avesp_coupling_undirect_unweight_2_Net(vertex_t *sp, char *stage, vertex_t **left, vertex_t **right, vertex_t *lNum, vertex_t *rNum, struct Net *base, struct Net *air, double *spa, double *spb, double *spab) {
+	vertex_t i;
+	edge_t j;
+	int STEP = 1;
+	memset(stage, 0 ,sizeof(char)*(base->maxId + 1));
+	while (*lNum) {
+		++STEP;
+		*rNum = 0;
+
+		for (i=0; i<*lNum; ++i) {
+			vertex_t id = (*left)[i];
+			for (j=0; j<base->degree[id]; ++j) {
+				vertex_t neigh = base->edges[id][j];
+				if (sp[neigh] == 0) {
+					spab[neigh] += spab[id];
+					spab[neigh] += spa[id];
+					spb[neigh] += spb[id];
+					if (stage[neigh] == 0) {
+						stage[neigh] = 1;
+						(*right)[(*rNum)++] = neigh;
+					}
+				}
+			}
+			if(id < air->maxId + 1) {
+				for (j=0; j<air->degree[id]; ++j) {
+					vertex_t neigh = air->edges[id][j];
+					if (sp[neigh] == 0) {
+						spab[neigh] += spab[id];
+						spab[neigh] += spb[id];
+						spa[neigh] += spa[id];
+						if (stage[neigh] == 0) {
+							stage[neigh] = 1;
+							(*right)[(*rNum)++] = neigh;
+						}
+					}
+				}
+			}
+		}
+		for (i = 0; i < *rNum; ++i) {
+			sp[(*right)[i]] = STEP;
+			stage[(*right)[i]] = 0;
+		}
+		int *tmp = *left;
+		*left = *right;
+		*right = tmp;
+		*lNum = *rNum;
+	}
+}
+//the vertices in air is a subset of the vertices in base.
+void spath_avesp_coupling_undirect_unweight_2_Net(struct Net *base, struct Net *air, double *avesp, double *coupling) {
+	if (base->directStatus != NS_UNDIRECTED || base->weightStatus != NS_UNWEIGHTED) {
+		isError("the base net is not undirected or not unweighted.");
+	}
+	if (air->directStatus != NS_UNDIRECTED || air->weightStatus != NS_UNWEIGHTED) {
+		isError("the air net is not undirected or not unweighted.");
+	}
+	vertex_t *sp = smalloc((base->maxId + 1)*sizeof(vertex_t));
+	vertex_t *left = smalloc((base->maxId + 1)*sizeof(vertex_t));
+	vertex_t *right = smalloc((base->maxId + 1)*sizeof(vertex_t));
+	double *spa = smalloc((base->maxId + 1) * sizeof(double));
+	double *spb = smalloc((base->maxId + 1) * sizeof(double));
+	double *spab = smalloc((base->maxId + 1) * sizeof(double));
+	char *stage = smalloc((base->maxId + 1) * sizeof(char));
+	vertex_t lNum, rNum;
+
+	vertex_t i,j;
+	edge_t k;
+	*avesp = 0;
+	*coupling =0;
+	for (i=0; i<base->maxId; ++i) {
+		for (j=0; j<base->maxId + 1; ++j) {
+			sp[j] = 0;
+			spa[j] = 0;
+			spb[j] = 0;
+			spab[j] = 0;
+		}
+		sp[i] = -1;
+		lNum = 0;
+		for (k = 0; k < base->degree[i]; ++k) {
+			int to = base->edges[i][k];
+			left[lNum++] = to;
+			sp[to] = 1;
+			++spb[to];
+		}
+		if (i < air->maxId + 1) {
+			for (k = 0; k < air->degree[i]; ++k) {
+				int to = air->edges[i][k];
+				left[lNum++] = to;
+				sp[to] = 1;
+				++spa[to];
+			}
+		}
+		core_spath_avesp_coupling_undirect_unweight_2_Net(sp, stage, &left, &right, &lNum, &rNum, base, air, spa, spb, spab);
+		for (j = i+1; j < base->maxId + 1; ++j) {
+			*avesp += sp[j];
+			*coupling += spab[j]/(spa[j] + spb[j] + spab[j]);
+		}
+	}
+
+	free(left); free(right);
+	free(spa); free(spb); free(spab);
+	free(sp);
+	free(stage);
+	double ij = (double)(base->maxId + 1)*base->maxId/2;
+	*avesp /= ij;
+	*coupling /= ij;
+}
 /*
 
-//standard dijkstra algorithm
-static double ** dijkstra_setasp_iidNet(struct iidNet *net) {
-	double **asp = malloc((net->maxId + 1) * sizeof(void *));
-	int i, j;
-	for (i = 0; i < net->maxId + 1; ++i) {
-		asp[i] = malloc((net->maxId + 1) * sizeof(double));
-	}
-	for (i = 0; i < net->maxId + 1; ++i) {
-		for (j = 0; j < net->maxId + 1; ++j) {
-			asp[i][j] = INT_MAX;
-		}
-	}
-	for (i = 0; i < net->maxId + 1; ++i) {
-		for (j = 0; j < net->count[i]; ++j) {
-			int id = net->edges[i][j];
-			asp[i][id] = net->d[i][j];
-		}
-	}
-	return asp;
-}
-double *dijkstra_1A_iidNet(struct iidNet *net, int nid) {
-	if (nid < 0 || nid > net->maxId) return NULL;
-	double **asp = dijkstra_setasp_iidNet(net);
-	double *sp = malloc((net->maxId + 1) * sizeof(double));
-	assert(sp != NULL);
-	char *flag = malloc(net->maxId + 1);
-	assert(flag != NULL);
-	int i;
-	for (i = 0; i < net->maxId + 1; ++i) {
-		sp[i] = asp[nid][i];
-		flag[i] = 0;
-	}
-	flag[nid] = 1;
-	sp[nid] = -1;
-	int alreadyflag = 1;
-	while (alreadyflag != net->maxId + 1) {
-		int be = -1;
-		double min = INT_MAX;
-		min *= 2;
-		for (i = 0; i < net->maxId + 1; ++i) {
-			if (!flag[i] && min > sp[i]) {
-				min = sp[i];
-				be = i;
-			}
-		}
-		flag[be] = 1;
-		++alreadyflag;
-		for (i = 0; i < net->maxId + 1; ++i) {
-			if (!flag[i] && sp[i] > sp[be] + asp[be][i]) {
-				sp[i] = sp[be] + asp[be][i];
-			}
-		}
-	}
-	
-	free(flag);
-	for (i = 0; i < net->maxId + 1; ++i) {
-		free(asp[i]);
-	}
-	free(asp);
-
-	return sp;
-}
 
 //this spath02 is FW algorithm for unweighted and undirected net.
 int **spath02_AA_iiNet(struct iiNet *net) {
@@ -566,108 +724,6 @@ void useRate_spath04_iiNet(struct iiNet *net, struct iiNet *air, double *useRate
 	*avesp /= all;
 }
 
-//this spath05 is for unweighted and undirected net.
-//to find coupling of two net: base and air.
-static void spath05_core_iiNet(int *sp, char *stage, int **left, int **right, int *lNum, int *rNum, struct iiNet *net, struct iiNet *air, int *STEP_END, double *spa, double *spb, double *spab) {
-	int i,j;
-	int STEP = 1;
-	memset(stage, 0 ,sizeof(char)*(net->maxId + 1));
-	while (*lNum && STEP != *STEP_END) {
-		++STEP;
-		*rNum = 0;
-
-		for (i=0; i<*lNum; ++i) {
-			int id = (*left)[i];
-			//printf("id:%d\n", id);
-			for (j=0; j<net->count[id]; ++j) {
-				int neigh = net->edges[id][j];
-				if (!sp[neigh]) {
-					spab[neigh] += spab[id];
-					spab[neigh] += spa[id];
-					spb[neigh] += spb[id];
-					if (stage[neigh] == 0) {
-						stage[neigh] = 1;
-						(*right)[(*rNum)++] = neigh;
-					}
-				}
-			}
-			if(id < air->maxId + 1) {
-				for (j=0; j<air->count[id]; ++j) {
-					int neigh = air->edges[id][j];
-					if (!sp[neigh]) {
-						spab[neigh] += spab[id];
-						spab[neigh] += spb[id];
-						spa[neigh] += spa[id];
-						if (stage[neigh] == 0) {
-							stage[neigh] = 1;
-							(*right)[(*rNum)++] = neigh;
-						}
-					}
-				}
-			}
-		}
-		for (j = 0; j < *rNum; ++j) {
-			sp[(*right)[j]] = STEP;
-			stage[(*right)[j]] = 0;
-		}
-		int *tmp = *left;
-		*left = *right;
-		*right = tmp;
-		*lNum = *rNum;
-	}
-}
-void coupling_spath05_iiNet(struct iiNet *net, struct iiNet *air, double *coupling, double *avesp) {
-	int *sp = smalloc((net->maxId + 1)*sizeof(int));
-	int *left = smalloc((net->maxId + 1)*sizeof(int));
-	int *right = smalloc((net->maxId + 1)*sizeof(int));
-	double *spa = smalloc((net->maxId + 1) * sizeof(double));
-	double *spb = smalloc((net->maxId + 1) * sizeof(double));
-	double *spab = smalloc((net->maxId + 1) * sizeof(double));
-	char *stage = smalloc((net->maxId + 1) * sizeof(char));
-	int lNum, rNum;
-
-	int i,j;
-	int STEP_END = -1;
-	*avesp = 0;
-	*coupling =0;
-	for (i=0; i<net->maxId + 1; ++i) {
-		for (j=0; j<net->maxId + 1; ++j) {
-			sp[j] = 0;
-			spa[j] = 0;
-			spb[j] = 0;
-			spab[j] = 0;
-		}
-		sp[i] = -1;
-		lNum = 0;
-		for (j = 0; j < net->count[i]; ++j) {
-			int to = net->edges[i][j];
-			left[lNum++] = to;
-			sp[to] = 1;
-			++spb[to];
-		}
-		if (i < air->maxId + 1) {
-			for (j = 0; j < air->count[i]; ++j) {
-				int to = air->edges[i][j];
-				left[lNum++] = to;
-				sp[to] = 1;
-				++spa[to];
-			}
-		}
-		spath05_core_iiNet(sp, stage, &left, &right, &lNum, &rNum, net, air, &STEP_END, spa, spb, spab);
-		for (j = i+1; j < net->maxId + 1; ++j) {
-			*avesp += sp[j];
-			*coupling += spab[j]/(spa[j] + spb[j] + spab[j]);
-		}
-	}
-
-	free(left); free(right);
-	free(spa); free(spb); free(spab);
-	free(sp);
-	free(stage);
-	double ij = (double)(net->maxId + 1)*net->maxId/2;
-	*avesp /= ij;
-	*coupling /= ij;
-}
 
 //this spath06 is for unweighted_undirected base and weighted_undirected air network.
 //to find gini of two net: base and air.
