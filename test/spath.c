@@ -70,6 +70,101 @@ START_TEST (test_spath_avesp_coupling_undirect_unweight_Net_1)
 }
 END_TEST
 
+START_TEST (test_spath_avesp_gini_undirect_unweight_Net_0)
+{
+
+	set_timeseed_MTPR();
+	int D_12 = 1, N = 1000, seed=1, limitN =5;
+	double theta=1.0+get_d_MTPR(), lambda = 0;
+	double alpha = get_d_MTPR()+0.5;
+
+	struct LineFile *baself = tdpotn_lf(D_12, N);
+	struct Net *base = create_Net(baself);
+	base->duplicatepairsStatus = NS_NON_DUPPAIRS;
+	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
+	free_Net(base);
+
+	double *weight = smalloc(baself->linesNum * sizeof(double));
+	long i;
+	for (i = 0; i < baself->linesNum; ++i) {
+		weight[i] = 1.0;
+	}
+	baself->d1 = weight;
+	struct LineFile *addlf = add_LineFile(airlf, baself);
+	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
+	free_LineFile(addlf);
+	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	free_Net(addnet);
+
+	for (i = 0; i < baself->linesNum; ++i) {
+		weight[i] = 0.0;
+	}
+	for (i = 0; i < airlf->linesNum; ++i) {
+		airlf->d1[i] = 0.0;
+	}
+	struct LineFile *lf = add_LineFile(airlf, baself);
+	free_LineFile(baself);
+	free_LineFile(airlf);
+	struct Net *net = create_weighted_Net(lf, lf->d1);
+	free_LineFile(lf);
+	set_edgesMatrix_Net(net);
+	double avesp, gini;
+	spath_avesp_gini_undirect_unweight_Net(net, &avesp, &gini);
+	free_Net(net);
+
+	printf("avesp: %f, avesp_dj: %f\n", avesp, avesp_dj);
+	ck_assert(fabs(avesp - avesp_dj) < ES);
+
+}
+END_TEST
+
+START_TEST (test_spath_avesp_gini_undirect_unweight_Net_1)
+{
+
+	set_timeseed_MTPR();
+	int D_12 = 2, N = 34*34, seed=1, limitN =5;
+	double theta=1.0 + get_d_MTPR(), lambda = 0;
+	double alpha = 0.5 + get_d_MTPR();
+
+	struct LineFile *baself = tdpotn_lf(D_12, N);
+	struct Net *base = create_Net(baself);
+	base->duplicatepairsStatus = NS_NON_DUPPAIRS;
+	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
+	free_Net(base);
+
+	double *weight = smalloc(baself->linesNum * sizeof(double));
+	long i;
+	for (i = 0; i < baself->linesNum; ++i) {
+		weight[i] = 1.0;
+	}
+	baself->d1 = weight;
+	struct LineFile *addlf = add_LineFile(airlf, baself);
+	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
+	free_LineFile(addlf);
+	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	free_Net(addnet);
+
+	for (i = 0; i < baself->linesNum; ++i) {
+		weight[i] = 0.0;
+	}
+	for (i = 0; i < airlf->linesNum; ++i) {
+		airlf->d1[i] = 0.0;
+	}
+	struct LineFile *lf = add_LineFile(airlf, baself);
+	free_LineFile(baself);
+	free_LineFile(airlf);
+	struct Net *net = create_weighted_Net(lf, lf->d1);
+	free_LineFile(lf);
+	set_edgesMatrix_Net(net);
+	double avesp, gini;
+	spath_avesp_gini_undirect_unweight_Net(net, &avesp, &gini);
+	free_Net(net);
+
+	printf("avesp: %f, avesp_dj: %f\n", avesp, avesp_dj);
+	ck_assert(fabs(avesp - avesp_dj) < ES);
+}
+END_TEST
+
 Suite *spath_suite(void) {
 	Suite *s = suite_create("shortest path");
 
@@ -78,6 +173,13 @@ Suite *spath_suite(void) {
 	tcase_add_test(tc_spath_avesp_coupling_undirect_unweight_Net, test_spath_avesp_coupling_undirect_unweight_Net_0);
 	tcase_add_test(tc_spath_avesp_coupling_undirect_unweight_Net, test_spath_avesp_coupling_undirect_unweight_Net_1);
 	suite_add_tcase(s, tc_spath_avesp_coupling_undirect_unweight_Net);
+
+
+	TCase *tc_spath_avesp_gini_undirect_unweight_Net = tcase_create("spath_avesp_gini_undirect_unweight_Net");
+	tcase_set_timeout(tc_spath_avesp_gini_undirect_unweight_Net, 0);
+	tcase_add_test(tc_spath_avesp_gini_undirect_unweight_Net, test_spath_avesp_gini_undirect_unweight_Net_0);
+	tcase_add_test(tc_spath_avesp_gini_undirect_unweight_Net, test_spath_avesp_gini_undirect_unweight_Net_1);
+	suite_add_tcase(s, tc_spath_avesp_gini_undirect_unweight_Net);
 
 	return s;
 }
