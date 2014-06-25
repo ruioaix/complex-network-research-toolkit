@@ -33,6 +33,8 @@ research/tdpotn/coupling
 research/tdpotn/gini
 research/tdpotn/basic
 research/tdpotn/theta_lambda
+research/tdpotn/unweight_avesp_coupling
+research/tdpotn/unweight_avesp_gini
 src/libcnrt.a
 research/onion/BR
 research/onion/hs

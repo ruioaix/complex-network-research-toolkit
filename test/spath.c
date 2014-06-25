@@ -8,7 +8,7 @@
 #define ES  0.0000000000000001
 
 
-START_TEST (test_spath_avesp_coupling_undirect_unweight_2_Net_0)
+START_TEST (test_spath_avesp_coupling_undirect_unweight_Net_0)
 {
 	set_timeseed_MTPR();
 	int D_12 = 1, N = 1000, seed=1, limitN =5;
@@ -31,7 +31,7 @@ START_TEST (test_spath_avesp_coupling_undirect_unweight_2_Net_0)
 	struct Net *air = create_Net(airlf);
 	free_LineFile(airlf);
 	double avesp, coupling;
-	spath_avesp_coupling_undirect_unweight_2_Net(base, air, &avesp, &coupling);
+	spath_avesp_coupling_undirect_unweight_Net(base, air, &avesp, &coupling);
 	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
 	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
 	printf("avesp: %f, avesp_dj: %f\n", avesp, avesp_dj);
@@ -39,7 +39,7 @@ START_TEST (test_spath_avesp_coupling_undirect_unweight_2_Net_0)
 }
 END_TEST
 
-START_TEST (test_spath_avesp_coupling_undirect_unweight_2_Net_1)
+START_TEST (test_spath_avesp_coupling_undirect_unweight_Net_1)
 {
 	set_timeseed_MTPR();
 	int D_12 = 2, N = 34*34, seed=1, limitN =5;
@@ -62,7 +62,7 @@ START_TEST (test_spath_avesp_coupling_undirect_unweight_2_Net_1)
 	struct Net *air = create_Net(airlf);
 	free_LineFile(airlf);
 	double avesp, coupling;
-	spath_avesp_coupling_undirect_unweight_2_Net(base, air, &avesp, &coupling);
+	spath_avesp_coupling_undirect_unweight_Net(base, air, &avesp, &coupling);
 	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
 	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
 	printf("avesp: %f, avesp_dj: %f\n", avesp, avesp_dj);
@@ -73,11 +73,11 @@ END_TEST
 Suite *spath_suite(void) {
 	Suite *s = suite_create("shortest path");
 
-	TCase *tc_spath_avesp_coupling_undirect_unweight_2_Net = tcase_create("spath_avesp_coupling_undirect_unweight_2_Net");
-	tcase_set_timeout(tc_spath_avesp_coupling_undirect_unweight_2_Net, 0);
-	tcase_add_test(tc_spath_avesp_coupling_undirect_unweight_2_Net, test_spath_avesp_coupling_undirect_unweight_2_Net_0);
-	tcase_add_test(tc_spath_avesp_coupling_undirect_unweight_2_Net, test_spath_avesp_coupling_undirect_unweight_2_Net_1);
-	suite_add_tcase(s, tc_spath_avesp_coupling_undirect_unweight_2_Net);
+	TCase *tc_spath_avesp_coupling_undirect_unweight_Net = tcase_create("spath_avesp_coupling_undirect_unweight_Net");
+	tcase_set_timeout(tc_spath_avesp_coupling_undirect_unweight_Net, 0);
+	tcase_add_test(tc_spath_avesp_coupling_undirect_unweight_Net, test_spath_avesp_coupling_undirect_unweight_Net_0);
+	tcase_add_test(tc_spath_avesp_coupling_undirect_unweight_Net, test_spath_avesp_coupling_undirect_unweight_Net_1);
+	suite_add_tcase(s, tc_spath_avesp_coupling_undirect_unweight_Net);
 
 	return s;
 }

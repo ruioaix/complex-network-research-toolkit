@@ -9,7 +9,8 @@ vertex_t *spath_1A_undirect_unweight_Net(struct Net *net, vertex_t originId);
 void spath_1A_step_undirect_unweight_Net(struct Net *net, vertex_t originId, vertex_t step, vertex_t *Num, vertex_t **ret);
 void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp);
 
-void spath_avesp_coupling_undirect_unweight_2_Net(struct Net *base, struct Net *air, double *avesp, double *coupling);
+void spath_avesp_coupling_undirect_unweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling);
+void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, double *gini);
 
 /*
  * standard shortest path algorithm.
