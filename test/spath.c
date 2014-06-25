@@ -10,10 +10,10 @@
 
 START_TEST (test_spath_avesp_coupling_undirect_unweight_2_Net_0)
 {
+	set_timeseed_MTPR();
 	int D_12 = 1, N = 1000, seed=1, limitN =5;
-	double theta=1.0, lambda = 0;
-	double alpha = 0.5;
-	set_seed_MTPR(seed);
+	double theta=1.0+get_d_MTPR(), lambda = 0;
+	double alpha = get_d_MTPR()+0.5;
 
 	struct LineFile *baself = tdpotn_lf(D_12, N);
 	struct Net *base = create_Net(baself);
@@ -41,10 +41,10 @@ END_TEST
 
 START_TEST (test_spath_avesp_coupling_undirect_unweight_2_Net_1)
 {
-	int D_12 = 2, N = 1600, seed=1, limitN =5;
-	double theta=1.2, lambda = 0;
-	double alpha = 0.5;
-	set_seed_MTPR(seed);
+	set_timeseed_MTPR();
+	int D_12 = 2, N = 34*34, seed=1, limitN =5;
+	double theta=1.0 + get_d_MTPR(), lambda = 0;
+	double alpha = 0.5 + get_d_MTPR();
 
 	struct LineFile *baself = tdpotn_lf(D_12, N);
 	struct Net *base = create_Net(baself);
