@@ -38,7 +38,7 @@ int main (int argc, char **argv) {
 
 	struct LineFile *baself = tdpotn_lf(D_12, N);
 	struct Net *base = create_Net(baself);
-	check_duplicatepairs_Net(base);
+	set_status_duplicatepairs_Net(base);
 	if (base->duplicatepairsStatus == NS_DUPPAIRS) {
 		isError("the net has some duplicate pairs, please make the net clean");
 	}

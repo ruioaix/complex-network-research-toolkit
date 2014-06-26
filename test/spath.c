@@ -32,7 +32,7 @@ START_TEST (test_spath_avesp_coupling_undirect_unweight_Net_0)
 	free_LineFile(airlf);
 	double avesp, coupling;
 	spath_avesp_coupling_undirect_unweight_Net(base, air, &avesp, &coupling);
-	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
+	struct Net *addnet = create_weighted_Net(addlf);
 	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
 	printf("avesp: %f, avesp_dj: %f\n", avesp, avesp_dj);
 	ck_assert(fabs(avesp - avesp_dj) < ES);
@@ -63,7 +63,7 @@ START_TEST (test_spath_avesp_coupling_undirect_unweight_Net_1)
 	free_LineFile(airlf);
 	double avesp, coupling;
 	spath_avesp_coupling_undirect_unweight_Net(base, air, &avesp, &coupling);
-	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
+	struct Net *addnet = create_weighted_Net(addlf);
 	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
 	printf("avesp: %f, avesp_dj: %f\n", avesp, avesp_dj);
 	ck_assert(fabs(avesp - avesp_dj) < ES);
@@ -91,7 +91,7 @@ START_TEST (test_spath_avesp_gini_undirect_unweight_Net_0)
 	}
 	baself->d1 = weight;
 	struct LineFile *addlf = add_LineFile(airlf, baself);
-	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
+	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
 	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
 	free_Net(addnet);
@@ -105,9 +105,9 @@ START_TEST (test_spath_avesp_gini_undirect_unweight_Net_0)
 	struct LineFile *lf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *net = create_weighted_Net(lf, lf->d1);
+	struct Net *net = create_weighted_Net(lf);
 	free_LineFile(lf);
-	set_edgesMatrix_Net(net);
+	set_option_edgesMatrix_Net(net);
 	double avesp, gini;
 	spath_avesp_gini_undirect_unweight_Net(net, &avesp, &gini);
 	free_Net(net);
@@ -139,7 +139,7 @@ START_TEST (test_spath_avesp_gini_undirect_unweight_Net_1)
 	}
 	baself->d1 = weight;
 	struct LineFile *addlf = add_LineFile(airlf, baself);
-	struct Net *addnet = create_weighted_Net(addlf, addlf->d1);
+	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
 	double avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
 	free_Net(addnet);
@@ -153,9 +153,9 @@ START_TEST (test_spath_avesp_gini_undirect_unweight_Net_1)
 	struct LineFile *lf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *net = create_weighted_Net(lf, lf->d1);
+	struct Net *net = create_weighted_Net(lf);
 	free_LineFile(lf);
-	set_edgesMatrix_Net(net);
+	set_option_edgesMatrix_Net(net);
 	double avesp, gini;
 	spath_avesp_gini_undirect_unweight_Net(net, &avesp, &gini);
 	free_Net(net);

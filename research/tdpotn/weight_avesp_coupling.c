@@ -43,8 +43,8 @@ int main (int argc, char **argv) {
 		weight[i] = 1.0;
 	}
 	baself->d1 = weight;
-	struct Net *base = create_weighted_Net(baself, baself->d1);
-	check_duplicatepairs_Net(base);
+	struct Net *base = create_weighted_Net(baself);
+	set_status_duplicatepairs_Net(base);
 	if (base->duplicatepairsStatus == NS_DUPPAIRS) {
 		isError("the net has some duplicate pairs, please make the net clean");
 	}
@@ -55,7 +55,7 @@ int main (int argc, char **argv) {
 		double alpha = kk * 0.1;
 
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
-		struct Net *air = create_weighted_Net(airlf, airlf->d1);
+		struct Net *air = create_weighted_Net(airlf);
 		printlp("air: Max: %d, Min: %d, idNum: %d, edgesNum: %d\n", \
 				air->maxId, air->minId, air->idNum, air->edgesNum);
 		if (air->degreeMax.sign == NS_VALID) printlp("degreMax: %d\n", air->degreeMax.value);

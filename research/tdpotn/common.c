@@ -47,17 +47,17 @@ struct LineFile * tdpotn_lf(int D_12, int N) {
 	return file;
 }
 
-static void tdpotn_get_all_degree(vertex_t *sp, vertex_t N, vertex_t **alld, vertex_t *alldNum, double **p_alld, double alpha) {
+static void tdpotn_get_all_degree(int *sp, int N, int **alld, int *alldNum, double **p_alld, double alpha) {
 	printsfb();
-	vertex_t *ddis = calloc(N, sizeof(vertex_t));
+	int *ddis = calloc(N, sizeof(int));
 
-	vertex_t i;
+	int i;
 	for (i=0; i<N; ++i) {
 		if (sp[i] > 0) {
 			ddis[sp[i]]++;
 		}
 	}
-	*alld = malloc(N*sizeof(vertex_t));
+	*alld = malloc(N*sizeof(int));
 	*alldNum = 0;
 	for (i=2; i<N; ++i) {
 		if (ddis[i]) {
@@ -89,32 +89,32 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 
 	//the point 0 can get all kinds of degree in both cycle or non_cycle net.
 	if (net->connectnessStatus == NS_NOTSURE) {
-		check_connectness_Net(net);
+		set_status_connectness_Net(net);
 	}
 	if (net->connectnessStatus == NS_NON_CNNTNESS) {
 		isError("for tdpotn, net should be fully connected");
 	}
-	vertex_t *sp = spath_1A_undirect_unweight_Net(net, 0);
-	vertex_t *alld, alldNum; double *p_alld;
+	int *sp = spath_1A_undirect_unweight_Net(net, 0);
+	int *alld, alldNum; double *p_alld;
 	tdpotn_get_all_degree(sp, net->maxId + 1, &alld, &alldNum, &p_alld, alpha);
 	free(sp);
 
-	vertex_t N = net->maxId + 1;
+	int N = net->maxId + 1;
 	double limit = (double)N*limitN;
 
-	vertex_t *id1 = malloc(limitN*N*sizeof(vertex_t));
-	vertex_t *id2 = malloc(limitN*N*sizeof(vertex_t));
+	int *id1 = malloc(limitN*N*sizeof(int));
+	int *id2 = malloc(limitN*N*sizeof(int));
 	double *weight = malloc(limitN*N*sizeof(double));
-	vertex_t *hash1 = calloc((net->maxId + 1)*3, sizeof(vertex_t));
-	vertex_t *hash2 = calloc((net->maxId + 1)*2, sizeof(vertex_t));
-	vertex_t *hash3 = calloc((net->maxId + 1)*3, sizeof(vertex_t));
-	vertex_t idNum = 0;
+	int *hash1 = calloc((net->maxId + 1)*3, sizeof(int));
+	int *hash2 = calloc((net->maxId + 1)*2, sizeof(int));
+	int *hash3 = calloc((net->maxId + 1)*3, sizeof(int));
+	int idNum = 0;
 	int badluck = 0;
 	double totalL = 0;
 	while (1) {
 		double chooseSPL = get_d_MTPR();
-		vertex_t splength = 0;
-		vertex_t i;
+		int splength = 0;
+		int i;
 		for (i=0; i<alldNum; ++i) {
 			if (p_alld[i] > chooseSPL) {
 				splength = alld[i];
@@ -126,15 +126,15 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 		if (tmp > limit) {
 			break;
 		}
-		vertex_t i1 = get_i31_MTPR()%(net->maxId + 1);
-		vertex_t lNum;
-		vertex_t *left=NULL;
+		int i1 = get_i31_MTPR()%(net->maxId + 1);
+		int lNum;
+		int *left=NULL;
 		spath_1A_step_undirect_unweight_Net(net, i1, splength, &lNum, &left);
 		if (lNum > 0) {
-			vertex_t random = get_i31_MTPR()%lNum;
-			vertex_t i2 = left[random];
-			vertex_t min = i1<i2?i1:i2;
-			vertex_t max = i1>i2?i1:i2;
+			int random = get_i31_MTPR()%lNum;
+			int i2 = left[random];
+			int min = i1<i2?i1:i2;
+			int max = i1>i2?i1:i2;
 			if (hash1[min + 2*max] && hash2[min + max] && hash3[min*2 + max]) {
 				printlp("not lucky, drop on same positon. try again.\n");
 				badluck ++;

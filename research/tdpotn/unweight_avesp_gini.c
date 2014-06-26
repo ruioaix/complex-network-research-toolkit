@@ -43,9 +43,8 @@ int main (int argc, char **argv) {
 		weight[i] = 0.0;
 	}
 	baself->d1 = weight;
-	struct Net *base = create_weighted_Net(baself, baself->d1);
-	base->weightStatus = NS_UNWEIGHTED;
-	check_duplicatepairs_Net(base);
+	struct Net *base = create_weighted_Net(baself);
+	set_status_duplicatepairs_Net(base);
 	if (base->duplicatepairsStatus == NS_DUPPAIRS) {
 		isError("the net has some duplicate pairs, please make the net clean");
 	}
@@ -60,9 +59,9 @@ int main (int argc, char **argv) {
 		}
 		struct LineFile *lf = add_LineFile(airlf, baself);
 		free_LineFile(airlf);
-		struct Net *net = create_weighted_Net(lf, lf->d1);
+		struct Net *net = create_weighted_Net(lf);
 		free_LineFile(lf);
-		set_edgesMatrix_Net(net);
+		set_option_edgesMatrix_Net(net);
 		double avesp, gini;
 		spath_avesp_gini_undirect_unweight_Net(net, &avesp, &gini);
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
@@ -71,7 +70,6 @@ int main (int argc, char **argv) {
 	}
 
 	free_LineFile(baself);
-	base->weightStatus = NS_WEIGHTED;
 	free_Net(base);
 	print_time();
 	return 0;
