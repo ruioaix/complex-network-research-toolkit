@@ -56,26 +56,30 @@ struct netOption_ipp{
  */
 struct Net{
 	//the number of vertices.
-	int idNum;
+	int idNum; //essential
 	//the maximum and minimum id of the vertices.
 	//the scope of ids is [0, ∞), but the minId doesn't have to be 0.
 	//"maxId - minId + 1" doen't have to be "idNum", hole is acceptable.
-	int maxId;
-	int minId;
+	int maxId; //essential
+	int minId; //essential
 	//the number of edges.
-	long edgesNum;
+	long edgesNum; //essential
 	//degree[11] means the degree of the vertex whose id is 11.
-	int *degree;
+	int *degree; //essential
+	//indegree maybe NULL even in a directed net, it's not essential
 	int *indegree;
 	//edges[23][2] means the id of the third neighbour of the vertex whose id is 23.
 	//edges[23] doesn't have to be a sorted array.
-	int **edges;
+	int **edges; //essential
+	//inedges maybe NULL even in a directed net, it's not essential
 	int **inedges;
 	//same structure to edges.
+	//the values are got from d1 of LineFile.
 	double **weight;
 	double **inweight;
 	//same structure to edges.
-	//this will not be used often, but an edge has some extra attribute. this is the place storing that.
+	//this will not be used often, but when an edge has some extra attribute, this is the place storing that.
+	//the values are got from d2 of LineFile.
 	double **edgesAttr;
 	double **inedgesAttr;
 	
