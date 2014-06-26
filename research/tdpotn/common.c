@@ -147,7 +147,6 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 			hash1[min + 2*max] = 1;
 			hash2[min + max] = 1;
 			hash3[min*2 + max] = 1;
-			//printf("%.4f%%\r", (double)totalL*100/limit);
 			id1[idNum] = i1;
 			id2[idNum] = i2;
 			weight[idNum] = pow(splength, lambda);

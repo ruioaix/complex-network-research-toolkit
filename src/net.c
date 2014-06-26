@@ -117,7 +117,7 @@ static struct Net *create_Net_init(long edgesNum, \
 
 static void create_Net_basic_lf_check(struct LineFile *lf) {
 	if (lf->i1 == NULL || lf->i2 == NULL || lf->linesNum < 1) {
-		isError("%s =>> i1 or/and i2 is NULL, or/and linesNum is 0.\n", __func__);
+		isError("i1 or/and i2 is NULL, or/and linesNum is 0.\n");
 	}
 }
 

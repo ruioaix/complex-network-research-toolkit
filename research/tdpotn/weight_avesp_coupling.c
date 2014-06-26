@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
 	}
 	free_LineFile(baself);
 
-	int kk=0;
+	int kk;
 	for (kk = 0; kk < 41; ++kk) {
 		double alpha = kk * 0.1;
 
