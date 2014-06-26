@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 	double q;
 	int algorithm_type, pairsNum;
 	robust_argc_argv(argc, argv, &es, &N, &seed, &MM0, &kor, &q, &algorithm_type, &pairsNum);
-	printm("%s =>> nodes Num: %d, random seed: %d, MM0: %d, q: %f, coupNum: %d.\n", __func__, N, seed, MM0, q, coupNum);
+	printm("%s =>> nodes Num: %d, random seed: %d, MM0: %d, q: %f, pairsNum: %d.\n", __func__, N, seed, MM0, q, pairsNum);
 	/********************************************************************************************************/
 
 	/***************create net & cplk.***************************************/

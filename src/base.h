@@ -25,7 +25,7 @@
 //if VERBOSE_LEVEL == 5, printsf will output, too.
 //if VERBOSE_LEVEL == 6, printlp will output, too.
 //if VERBOSE_LEVEL == 0, all printxxx stop output.
-#define VERBOSE_LEVEL 0
+#define VERBOSE_LEVEL 6
 #define printm(format, ...) ((void)0)
 #define printgfb(format, ...) ((void)0)
 #define printgfe(format, ...) ((void)0)
@@ -100,9 +100,9 @@ void print_label(int i);
 #include <stdio.h> //for FILE, perror, fprintf, stderr
 void iserror(char *format, ...);
 #define isError(format, ...) do {\
-		fprintf(stderr, "[ERROR]:\n\t%s ==> ", __func__);\
+		fprintf(stderr, "[ERROR]:\n\tfile: \"%s\", line: %d.\n\t%s =>> ", \
+				__FILE__, __LINE__, __func__);\
 		iserror(format, ##__VA_ARGS__);\
-		fprintf(stderr, "\n");\
 } while(0)
 /********************************************************************************************************/
 

@@ -664,9 +664,6 @@ void set_option_edgesMatrix_Net(struct Net *net) {
 
 void set_status_connectness_Net(struct Net *net) {
 	printgfb();
-	if (net->weight != NULL || net->directStatus == NS_DIRECTED) {
-		isError("now, this function can only handle nets which are unweighted and undirected.");
-	}
 	int i;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		if (net->degree[i] != 0) {
@@ -688,9 +685,6 @@ void set_status_connectness_Net(struct Net *net) {
 
 void set_status_duplicatepairs_Net(struct Net *net) {
 	printgfb();
-	if (net->weight != NULL || net->directStatus == NS_DIRECTED) {
-		isError("now, this function can only handle nets which are unweighted and undirected.");
-	}
 	int i,j,k;
 	int *place = malloc((net->maxId+1)*sizeof(int));
 	for (k=0; k<net->maxId + 1; ++k) {

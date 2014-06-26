@@ -130,9 +130,11 @@ struct Net *create_directed_weighted_Net(struct LineFile * file);
 //generate the Matrix according to edges element.
 //may be there will be a inedgesMatrix element later.
 void set_option_edgesMatrix_Net(struct Net *net);
-//for undirected, unweighted.
+//test duplicatepairs only according to edges element.
 void set_status_connectness_Net(struct Net *net);
-//for undirected, unweighted.
+//test duplicatepairs only according to edges element.
+//if there is no duplicatepairs in edges element, then no duplicatepairs
+//in the entire net.
 void set_status_duplicatepairs_Net(struct Net *net);
 
 /*
