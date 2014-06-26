@@ -21,7 +21,7 @@ void free_Net(struct Net *net) {
 		free(net->edges[i]);
 	}
 	free(net->edges);
-	if (net->directStatus == NS_DIRECTED) {
+	if (net->inedges != NULL) {
 		for(i=0; i<net->maxId+1; ++i) {
 			free(net->inedges[i]);
 		}
@@ -29,12 +29,12 @@ void free_Net(struct Net *net) {
 	}
 	
 	//free weight
-	if (weight != NULL) {
+	if (net->weight != NULL) {
 		for(i=0; i<net->maxId+1; ++i) {
 			free(net->weight[i]);
 		}
 		free(net->weight);
-		if (net->directStatus == NS_DIRECTED) {
+		if (net->inweight != NULL) {
 			for(i=0; i<net->maxId+1; ++i) {
 				free(net->inweight[i]);
 			}
@@ -43,48 +43,46 @@ void free_Net(struct Net *net) {
 	}
 
 	//free edgesAttr
-	if (net->weightStatus == NS_WEIGHTED) {
+	if (net->edgesAttr != NULL) {
 		for(i=0; i<net->maxId+1; ++i) {
-			free(net->weight[i]);
+			free(net->edgesAttr[i]);
 		}
-		free(net->weight);
-		if (net->directStatus == NS_DIRECTED) {
+		free(net->edgesAttr);
+		if (net->inedgesAttr != NULL) {
 			for(i=0; i<net->maxId+1; ++i) {
-				free(net->inweight[i]);
+				free(net->inedgesAttr[i]);
 			}
-			free(net->inweight);
+			free(net->inedgesAttr);
 		}
 	}
 
 	//free edgesMatrix
 	if (net->edgesMatrix.sign == NS_VALID) {
 		free(net->edgesMatrix.pp[0]);
-		net->edgesMatrix.pp[0] = NULL;
 		free(net->edgesMatrix.pp);
-		net->edgesMatrix.pp = NULL;
 	}
 
 	//free net
-	free(net); net = NULL;
+	free(net); 
+	net = NULL;
 	printgfe();
 }
 
-static struct Net *create_Net_init(edge_t edgesNum, \
+static struct Net *create_Net_init(long edgesNum, \
 		int maxId, int minId, int idNum, \
-		edge_t *degree, edge_t *indegree, \
+		int *degree, int *indegree, \
 		int **edges, int **inedges, \
 		double **weight, double **inweight, \
-		enum NET_STATUS dmax, edge_t degreeMax, \
-		enum NET_STATUS dmin, edge_t degreeMin, \
-		enum NET_STATUS idmax, edge_t indegreeMax, \
-		enum NET_STATUS idmin, edge_t indegreeMin, \
+		double **edgesAttr, double **inedgesAttr, \
+		enum NET_STATUS dmax, int degreeMax, \
+		enum NET_STATUS dmin, int degreeMin, \
+		enum NET_STATUS idmax, int indegreeMax, \
+		enum NET_STATUS idmin, int indegreeMin, \
 		enum NET_STATUS directStatus, \
-		enum NET_STATUS weightStatus, \
 		enum NET_STATUS connectnessStatus, \
 		enum NET_STATUS duplicatepairsStatus) 
 { 
-	struct Net *net = malloc(sizeof(struct Net));
-	assert(net != NULL);
+	struct Net *net = smalloc(sizeof(struct Net));
 	net->edgesNum=edgesNum;
 	net->maxId=maxId;
 	net->minId=minId;
@@ -95,6 +93,8 @@ static struct Net *create_Net_init(edge_t edgesNum, \
 	net->inedges = inedges;
 	net->weight = weight;
 	net->inweight = inweight;
+	net->edgesAttr = edgesAttr;
+	net->inedgesAttr = inedgesAttr;
 
 	net->degreeMax.sign = dmax;
 	net->degreeMax.value = degreeMax;
@@ -108,7 +108,6 @@ static struct Net *create_Net_init(edge_t edgesNum, \
 	net->avesp.sign = NS_NON_VALID;
 
 	net->directStatus = directStatus;
-	net->weightStatus = weightStatus;
 	net->connectnessStatus = connectnessStatus;
 	net->duplicatepairsStatus = duplicatepairsStatus;
 
@@ -117,7 +116,7 @@ static struct Net *create_Net_init(edge_t edgesNum, \
 }
 
 static void create_Net_basic_lf_check(struct LineFile *lf) {
-	if (lf->i1 == NULL || lf->i2 == NULL || lf->linesNum == 0) {
+	if (lf->i1 == NULL || lf->i2 == NULL || lf->linesNum < 1) {
 		isError("%s =>> i1 or/and i2 is NULL, or/and linesNum is 0.\n", __func__);
 	}
 }
@@ -126,7 +125,7 @@ static void create_Net_maxId_minId(struct LineFile *lf, \
 		int *maxId, int *minId) {
 	*maxId = lf->i1[0];
 	*minId = lf->i1[0];
-	edge_t i;
+	long i;
 	for(i=0; i<lf->linesNum; ++i) {
 		*maxId = *maxId > lf->i1[i] ? *maxId : lf->i1[i];	
 		*maxId = *maxId > lf->i2[i] ? *maxId : lf->i2[i];	
@@ -136,10 +135,10 @@ static void create_Net_maxId_minId(struct LineFile *lf, \
 }
 
 static void create_Net_undirect_degree_idNum(struct LineFile *lf, int maxId, \
-		edge_t **degree, int *idNum) {
-	*degree=calloc(maxId+1, sizeof(edge_t)); assert(degree!=NULL);
+		int **degree, int *idNum) {
+	*degree=calloc(maxId+1, sizeof(int)); assert(degree!=NULL);
 
-	edge_t i;
+	long i;
 	for(i=0; i<lf->linesNum; ++i) {
 		++(*degree)[lf->i1[i]];
 		++(*degree)[lf->i2[i]];
@@ -154,11 +153,11 @@ static void create_Net_undirect_degree_idNum(struct LineFile *lf, int maxId, \
 }
 
 static void create_Net_direct_degree_idNum(struct LineFile *lf, int maxId, \
-		edge_t **degree, edge_t **indegree ,int *idNum) {
-	*degree=calloc(maxId+1, sizeof(edge_t)); assert(degree!=NULL);
-	*indegree=calloc(maxId+1, sizeof(edge_t)); assert(indegree!=NULL);
+		int **degree, int **indegree ,int *idNum) {
+	*degree=calloc(maxId+1, sizeof(int)); assert(degree!=NULL);
+	*indegree=calloc(maxId+1, sizeof(int)); assert(indegree!=NULL);
 
-	edge_t i;
+	long i;
 	for(i=0; i<lf->linesNum; ++i) {
 		++(*degree)[lf->i1[i]];
 		++(*indegree)[lf->i2[i]];
@@ -172,26 +171,26 @@ static void create_Net_direct_degree_idNum(struct LineFile *lf, int maxId, \
 	}
 }
 
-static void create_Net_directed_edges_weight(struct LineFile *lf, int maxId, edge_t *degree, edge_t *indegree, double *wgt, \
+static void create_Net_directed_edges_weight(struct LineFile *lf, int maxId, int *degree, int *indegree, double *wgt, \
 		int ***edges, int ***inedges, \
 		double ***weight, double ***inweight, \
-		edge_t *degreeMax, edge_t *degreeMin, edge_t *indegreeMax, edge_t *indegreeMin) {
-	*edges=malloc((maxId+1)*sizeof(int *)); assert(*edges!=NULL);
-	*inedges=malloc((maxId+1)*sizeof(int *)); assert(*inedges!=NULL);
+		int *degreeMax, int *degreeMin, int *indegreeMax, int *indegreeMin) {
+	*edges=smalloc((maxId+1)*sizeof(int *));
+	*inedges=smalloc((maxId+1)*sizeof(int *));
 	if (wgt != NULL) {
-		*weight = malloc((maxId+1)*sizeof(double *)); assert(*weight!=NULL);
-		*inweight = malloc((maxId+1)*sizeof(double *)); assert(*inweight!=NULL);
+		*weight = smalloc((maxId+1)*sizeof(double *));
+		*inweight = smalloc((maxId+1)*sizeof(double *));
 	}
 	int i;
-	edge_t dmi=EDGE_T_MAX, idmi=EDGE_T_MAX; 
-	edge_t dma=0, idma=0;
+	int dmi=INT_MAX, idmi=INT_MAX; 
+	int dma=0, idma=0;
 	for(i=0; i<maxId+1; ++i) {
 		if (degree[i]!=0) {
 			dma = dma > degree[i] ? dma : degree[i];
 			dmi = dmi < degree[i] ? dmi : degree[i];
-			(*edges)[i]=malloc(degree[i]*sizeof(int)); assert((*edges)[i]!=NULL);
+			(*edges)[i]=smalloc(degree[i]*sizeof(int));
 			if (wgt != NULL) {
-				(*weight)[i]=malloc(degree[i]*sizeof(double)); assert((*weight)[i]!=NULL);
+				(*weight)[i]=smalloc(degree[i]*sizeof(double));
 			}
 		}
 		else {
@@ -204,9 +203,9 @@ static void create_Net_directed_edges_weight(struct LineFile *lf, int maxId, edg
 		if (indegree[i]!=0) {
 			idma = idma > indegree[i] ? idma : indegree[i];
 			idmi = idmi < indegree[i] ? idmi : indegree[i];
-			(*inedges)[i]=malloc(indegree[i]*sizeof(int)); assert((*inedges)[i]!=NULL);
+			(*inedges)[i]=smalloc(indegree[i]*sizeof(int));
 			if (wgt != NULL) {
-				(*inweight)[i]=malloc(indegree[i]*sizeof(double)); assert((*inweight)[i]!=NULL);
+				(*inweight)[i]=smalloc(indegree[i]*sizeof(double));
 			}
 		}
 		else {
@@ -221,9 +220,9 @@ static void create_Net_directed_edges_weight(struct LineFile *lf, int maxId, edg
 	*indegreeMax = idma;
 	*indegreeMin = idmi;
 
-	edge_t *out_count=calloc(maxId+1, sizeof(edge_t)); assert(out_count!=NULL);
-	edge_t *in_count=calloc(maxId+1, sizeof(edge_t)); assert(in_count!=NULL);
-	edge_t j;
+	int *out_count=scalloc(maxId+1, sizeof(int));
+	int *in_count=scalloc(maxId+1, sizeof(int));
+	long j;
 	for(j=0; j<lf->linesNum; ++j) {
 		int i1 =lf->i1[j];
 		int i2 =lf->i2[j];
@@ -241,22 +240,22 @@ static void create_Net_directed_edges_weight(struct LineFile *lf, int maxId, edg
 	free(in_count);
 }
 
-static void create_Net_undirected_edges_weight(struct LineFile *lf, int maxId, edge_t *degree, double *wgt, \
-		int ***edges, double ***weight, edge_t *degreeMax, edge_t *degreeMin) {
-	*edges=malloc((maxId+1)*sizeof(int *)); assert(*edges!=NULL);
+static void create_Net_undirected_edges_weight(struct LineFile *lf, int maxId, int *degree, double *wgt, \
+		int ***edges, double ***weight, int *degreeMax, int *degreeMin) {
+	*edges=smalloc((maxId+1)*sizeof(int *));
 	if (wgt != NULL) {
-		*weight=malloc((maxId+1)*sizeof(double *)); assert(*weight!=NULL);
+		*weight=smalloc((maxId+1)*sizeof(double *));
 	}
 	int i;
-	edge_t dmi=EDGE_T_MAX;
-	edge_t dma=0;
+	int dmi=INT_MAX;
+	int dma=0;
 	for(i=0; i<maxId+1; ++i) {
 		if (degree[i]!=0) {
 			dma = dma > degree[i] ? dma : degree[i];
 			dmi = dmi < degree[i] ? dmi : degree[i];
-			(*edges)[i]=malloc(degree[i]*sizeof(int)); assert((*edges)[i]!=NULL);
+			(*edges)[i]=smalloc(degree[i]*sizeof(int));
 			if (wgt != NULL) {
-				(*weight)[i]=malloc(degree[i]*sizeof(double)); assert((*weight)[i]!=NULL);
+				(*weight)[i]=smalloc(degree[i]*sizeof(double));
 			}
 		}
 		else {
@@ -269,8 +268,8 @@ static void create_Net_undirected_edges_weight(struct LineFile *lf, int maxId, e
 	*degreeMax = dma;
 	*degreeMin = dmi;
 
-	edge_t *count=calloc(maxId+1, sizeof(edge_t)); assert(count!=NULL);
-	edge_t j;
+	int *count=scalloc(maxId+1, sizeof(int));
+	long j;
 	for(j=0; j<lf->linesNum; ++j) {
 		int i1 =lf->i1[j];
 		int i2 =lf->i2[j];
@@ -296,11 +295,11 @@ struct Net *create_Net(struct LineFile * lf) {
 	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	int idNum;
-	edge_t *degree;
+	int *degree;
 	create_Net_undirect_degree_idNum(lf, maxId, &degree, &idNum);
 	printgf("get degree, idNum: %d.\n", idNum);
 
-	edge_t degreeMax, degreeMin;
+	int degreeMax, degreeMin;
 	int **edges;
 	create_Net_undirected_edges_weight(lf, maxId, degree, NULL, &edges, NULL, &degreeMax, &degreeMin);
 	printgf("get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", degreeMax, degreeMin);
@@ -310,12 +309,12 @@ struct Net *create_Net(struct LineFile * lf) {
 			degree, NULL, \
 			edges, NULL, \
 			NULL, NULL, \
+			NULL, NULL, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
 			NS_NON_VALID, -1, \
 			NS_NON_VALID, -1, \
 			NS_UNDIRECTED, \
-			NS_UNWEIGHTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 	printgf("return Net.\n");
@@ -332,12 +331,12 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	int idNum;
-	edge_t *degree, *indegree;
+	int *degree, *indegree;
 	create_Net_direct_degree_idNum(lf, maxId, &degree, &indegree, &idNum);
 	printgf("get degree, idNum: %d.\n", idNum);
 
-	edge_t degreeMax, degreeMin;
-	edge_t indegreeMax, indegreeMin;
+	int degreeMax, degreeMin;
+	int indegreeMax, indegreeMin;
 	int **edges, **inedges;
 	create_Net_directed_edges_weight(lf, maxId, degree, indegree, NULL, \
 			&edges, &inedges, NULL, NULL, &degreeMax, &degreeMin, &indegreeMax, &indegreeMin);
@@ -348,12 +347,12 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 			degree, indegree, \
 			edges, inedges, \
 			NULL, NULL, \
+			NULL, NULL, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
 			NS_VALID, indegreeMax, \
 			NS_VALID, indegreeMin, \
 			NS_DIRECTED, \
-			NS_UNWEIGHTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 
@@ -362,21 +361,22 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 	return net;
 }
 
-struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
+struct Net *create_weighted_Net(struct LineFile * lf) {
 	printgfb();
 	create_Net_basic_lf_check(lf);
-	if (wgt == NULL) isError("%s =>> weight is NULL.\n", __func__);
+	if (lf->d1 == NULL) isError("%s =>> weight is NULL.\n", __func__);
+	double *wgt = lf->d1;
 
 	int maxId, minId;
 	create_Net_maxId_minId(lf, &maxId, &minId);
 	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	int idNum;
-	edge_t *degree;
+	int *degree;
 	create_Net_undirect_degree_idNum(lf, maxId, &degree, &idNum);
 	printgf("get degree, idNum: %d.\n", idNum);
 
-	edge_t degreeMax, degreeMin;
+	int degreeMax, degreeMin;
 	int **edges;
 	double **weight;
 	create_Net_undirected_edges_weight(lf, maxId, degree, wgt, &edges, &weight, &degreeMax, &degreeMin);
@@ -387,12 +387,12 @@ struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
 			degree, NULL, \
 			edges, NULL, \
 			weight, NULL, \
+			NULL, NULL, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
 			NS_NON_VALID, -1, \
 			NS_NON_VALID, -1, \
 			NS_UNDIRECTED, \
-			NS_WEIGHTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 	printgf("return Net.\n");
@@ -400,22 +400,23 @@ struct Net *create_weighted_Net(struct LineFile * lf, double *wgt) {
 	return net;
 }
 
-struct Net *create_directed_weighted_Net(struct LineFile * lf, double *wgt) {
+struct Net *create_directed_weighted_Net(struct LineFile * lf) {
 	printgfe();
 	create_Net_basic_lf_check(lf);
-	if (wgt == NULL) isError("%s =>> weight is NULL.\n", __func__);
+	if (lf->d1 == NULL) isError("%s =>> weight is NULL.\n", __func__);
+	double *wgt = lf->d1;
 
 	int maxId, minId;
 	create_Net_maxId_minId(lf, &maxId, &minId);
 	printgf("get maxId: %d, minId: %d\n", maxId, minId);
 
 	int idNum;
-	edge_t *degree, *indegree;
+	int *degree, *indegree;
 	create_Net_direct_degree_idNum(lf, maxId, &degree, &indegree, &idNum);
 	printgf("get degree, idNum: %d.\n", idNum);
 
-	edge_t degreeMax, degreeMin;
-	edge_t indegreeMax, indegreeMin;
+	int degreeMax, degreeMin;
+	int indegreeMax, indegreeMin;
 	int **edges, **inedges;
 	double **weight, **inweight;
 	create_Net_directed_edges_weight(lf, maxId, degree, indegree, wgt, \
@@ -427,12 +428,12 @@ struct Net *create_directed_weighted_Net(struct LineFile * lf, double *wgt) {
 			degree, indegree, \
 			edges, inedges, \
 			weight, inweight, \
+			NULL, NULL, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
 			NS_VALID, indegreeMax, \
 			NS_VALID, indegreeMin, \
 			NS_DIRECTED, \
-			NS_WEIGHTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 	printgf("return Net.\n");
@@ -637,16 +638,16 @@ void verify_fullyConnected_iiNet(struct iiNet *net) {
 }
 */
 
-void set_edgesMatrix_Net(struct Net *net) {
+void set_option_edgesMatrix_Net(struct Net *net) {
 	int maxId = net->maxId;
-	edge_t *em_onetime = scalloc((maxId + 1) * (maxId + 1), sizeof(edge_t));
-	edge_t **em = smalloc((maxId + 1) * sizeof(edge_t *));
+	int *em_onetime = scalloc((maxId + 1) * (maxId + 1), sizeof(int));
+	int **em = smalloc((maxId + 1) * sizeof(int *));
 	int i;
 	em[0] = em_onetime;
 	for (i = 1; i < maxId + 1; ++i) {
 		em[i] = em_onetime + (maxId + 1)*i;
 	}
-	edge_t j;
+	long j;
 	for (j = 0; j < (maxId + 1)*(maxId + 1); ++j) {
 		em_onetime[j] = -1;
 	}
@@ -661,15 +662,18 @@ void set_edgesMatrix_Net(struct Net *net) {
 	net->edgesMatrix.sign = NS_VALID;
 }
 
-void check_connectness_Net(struct Net *net) {
+void set_status_connectness_Net(struct Net *net) {
 	printgfb();
+	if (net->weight != NULL || net->directStatus == NS_DIRECTED) {
+		isError("now, this function can only handle nets which are unweighted and undirected.");
+	}
 	int i;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		if (net->degree[i] != 0) {
 			break;
 		}
 	}
-	edge_t * sp = spath_1A_undirect_unweight_Net(net, i);
+	int * sp = spath_1A_undirect_unweight_Net(net, i);
 	for (i = 0; i < net->maxId + 1; ++i) {
 		if(net->degree[i] != 0 && sp[i] == 0) {
 			net->connectnessStatus = NS_NON_CNNTNESS;
@@ -682,15 +686,17 @@ void check_connectness_Net(struct Net *net) {
 	printgfe();
 }
 
-void check_duplicatepairs_Net(struct Net *net) {
+void set_status_duplicatepairs_Net(struct Net *net) {
 	printgfb();
-	edge_t i;
-	int j,k;
+	if (net->weight != NULL || net->directStatus == NS_DIRECTED) {
+		isError("now, this function can only handle nets which are unweighted and undirected.");
+	}
+	int i,j,k;
 	int *place = malloc((net->maxId+1)*sizeof(int));
 	for (k=0; k<net->maxId + 1; ++k) {
 		place[k] = -1;
 	}
-	edge_t dpairsNum=0;
+	long dpairsNum=0;
 	FILE *fp = NULL;
 	char *tmpdpfile = "/tmp/duplicatepairs";
 	for (j=0; j<net->maxId+1; ++j) {
@@ -704,7 +710,7 @@ void check_duplicatepairs_Net(struct Net *net) {
 					fp = fopen(tmpdpfile, "w");
 					if (fp == NULL)  isError("can not open %s file.\n", tmpdpfile);
 				}
-				fprintf(fp, "duplicate pairs %d:\t%d\t%d\n", ++dpairsNum, j, neigh);
+				fprintf(fp, "duplicate pairs %ld:\t%d\t%d\n", ++dpairsNum, j, neigh);
 			}
 		}
 		for (i = 0; i < net->degree[j]; ++i) {

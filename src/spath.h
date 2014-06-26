@@ -5,8 +5,8 @@
 double *dijkstra_1A_undirected_weighted_Net(struct Net *net, int nid);
 double dijkstra_avesp_undirected_weighted_Net(struct Net *net);
 
-vertex_t *spath_1A_undirect_unweight_Net(struct Net *net, vertex_t originId);
-void spath_1A_step_undirect_unweight_Net(struct Net *net, vertex_t originId, vertex_t step, vertex_t *Num, vertex_t **ret);
+int *spath_1A_undirect_unweight_Net(struct Net *net, int originId);
+void spath_1A_step_undirect_unweight_Net(struct Net *net, int originId, int step, int *Num, int **ret);
 void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp);
 
 void spath_avesp_coupling_undirect_unweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling);
