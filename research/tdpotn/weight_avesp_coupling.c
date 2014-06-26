@@ -7,7 +7,7 @@
 
 /**
  * default: ./tdpotn-weight_avesp_coupling D_12   N    seed limitN theta lambda
- * default: ./tdpotn-weight_avesp_coupling  1    2500   1     5     1.0    0
+ * default: ./tdpotn-weight_avesp_coupling  1    2500   1     5     1.2    0.2
  *
  * D_12 = 1, 1 means 1d, 2 means 2d.
  * N = 50, N is the number of vertices; 
@@ -62,7 +62,8 @@ int main (int argc, char **argv) {
 		if (air->degreeMin.sign == NS_VALID) printlp("degreMin: %d\n", air->degreeMin.value);
 		free_LineFile(airlf);
 		double avesp=0, coupling=0;
-		//spath_avesp_coupling_undirect_unweight_Net(base, air, &avesp, &coupling);
+		//spath_avesp_coupling_undirect_1up_weight_Net(base, air, &avesp, &coupling);
+		spath_avesp_undirect_1upweight_Net(base, air, &avesp);
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_Net(air);

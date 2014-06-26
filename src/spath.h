@@ -12,6 +12,8 @@ void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp);
 void spath_avesp_coupling_undirect_unweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling);
 void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, double *gini);
 
+void spath_avesp_undirect_1upweight_Net(struct Net *base, struct Net *air, double *avesp);
+void spath_avesp_coupling_undirect_1upweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling);
 /*
  * standard shortest path algorithm.
  */

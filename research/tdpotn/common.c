@@ -87,6 +87,9 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	printgfb();
 	if (theta < 0.5) isError("theta should be [0.5, +00)");
 
+	double **weight_tmp = net->weight;
+	net->weight = NULL;
+
 	//the point 0 can get all kinds of degree in both cycle or non_cycle net.
 	if (net->connectnessStatus == NS_NOTSURE) {
 		set_status_connectness_Net(net);
@@ -167,6 +170,7 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	lf->linesNum = idNum;
 	lf->memNum = limitN*N*sizeof(int);
 	lf->filename = "air";
+	net->weight = weight_tmp;
 
 	printgfe();
 	return lf;
