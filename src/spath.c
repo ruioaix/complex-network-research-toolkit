@@ -759,7 +759,7 @@ static void set_spAspall_spath_avesp_gini_undirect_unweight_Net(int *sp, char *s
 		*lNum = *rNum;
 	}
 }
-static void set_netWeight_spath_avesp_gini_undirect_unweight_Net(int source, int *sp, char *stage, int **left, int **right, int *lNum, int *rNum, struct Net *net, double *spall) {
+static void set_edgesAttr_spath_avesp_gini_undirect_unweight_Net(int source, int *sp, char *stage, int **left, int **right, int *lNum, int *rNum, struct Net *net, double *spall) {
 	int i,j,k;
 	*rNum = 0;
 	memset(stage, 0 ,sizeof(char)*(net->maxId + 1));
@@ -767,8 +767,8 @@ static void set_netWeight_spath_avesp_gini_undirect_unweight_Net(int source, int
 		int step = sp[i];
 		double aij = spall[i];
 		if (step == 1) {
-			net->weight[i][net->edgesMatrix.pp[i][source]] += 1;
-			net->weight[source][net->edgesMatrix.pp[source][i]] += 1;
+			net->edgesAttr[i][net->edgesMatrix.pp[i][source]] += 1;
+			net->edgesAttr[source][net->edgesMatrix.pp[source][i]] += 1;
 		}
 		else if (step > 1) {
 			*lNum = 0;
@@ -782,8 +782,8 @@ static void set_netWeight_spath_avesp_gini_undirect_unweight_Net(int source, int
 					for (j=0; j<net->degree[id]; ++j) {
 						int neigh = net->edges[id][j];
 						if (sp[neigh] == step) {
-							net->weight[id][net->edgesMatrix.pp[id][neigh]] += spall[neigh]/aij;
-							net->weight[neigh][net->edgesMatrix.pp[neigh][id]] += spall[neigh]/aij;
+							net->edgesAttr[id][net->edgesMatrix.pp[id][neigh]] += spall[neigh]/aij;
+							net->edgesAttr[neigh][net->edgesMatrix.pp[neigh][id]] += spall[neigh]/aij;
 							if (stage[neigh] == 0) {
 								stage[neigh] = 1;
 								(*right)[(*rNum)++] = neigh;
@@ -804,8 +804,8 @@ static void set_netWeight_spath_avesp_gini_undirect_unweight_Net(int source, int
 			}
 			for (k=0; k<*lNum; ++k) {
 				int id = (*left)[k];
-				net->weight[id][net->edgesMatrix.pp[id][source]] += 1/aij;
-				net->weight[source][net->edgesMatrix.pp[source][id]] += 1/aij;
+				net->edgesAttr[id][net->edgesMatrix.pp[id][source]] += 1/aij;
+				net->edgesAttr[source][net->edgesMatrix.pp[source][id]] += 1/aij;
 			}
 		}
 	}
@@ -819,12 +819,12 @@ static double calculate_gini_spath_avesp_gini_undirect_unweight_Net(struct Net *
 	for (i = 0; i < net->maxId + 1; ++i) {
 		for (j = 0; j < net->degree[i]; ++j) {
 			if (i<net->edges[i][j]) {
-				double x1 = net->weight[i][j];	
+				double x1 = net->edgesAttr[i][j];	
 				total += x1;
 				for (m = 0; m < net->maxId + 1; ++m) {
 					for (n = 0; n < net->degree[m]; ++n) {
 						if (m < net->edges[m][n]) {
-							double x2 = net->weight[m][n];
+							double x2 = net->edgesAttr[m][n];
 							diff += fabs(x1 - x2);
 						}
 					}
@@ -866,7 +866,7 @@ void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, doub
 		for (j = i+1; j < net->maxId + 1; ++j) {
 			*avesp += sp[j];
 		}
-		set_netWeight_spath_avesp_gini_undirect_unweight_Net(i, sp, stage, &left, &right, &lNum, &rNum, net, spall);
+		set_edgesAttr_spath_avesp_gini_undirect_unweight_Net(i, sp, stage, &left, &right, &lNum, &rNum, net, spall);
 	}
 
 	free(left);

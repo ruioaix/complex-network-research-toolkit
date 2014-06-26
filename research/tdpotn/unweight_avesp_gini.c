@@ -37,13 +37,13 @@ int main (int argc, char **argv) {
 	double coupling = -1;
 
 	struct LineFile *baself = tdpotn_lf(D_12, N);
-	double *weight = smalloc(baself->linesNum * sizeof(double));
+	double *edgesAttr = smalloc(baself->linesNum * sizeof(double));
 	long i;
 	for (i = 0; i < baself->linesNum; ++i) {
-		weight[i] = 0.0;
+		edgesAttr[i] = 0.0;
 	}
-	baself->d1 = weight;
-	struct Net *base = create_weighted_Net(baself);
+	baself->d2 = edgesAttr;
+	struct Net *base = create_Net(baself);
 	set_status_duplicatepairs_Net(base);
 	if (base->duplicatepairsStatus == NS_DUPPAIRS) {
 		isError("the net has some duplicate pairs, please make the net clean");
@@ -57,9 +57,11 @@ int main (int argc, char **argv) {
 		for (i = 0; i < airlf->linesNum; ++i) {
 			airlf->d1[i] = 0.0;
 		}
+		airlf->d2 = airlf->d1;
+		airlf->d1 = NULL;
 		struct LineFile *lf = add_LineFile(airlf, baself);
 		free_LineFile(airlf);
-		struct Net *net = create_weighted_Net(lf);
+		struct Net *net = create_Net(lf);
 		free_LineFile(lf);
 		set_option_edgesMatrix_Net(net);
 		double avesp, gini;
