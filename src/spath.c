@@ -489,7 +489,6 @@ static void core_spath_avesp_coupling_undirect_1upweight_Net(double *sp, signed 
 	int i;
 	int j;
 	int STEP = 1;
-	int kt = 0;
 	while (*lNum) {
 		++STEP;
 		*rNum = 0;
@@ -546,14 +545,16 @@ static void core_spath_avesp_coupling_undirect_1upweight_Net(double *sp, signed 
 		*lNum = *rNum;
 		for (i = 0; i < *lNum; ++i) {
 			int id = (*left)[i];
+			int s = 0;
 			for (j = 0; j < base->degree[id]; ++j) {
 				int neigh = base->edges[id][j];
 				if (gs[neigh]==1 && fabs(sp[id] - sp[neigh] - base->weight[id][j]) < ES) {
 					spb[id] += spb[neigh];
 					spab[id] += spa[neigh] + spab[neigh];
+					s = 1;
 				}
-				else if (gs[neigh]==-1 && fabs(sp[id] - sp[neigh] - base->weight[id][j]) < ES) {
-					spb[id]++;
+				else if (gs[neigh]==-1) {
+					isError("should not arrive here.");
 				}
 			}
 			if (id < air->maxId + 1) {
@@ -562,13 +563,27 @@ static void core_spath_avesp_coupling_undirect_1upweight_Net(double *sp, signed 
 					if (gs[neigh]==1 && fabs(sp[id] - sp[neigh] - air->weight[id][j]) < ES) {
 						spa[id] += spa[neigh];
 						spab[id] += spb[neigh] + spab[neigh];
+						s=1;
 					}
-					else if (gs[neigh]==-1 && fabs(sp[id] - sp[neigh] - base->weight[id][j]) < ES) {
+					else if (gs[neigh]==-1 && fabs(sp[id] - air->weight[id][j]) < ES) {
 						spa[id]++;
+						s=1;
 					}
 				}
 			}
-			kt++;
+			if (s == 0) {
+				isError("should not arrive here. s = 0");
+				//for (j = 0; j < base->degree[id]; ++j) {
+				//	int neigh = base->edges[id][j];
+				//	printf("b: %d\t%d\t%f\n", id, neigh, sp[id]-sp[neigh]-base->weight[id][j]);
+				//}
+				//if (id < air->maxId + 1) {
+				//	for (j = 0; j < air->degree[id]; ++j) {
+				//		int neigh = air->edges[id][j];
+				//		printf("a: %d\t%d\t%f\n", id, neigh, sp[id]-sp[neigh]-air->weight[id][j]);
+				//	}
+				//}
+			}
 		}
 	}
 }

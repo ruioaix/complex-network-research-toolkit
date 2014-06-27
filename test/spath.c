@@ -162,7 +162,7 @@ START_TEST (test_spath_avesp_undirect_1upweight_Net)
 	int i;
 	for (i = 0; i < 10; ++i) {
 		D_12 = get_i31_MTPR()%2 + 1; 
-		int L = get_i31_MTPR()%50;
+		int L = 5+get_i31_MTPR()%30;
 		N = L*L;
 		test_spath_avesp_undirect_1upweight_Net_core(D_12, N, &avesp, &avesp_dj);
 		printf("avesp: %f, avesp_dj: %f\n", avesp, avesp_dj);
