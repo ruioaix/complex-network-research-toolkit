@@ -109,7 +109,6 @@ double dijkstra_avesp_undirected_weighted_Net(struct Net *net) {
 
 		for (i = j+1; i < net->maxId + 1; ++i) {
 			avesp += sp[i];
-			//printf("%d-%d: %f\n", j, i, sp[i]);
 		}
 	}
 
@@ -455,9 +454,7 @@ void spath_avesp_undirect_1upweight_Net(struct Net *base, struct Net *air, doubl
 		}
 		core_spath_avesp_undirect_1upweight_Net(sp, gs, upCSlist, ups, upCSlistNum, &left, &right, &lNum, &rNum, base, air);
 		for (j = i+1; j < base->maxId + 1; ++j) {
-			//printf("gs:%d\t%d\t%f\n", j, gs[j],sp[j]);
 			*avesp += sp[j];
-			//printf("%d-%d: %f\n", i, j, sp[j]);
 		}
 		//exit(0);
 	}
@@ -468,6 +465,185 @@ void spath_avesp_undirect_1upweight_Net(struct Net *base, struct Net *air, doubl
 	double ij = (double)(base->maxId + 1)*base->maxId/2;
 	*avesp /= ij;
 }
+/********************************************************************************************************/
+
+/********************get avesp&coupling of two undirected&1up_weighted net: base and air*****************/
+//the vertices in air is a subset of the vertices in base.
+//this can only handle the net in which the weight of all edges are not less than 1.0, so called 1up.
+//both base and air are requited to satisfy this prerequisite.
+/*
+ * after while && ++STEP && *rNum=0:
+ * 		in left: only have vertices whose sp is [STEP-1, STEP).
+ * 		in right: only have vertices whose sp is [STEP, STEP+1).
+ * 		in CSlist: only have vertices whose sp is [STEP, +00).
+ * 		in left's neighs, if a vertex's gs = 0, then its sp only can be [STEP, +00)
+ * 		when a vertex is put into right, gs will be 1.
+ * 		after looking into left's neight, CSlist may have some values whose gs is 1, should get rid of them.
+ * 		after looking into left's neight, CSlist may have some values whose gs is 0 and sp is [STEP, STEP+1), should 
+ * 		put them into right.
+ *
+ * difficult logic, but should be much faster then dijkstra.
+ */
+#define ES  0.000000000001
+static void core_spath_avesp_coupling_undirect_1upweight_Net(double *sp, signed char *gs, int *upCSlist, signed char *ups, int upCSlistNum, int **left, int **right, int *lNum, int *rNum, struct Net *base, struct Net *air, double *spa, double *spb, double *spab) {
+	int i;
+	int j;
+	int STEP = 1;
+	int kt = 0;
+	while (*lNum) {
+		++STEP;
+		*rNum = 0;
+
+		for (i=0; i<*lNum; ++i) {
+			int id = (*left)[i];
+			for (j=0; j<base->degree[id]; ++j) {
+				int neigh = base->edges[id][j];
+				sp[neigh] = dmin(sp[neigh], sp[id] + base->weight[id][j]);
+				if (sp[neigh] < STEP + 1.0 && gs[neigh] == 0) {
+					gs[neigh] = 1;
+					(*right)[(*rNum)++] = neigh;
+				}
+				else if (sp[neigh] >= STEP + 1.0 && gs[neigh] == 0 && ups[neigh] == 0) {
+					upCSlist[upCSlistNum++] = neigh;
+					ups[neigh] = 1;
+				}
+
+			}
+			if(id < air->maxId + 1) {
+				for (j=0; j<air->degree[id]; ++j) {
+					int neigh = air->edges[id][j];
+					sp[neigh] = dmin(sp[neigh], sp[id] + air->weight[id][j]);
+					if (sp[neigh] < STEP + 1.0 && gs[neigh] == 0) {
+						gs[neigh] = 1;
+						(*right)[(*rNum)++] = neigh;
+					}
+					else if (sp[neigh] >= STEP + 1.0 && gs[neigh] == 0 && ups[neigh] == 0) {
+						upCSlist[upCSlistNum++] = neigh;
+						ups[neigh] = 1;
+					}
+				}
+			}
+		}
+		for (i = 0; i <upCSlistNum; ) {
+			int id = upCSlist[i];
+			if (gs[id] == 1) {
+				ups[id] = 0;
+				upCSlist[i] = upCSlist[--upCSlistNum];
+			}
+			else if(sp[id]<STEP+1) {
+				gs[id] = 1;
+				(*right)[(*rNum)++] = id;
+				upCSlist[i] = upCSlist[--upCSlistNum];
+				ups[id] = 0;
+			}
+			else {
+				++i;
+			}
+		}
+		int *tmp = *left;
+		*left = *right;
+		*right = tmp;
+		*lNum = *rNum;
+		for (i = 0; i < *lNum; ++i) {
+			int id = (*left)[i];
+			for (j = 0; j < base->degree[id]; ++j) {
+				int neigh = base->edges[id][j];
+				if (gs[neigh]==1 && fabs(sp[id] - sp[neigh] - base->weight[id][j]) < ES) {
+					spb[id] += spb[neigh];
+					spab[id] += spa[neigh] + spab[neigh];
+				}
+				else if (gs[neigh]==-1 && fabs(sp[id] - sp[neigh] - base->weight[id][j]) < ES) {
+					spb[id]++;
+				}
+			}
+			if (id < air->maxId + 1) {
+				for (j = 0; j < air->degree[id]; ++j) {
+					int neigh = air->edges[id][j];
+					if (gs[neigh]==1 && fabs(sp[id] - sp[neigh] - air->weight[id][j]) < ES) {
+						spa[id] += spa[neigh];
+						spab[id] += spb[neigh] + spab[neigh];
+					}
+					else if (gs[neigh]==-1 && fabs(sp[id] - sp[neigh] - base->weight[id][j]) < ES) {
+						spa[id]++;
+					}
+				}
+			}
+			kt++;
+		}
+	}
+}
+void spath_avesp_coupling_undirect_1upweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling) {
+	if (base->directStatus != NS_UNDIRECTED || base->weight == NULL) {
+		isError("the base net should be undirected and weighted.");
+	}
+	if (air->directStatus != NS_UNDIRECTED || air->weight == NULL) {
+		isError("the air net should be undirected and weighted.");
+	}
+	double *sp = smalloc((base->maxId + 1)*sizeof(double));
+	double *spa = smalloc((base->maxId + 1) * sizeof(double));
+	double *spb = smalloc((base->maxId + 1) * sizeof(double));
+	double *spab = smalloc((base->maxId + 1) * sizeof(double));
+	int *left = smalloc((base->maxId + 1)*sizeof(int));
+	int *right = smalloc((base->maxId + 1)*sizeof(int));
+	int *upCSlist = smalloc((base->maxId + 1)*sizeof(int));
+	signed char *gs = smalloc((base->maxId + 1) * sizeof(signed char));
+	signed char *ups = scalloc((base->maxId + 1) , sizeof(signed char));
+	int lNum, rNum, upCSlistNum;
+
+	int i,j,k;
+	*avesp = 0;
+	*coupling = 0;
+	for (i=0; i<base->maxId; ++i) {
+		for (j=0; j<base->maxId + 1; ++j) {
+			sp[j] = INT_MAX;
+			gs[j] = 0;
+			spa[j] = 0;
+			spb[j] = 0;
+			spab[j] = 0;
+		}
+		gs[i] = sp[i] = -1;
+		lNum = 0;
+		upCSlistNum = 0;
+		for (k = 0; k < base->degree[i]; ++k) {
+			int to = base->edges[i][k];
+			left[lNum++] = to;
+			sp[to] = 1;
+			gs[to] = 1;
+			spb[to]++;
+		}
+		if (i < air->maxId + 1) {
+			for (k = 0; k < air->degree[i]; ++k) {
+				int to = air->edges[i][k];
+				sp[to] = air->weight[i][k];
+				if (sp[to] < 2.0) {
+					left[lNum++] = to;
+					gs[to] = 1;
+					spa[to]++;
+				}
+				else {
+					upCSlist[upCSlistNum++] = to;
+					ups[to] = 1;
+				}
+			}
+		}
+		core_spath_avesp_coupling_undirect_1upweight_Net(sp, gs, upCSlist, ups, upCSlistNum, &left, &right, &lNum, &rNum, base, air, spa, spb, spab);
+		for (j = i+1; j < base->maxId + 1; ++j) {
+			*avesp += sp[j];
+			*coupling += spab[j]/(spa[j] + spb[j] + spab[j]);
+		}
+	}
+
+	free(left); free(right);
+	free(upCSlist);
+	free(sp); free(gs); free(ups);
+	free(spa); free(spb); free(spab);
+	double ij = (double)(base->maxId + 1)*base->maxId/2;
+	*avesp /= ij;
+	*coupling /= ij;
+}
+/********************************************************************************************************/
+
+
 /*
 
 

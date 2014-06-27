@@ -62,8 +62,8 @@ int main (int argc, char **argv) {
 		if (air->degreeMin.sign == NS_VALID) printlp("degreMin: %d\n", air->degreeMin.value);
 		free_LineFile(airlf);
 		double avesp=0, coupling=0;
-		//spath_avesp_coupling_undirect_1up_weight_Net(base, air, &avesp, &coupling);
-		spath_avesp_undirect_1upweight_Net(base, air, &avesp);
+		spath_avesp_coupling_undirect_1upweight_Net(base, air, &avesp, &coupling);
+		//spath_avesp_undirect_1upweight_Net(base, air, &avesp);
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_Net(air);
