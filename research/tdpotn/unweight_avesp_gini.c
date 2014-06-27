@@ -63,7 +63,6 @@ int main (int argc, char **argv) {
 		free_LineFile(airlf);
 		struct Net *net = create_Net(lf);
 		free_LineFile(lf);
-		set_option_edgesMatrix_Net(net);
 		double avesp, gini;
 		spath_avesp_gini_undirect_unweight_Net(net, &avesp, &gini);
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);

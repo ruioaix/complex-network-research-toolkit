@@ -116,6 +116,7 @@ double dijkstra_avesp_undirected_weighted_Net(struct Net *net) {
 	free(flag);
 	free(asp[0]);
 	free(asp);
+	free(sp);
 	double EE = (double)(net->maxId + 1)*net->maxId/2;
 	return avesp/EE;
 }
@@ -946,7 +947,6 @@ static void set_edgesAttr_spath_avesp_gini_undirect_unweight_Net(int source, int
 		}
 	}
 }
-
 static double calculate_gini_spath_avesp_gini_undirect_unweight_Net(struct Net *net) {
 	int i,j;
 	int m,n;
@@ -974,6 +974,15 @@ static double calculate_gini_spath_avesp_gini_undirect_unweight_Net(struct Net *
 	return G;
 }
 void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, double *gini) {
+	if (net->directStatus == NS_DIRECTED || net->weight != NULL) {
+		isError("net should be undirected and unweight");
+	}
+	if (net->edgesAttr == NULL) {
+		isError("gini calculation need edgesAttr element.");
+	}
+	if (net->edgesMatrix.sign == NS_NON_VALID) {
+		set_option_edgesMatrix_Net(net);
+	}
 	int *sp = smalloc((net->maxId + 1)*sizeof(int));
 	int *left = smalloc((net->maxId + 1)*sizeof(int));
 	int *right = smalloc((net->maxId + 1)*sizeof(int));
