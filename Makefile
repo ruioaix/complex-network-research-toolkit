@@ -1,4 +1,4 @@
-src := src
+lib := lib
 resh := research
 tlkt := toolkit
 checkdir := tests
@@ -7,39 +7,36 @@ resh_sources := $(wildcard $(resh)/*/*.c)
 resh_dirs := $(sort $(dir $(resh_sources)))
 resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 
-#sources := $(filter-out $(resh)/*/common.c,$(resh_sources))
-#sources := $(subst $(resh)/,,$(sources))
-#sources += $(wildcard $(tlkt)/*.c)
-#sources := $(subst .c,,$(sources))
-#sources := $(subst /,-,$(sources))
-
 tdpotn :
 all :
 test :
 
-.PHONY : all clean $(resh) $(tlkt) $(src) $(resh_dirsname) $(checkdir) dist check
+.PHONY : all clean $(resh) $(tlkt) $(lib) $(resh_dirsname) $(checkdir) dist check
 
-all : $(src) $(checkdir) $(tlkt) $(resh) 
+all : $(lib) $(checkdir) $(tlkt) $(resh) 
 
-$(resh) $(tlkt) $(checkdir) : $(src)
+$(resh) $(tlkt) : $(lib)
 	@$(MAKE) -C $@ all
 
-$(resh_dirsname) : $(src)
+$(checkdir) : $(lib) $(resh)
+	@$(MAKE) -C $@ all
+
+$(resh_dirsname) : $(lib)
 	@$(MAKE) -C $(resh) $@
 
-$(src) :
+$(lib) :
 	@$(MAKE) -C $@ all
 
 clean :
-	@$(RM) cnrt.tar.gz *.log
-	@for d in $(src) $(tlkt) $(resh) $(checkdir); \
+	@$(RM) cnrt*.tar.gz *.log
+	@for d in $(lib) $(tlkt) $(resh) $(checkdir); \
 		do \
 		$(MAKE) -C $$d clean; \
 		done
 
-dist : clean
-	tar zcvf cnrt.tar.gz $(src) $(resh) $(tlkt) $(checkdir) Makefile .git
+time = `date +%Y%m%d_%H%M%S`
+dist : 
+	tar zcvf cnrt_$(time).tar.gz $(lib) $(resh) $(tlkt) $(checkdir) Makefile .git
 
 check : $(checkdir)
-	@./test/test
-
+	@./tests/test
