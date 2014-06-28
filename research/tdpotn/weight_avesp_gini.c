@@ -6,8 +6,8 @@
 #include "spath.h"
 
 /**
- * default: ./tdpotn-unweight_avesp_gini D_12   N    seed limitN theta lambda
- * default: ./tdpotn-unweight_avesp_gini  1    2500   1     5     1.2    0
+ * default: ./tdpotn-weight_avesp_gini D_12   N    seed limitN theta lambda
+ * default: ./tdpotn-weight_avesp_gini  1    2500   1     5     1.2    0.2
  *
  * D_12 = 1, 1 means 1d, 2 means 2d.
  * N = 50, N is the number of vertices; 
@@ -23,7 +23,6 @@
  * lambda = 0, this decide the effect of a air edge. 
  * 		if lambda = 0, all air edges's weight is 1, it's the best experience.
  * 		if lambda = 1, all air edges has no advance to base net. it's the worst experience.
- * 		lambda will keep 0 in this program, because net is unweighted.
  */
 int main (int argc, char **argv) {
 
@@ -38,33 +37,36 @@ int main (int argc, char **argv) {
 
 	struct LineFile *baself = tdpotn_lf(D_12, N);
 	double *edgesAttr = smalloc(baself->linesNum * sizeof(double));
+	double *weight = smalloc(baself->linesNum * sizeof(double));
 	long i;
 	for (i = 0; i < baself->linesNum; ++i) {
 		edgesAttr[i] = 0.0;
+		weight[i] = 1.0;
 	}
+	baself->d1 = weight;
 	baself->d2 = edgesAttr;
-	struct Net *base = create_Net(baself);
-	set_status_duplicatepairs_Net(base);
-	if (base->duplicatepairsStatus == NS_DUPPAIRS) {
-		isError("the net has some duplicate pairs, please make the net clean");
-	}
+	struct Net *base = create_weighted_Net(baself);
+	//set_status_duplicatepairs_Net(base);
+	//if (base->duplicatepairsStatus == NS_DUPPAIRS) {
+	//	isError("the net has some duplicate pairs, please make the net clean");
+	//}
 
 	int kk=0;
 	for (kk = 0; kk < 41; ++kk) {
 		double alpha = kk * 0.1;
 
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
+		edgesAttr = smalloc(airlf->linesNum * sizeof(double));
 		for (i = 0; i < airlf->linesNum; ++i) {
-			airlf->d1[i] = 0.0;
+			edgesAttr[i] = 0.0;
 		}
-		airlf->d2 = airlf->d1;
-		airlf->d1 = NULL;
+		airlf->d2 = edgesAttr;
 		struct LineFile *lf = add_LineFile(airlf, baself);
 		free_LineFile(airlf);
-		struct Net *net = create_Net(lf);
+		struct Net *net = create_weighted_Net(lf);
 		free_LineFile(lf);
 		double avesp, gini;
-		spath_avesp_gini_undirect_unweight_Net(net, &avesp, &gini);
+		spath_avesp_gini_undirect_1upweight_Net(net, &avesp, &gini);
 		tdpotn_print(D_12, base->idNum, seed, limitN, theta, lambda, alpha, avesp, coupling, gini);
 
 		free_Net(net);

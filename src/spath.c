@@ -342,7 +342,171 @@ void spath_avesp_coupling_undirect_unweight_Net(struct Net *base, struct Net *ai
 }
 /********************************************************************************************************/
 
-/***********get avesp of two undirected&1up_weighted net: base and air*****************/
+/****************avesp & gini for undirect and unweight net.*********************************************/
+//this spath06 is for unweighted_undirected base and weighted_undirected air network.
+//to find gini of two net: base and air.
+static void set_spAspall_spath_avesp_gini_undirect_unweight_Net(int *sp, char *stage,  int **left, int **right, int *lNum, int *rNum, struct Net *net, double *spall) {
+	int i,j;
+	int STEP = 1;
+	memset(stage, 0 ,sizeof(char)*(net->maxId + 1));
+	while (*lNum) {
+		++STEP;
+		*rNum = 0;
+
+		for (i=0; i<*lNum; ++i) {
+			int id = (*left)[i];
+			for (j=0; j<net->degree[id]; ++j) {
+				int neigh = net->edges[id][j];
+				if (sp[neigh] == 0) {
+					spall[neigh] += spall[id];
+					if (stage[neigh] == 0) {
+						stage[neigh] = 1;
+						(*right)[(*rNum)++] = neigh;
+					}
+				}
+			}
+		}
+		for (j = 0; j < *rNum; ++j) {
+			sp[(*right)[j]] = STEP;
+			stage[(*right)[j]] = 0;
+		}
+		int *tmp = *left;
+		*left = *right;
+		*right = tmp;
+		*lNum = *rNum;
+	}
+}
+static void set_edgesAttr_spath_avesp_gini_undirect_unweight_Net(int source, int *sp, char *stage, int **left, int **right, int *lNum, int *rNum, struct Net *net, double *spall) {
+	int i,j,k;
+	*rNum = 0;
+	memset(stage, 0 ,sizeof(char)*(net->maxId + 1));
+	for (i = 0; i < net->maxId + 1; ++i) {
+		int step = sp[i];
+		double aij = spall[i];
+		if (step == 1) {
+			net->edgesAttr[i][net->edgesMatrix.pp[i][source]] += 1;
+			net->edgesAttr[source][net->edgesMatrix.pp[source][i]] += 1;
+		}
+		else if (step > 1) {
+			*lNum = 0;
+			(*left)[(*lNum)++] = i;
+			while (step != 1) {
+				step--;
+				*rNum = 0;
+
+				for (k=0; k<*lNum; ++k) {
+					int id = (*left)[k];
+					for (j=0; j<net->degree[id]; ++j) {
+						int neigh = net->edges[id][j];
+						if (sp[neigh] == step) {
+							net->edgesAttr[id][net->edgesMatrix.pp[id][neigh]] += spall[neigh]/aij;
+							net->edgesAttr[neigh][net->edgesMatrix.pp[neigh][id]] += spall[neigh]/aij;
+							if (stage[neigh] == 0) {
+								stage[neigh] = 1;
+								(*right)[(*rNum)++] = neigh;
+							}
+						}
+					}
+				}
+
+				for (k = 0; k < *rNum; ++k) {
+					int id = (*right)[k];
+					stage[id] = 0;	
+				}
+
+				int *tmp = *left;
+				*left = *right;
+				*right = tmp;
+				*lNum = *rNum;
+			}
+			for (k=0; k<*lNum; ++k) {
+				int id = (*left)[k];
+				net->edgesAttr[id][net->edgesMatrix.pp[id][source]] += 1/aij;
+				net->edgesAttr[source][net->edgesMatrix.pp[source][id]] += 1/aij;
+			}
+		}
+	}
+}
+static double calculate_gini_spath_avesp_gini_undirect_unweight_Net(struct Net *net) {
+	int i,j;
+	int m,n;
+	double diff = 0.0;
+	double total = 0.0;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		for (j = 0; j < net->degree[i]; ++j) {
+			if (i<net->edges[i][j]) {
+				double x1 = net->edgesAttr[i][j];	
+				total += x1;
+				for (m = 0; m < net->maxId + 1; ++m) {
+					for (n = 0; n < net->degree[m]; ++n) {
+						if (m < net->edges[m][n]) {
+							double x2 = net->edgesAttr[m][n];
+							diff += fabs(x1 - x2);
+						}
+					}
+				}
+			}
+		}
+	}
+	//double Tij=(double)(net->maxId + 1)*net->maxId/2;
+	double E = (double)net->edgesNum;
+	double G = diff/(2*E*total/**Tij*/);
+	return G;
+}
+void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, double *gini) {
+	if (net->directStatus == NS_DIRECTED || net->weight != NULL) {
+		isError("net should be undirected and unweight");
+	}
+	if (net->edgesAttr == NULL) {
+		isError("gini calculation need edgesAttr element.");
+	}
+	if (net->edgesMatrix.sign == NS_NON_VALID) {
+		set_option_edgesMatrix_Net(net);
+	}
+	int *sp = smalloc((net->maxId + 1)*sizeof(int));
+	int *left = smalloc((net->maxId + 1)*sizeof(int));
+	int *right = smalloc((net->maxId + 1)*sizeof(int));
+	double *spall = smalloc((net->maxId + 1) * sizeof(double));
+	char *stage = smalloc((net->maxId + 1) * sizeof(char));
+	int lNum, rNum;
+
+	*avesp = 0;
+	*gini = 0;
+	int i,j;
+	for (i=0; i<net->maxId; ++i) {
+		for (j=0; j<net->maxId + 1; ++j) {
+			sp[j] = 0;
+			spall[j] = 0;
+		}
+		sp[i] = -1;
+		lNum = 0;
+		for (j = 0; j < net->degree[i]; ++j) {
+			int to = net->edges[i][j];
+			left[lNum++] = to;
+			sp[to] = 1;
+			++spall[to];
+		}
+		set_spAspall_spath_avesp_gini_undirect_unweight_Net(sp, stage, &left, &right, &lNum, &rNum, net, spall);
+		for (j = i+1; j < net->maxId + 1; ++j) {
+			*avesp += sp[j];
+		}
+		set_edgesAttr_spath_avesp_gini_undirect_unweight_Net(i, sp, stage, &left, &right, &lNum, &rNum, net, spall);
+	}
+
+	free(left);
+	free(right);
+	free(sp);
+	free(spall);
+	free(stage);
+	*avesp /= (double)(net->maxId + 1)*net->maxId/2;
+	*gini = calculate_gini_spath_avesp_gini_undirect_unweight_Net(net);
+}
+/********************************************************************************************************/
+
+
+
+
+/***********get avesp of two undirected&1up_weighted net *****************/
 //the vertices in air is a subset of the vertices in base.
 //this can only handle the net in which the weight of all edges are not less than 1.0, so called 1up.
 //both base and air are requited to satisfy this prerequisite.
@@ -630,408 +794,14 @@ void spath_avesp_coupling_undirect_1upweight_Net(struct Net *base, struct Net *a
 }
 /********************************************************************************************************/
 
-
-/*
-
-
-//this spath02 is FW algorithm for unweighted and undirected net.
-int **spath02_AA_iiNet(struct iiNet *net) {
-//FILE *fp = fopen("fw", "w");
-int **apsp = malloc((net->maxId + 1)*sizeof(void *));
-int i,j,k;
-for (i=0; i<net->maxId + 1; ++i) {
-apsp[i] = calloc((net->maxId + 1), sizeof(int));
-}
-for (i=0; i<net->maxId + 1; ++i) {
-for (j=0; j<net->count[i]; ++j) {
-int id = net->edges[i][j];
-apsp[i][id] = 1;
-}
-}
-for (i=0; i<net->maxId + 1; ++i) {
-for (j=0; j<net->maxId + 1; ++j) {
-if (!apsp[i][j]) {
-apsp[i][j] = 2*(net->maxId + 1);
-}
-else if (i<j){
-//fprintf(fp, "%d\t%d\t%d\n", i, j, apsp[i][j]);
-}
-if (i==j) {
-apsp[i][j] = 0;
-}
-//fprintf(fp, "%d\t%d\t%d\n", i, j, apsp[i][j]);
-}
-}
-for (k=0; k<net->maxId + 1; ++k) {
-printf("%.2f%%\r", k*100.0/net->maxId);fflush(stdout);
-for (i=0; i<net->maxId + 1; ++i) {
-for (j=0; j<net->maxId + 1; ++j) {
-int havek = apsp[i][k] + apsp[k][j];
-apsp[i][j] = havek < apsp[i][j] ? havek : apsp[i][j];
-}
-}
-//printf("%d\t%d\t%d\n", apsp[7][0], apsp[8][8], apsp[7][8]);
-}
-printf("\n");fflush(stdout);
-return apsp;
-}
-
-#define EPS 0.0000001
-//this spath03 is for unweighted_undirected base and weighted_undirected air network.
-//the weight of each link in air network is >= 1.0.
-static void spath03_core_Net(double *sp, char *gs, int *blist, int *nlist, int bNum, int nNum, int **left, int **right, int *lNum, int *rNum, struct iiNet *net, struct iidNet *air, int *STEP_END) {
-int i,j;
-int STEP = 1;
-while (*lNum && STEP != *STEP_END) {
- *rNum = 0;
- ++STEP;
-
- for (i = 0; i < nNum; ++i) {
- int id = nlist[i];
- if (gs[id] != 3) {
- if (i != nNum - 1) {
- nlist[i] = nlist[--nNum];
- --i;
- }
- else {
- --nNum;
- }
- }
- else if(sp[id] < STEP + 1 - EPS && sp[id] >= STEP) {
- blist[bNum++] = id;
- gs[id] = 2;
- if (i != nNum - 1) {
- nlist[i] = nlist[--nNum];
---i;
-}
-else {
-	--nNum;
-}
-}
-else if (sp[id] >= STEP + 1 - EPS && sp[id] < STEP + 1 ) {
-	gs[id] = 3;
-	sp[id] = STEP + 1;
-}
-else if (sp[id] >= STEP + 1) {
-}
-else {
-	printf("%d\t%f\t%d\n", gs[id], sp[id], STEP);
-	isError("spath03_core_Net nlist");
-}
-}
-
-for (i=0; i<*lNum; ++i) {
-	int id = (*left)[i];
-	for (j=0; j<net->count[id]; ++j) {
-		int neigh = net->edges[id][j];
-		//if gs = 1, neigh is already defined.
-		if (gs[neigh] != 1) {
-			sp[neigh] = dmin(sp[id] + 1, sp[neigh]);
-			if (sp[neigh] == STEP) {
-				(*right)[(*rNum)++] = neigh;
-				gs[neigh] = 1;
-			}
-			else if (sp[neigh] < STEP + 1 && sp[neigh] > STEP) {
-				if (gs[neigh] != 2) {
-					gs[neigh] = 2;
-					blist[bNum++] = neigh;
-				}
-			}
-			else {
-				printf("err: %d\t%.17f\t%.17f\t%d\n", STEP, sp[id], sp[neigh], gs[neigh]);
-				isError("spath03_core_Net, tt");
-			}
-		}
-	}
-	if(id < air->maxId + 1) {
-		for (j=0; j<air->count[id]; ++j) {
-			int neigh = air->edges[id][j];
-			double airl = air->d[id][j];
-			if (gs[neigh] != 1) {
-				sp[neigh] = dmin(sp[id] + airl, sp[neigh]);
-				if (sp[neigh] == STEP) {
-					(*right)[(*rNum)++] = neigh;
-					gs[neigh] = 1;
-				}
-				else if (sp[neigh] < STEP + 1 && sp[neigh] > STEP) {
-					if (gs[neigh] != 2) {
-						gs[neigh] = 2;
-						blist[bNum++] = neigh;
-					}
-				}
-				else if (sp[neigh] >= STEP + 1) {
-					if (gs[neigh] == 0) {
-						nlist[nNum++] = neigh;
-						gs[neigh] = 3;
-					}
-					else if (gs[neigh] == 3) {
-					}
-					else {
-						isError("spath03_core_Net x");
-					}
-				}
-				else {
-					printf("err: %d\t%d\t%d\t%f\n", STEP, id, neigh, sp[neigh]);
-					isError("spath03_core_Net 2");
-				}
-			}
-		}
-	}
-}
-
-for (j = 0; j < bNum; ++j) {
-	int id = blist[j];	
-	if (gs[id] == 2) {
-		(*right)[(*rNum)++] = id;
-		gs[id] = 1;
-	}
-	else if (gs[id] == 1) {
-	}
-	else {
-		printf("err: %d\t%d\t%f\n", gs[id], STEP, sp[id]);
-		isError("spath03_core_Net 3");
-	}
-}
-bNum = 0;
-
-int *tmp = *left;
-*left = *right;
-*right = tmp;
-*lNum = *rNum;
-}
-}
-void avesp_spath03_Net(struct iiNet *net, struct iidNet *air, double *avesp) {
-	double *sp = malloc((net->maxId + 1)*sizeof(double));
-	assert(sp != NULL);
-	int *left = malloc((net->maxId + 1)*sizeof(int));
-	assert(left != NULL);
-	int *right = malloc((net->maxId + 1)*sizeof(int));
-	assert(right != NULL);
-	int lNum, rNum;
-
-	char *gs = malloc((net->maxId + 1)*sizeof(char));
-	int *blist = malloc((net->maxId + 1)*sizeof(int));
-	int *nlist = malloc((net->maxId + 1)*sizeof(int)); int bNum, nNum;
-
-	*avesp = 0;
-	int cc = 0;
-
-	int i,j;
-	int STEP_END = -1;
-	//FILE *fp = fopen("1", "w"); fileError(fp, "get_avesp_Net");
-	for (i=0; i<net->maxId + 1; ++i) {
-		//printf("complete: %.4f%%\r", (double)i*100/(net->maxId + 1));fflush(stdout);
-		for (j=0; j<net->maxId + 1; ++j) {
-			sp[j] = INT_MAX;
-			gs[j] = 0;
-		}
-		sp[i] = -1;
-		gs[i] = 1;
-		bNum = nNum = lNum = 0;
-		for (j = 0; j < net->count[i]; ++j) {
-			int to = net->edges[i][j];
-			left[lNum++] = to;
-			sp[to] = 1.0;
-			gs[to] = 1;
-		}
-		if (i < air->maxId + 1) {
-			for (j = 0; j < air->count[i]; ++j) {
-				int to = air->edges[i][j];
-				double airl = air->d[i][j];
-				if (gs[to] == 0) {
-					if (airl < 2) {
-						sp[to] = airl;
-						gs[to] = 1;
-						left[lNum++] = to;
-					}
-					else {
-						sp[to] = airl;
-						gs[to] = 3;
-						nlist[nNum++] = to;
-					}
-				}
-			}
-		}
-		spath03_core_Net(sp, gs, blist, nlist, bNum, nNum, &left, &right, &lNum, &rNum, net, air, &STEP_END);
-		//int co = 0;
-		//double avess = 0;
-		for (j = 0; j < net->maxId + 1; ++j) {
-			//fprintf(fp, "sp: %d\t%d\t%f\n", i, j, sp[j]);
-			//if (i==0 && sp[j]>0) {
-			//	printf("%d, %f\n", j, sp[j]);
-			//}
-			if (sp[j] > 0) {
-				*avesp += sp[j];
-				++cc;
-				//avess += sp[j];
-				//++co;
-			}
-		}
-		//if (i==0) printf("i: %d, co: %d, ave: %f, avesp: %f\n", i, co, avess, avess/co);
-	}
-	//fclose(fp);
-
-	free(left);
-	free(right);
-	free(sp);
-	free(gs);
-	free(blist);
-	free(nlist);
-	double all = (double)(net->maxId + 1)*net->maxId;
-	*avesp = (*avesp)/all;
-	//printf("check: %d\t%f\n", cc, all);
-}
-
-//this spath04 is for unweighted and undirected net.
-//to find how many shortest pathes use only base or only air or both.
-static void spath04_core_iiNet(int *sp, char *use, int **left, int **right, int *lNum, int *rNum, struct iiNet *net, struct iiNet *air, int *STEP_END) {
-	int i,j;
+/***********get avesp&gini of two undirected&1up_weighted net: net *****************/
+//the vertices in air is a subset of the vertices in base.
+//this can only handle the net in which the weight of all edges are not less than 1.0, so called 1up.
+//both base and air are requited to satisfy this prerequisite.
+static void set_spAspall_spath_avesp_gini_undirect_1upweight_Net(double *sp, double *spall, signed char *gs, int *upCSlist, signed char *ups, int upCSlistNum, int **left, int **right, int *lNum, int *rNum, struct Net *net) {
+	int i;
+	int j;
 	int STEP = 1;
-	while (*lNum && STEP != *STEP_END) {
-		++STEP;
-		*rNum = 0;
-
-		for (i=0; i<*lNum; ++i) {
-			int id = (*left)[i];
-			//printf("id:%d\n", id);
-			for (j=0; j<net->count[id]; ++j) {
-				int neigh = net->edges[id][j];
-				if (!sp[neigh]) {
-					//pn q xiang yu net
-					if (0 == use[id]) {
-						if (-1 == use[neigh]) {
-							use[neigh] = 3;
-						}
-						else if (4 == use[neigh]) {
-							use[neigh] = 2;
-							sp[neigh] = STEP;
-							(*right)[(*rNum)++] = neigh;
-						}
-					}
-					else if (1 == use[id]) {
-						if (-1 == use[neigh]) {
-							use[neigh] = 4;
-						}
-						else if (3 == use[neigh]) {
-							use[neigh] = 2;
-							sp[neigh] = STEP;
-							(*right)[(*rNum)++] = neigh;
-						}
-					}
-					else if (2 == use[id]) {
-						use[neigh] = 2;
-						sp[neigh] = STEP;
-						(*right)[(*rNum)++] = neigh;
-					}
-				}
-			}
-			if(id < air->maxId + 1) {
-				for (j=0; j<air->count[id]; ++j) {
-					int neigh = air->edges[id][j];
-					if (!sp[neigh]) {
-						if (-1 == use[neigh]) {
-							use[neigh] = 4;
-						}
-						else if (3 == use[neigh]) {
-							use[neigh] = 2;
-							sp[neigh] = STEP;
-							(*right)[(*rNum)++] = neigh;
-						}
-					}
-				}
-			}
-		}
-		//static int kk = 0;
-		for (j = 0; j < net->maxId + 1; ++j) {
-			if (3 == use[j] || 4 == use[j]) {
-				use[j] -= 3;
-				sp[j] = STEP;
-				(*right)[(*rNum)++] = j;
-			}
-			//printf("%d\t%d\n", j, use[j]);fflush(stdout);
-		}
-		//printf("******************************************\n");
-		//if (kk++ == 4) exit(0);
-		int *tmp = *left;
-		*left = *right;
-		*right = tmp;
-		*lNum = *rNum;
-	}
-}
-void useRate_spath04_iiNet(struct iiNet *net, struct iiNet *air, double *useRate, double *sameRate, double *cleanRate, double *avesp) {
-	int *sp = malloc((net->maxId + 1)*sizeof(int));
-	assert(sp != NULL);
-	int *left = malloc((net->maxId + 1)*sizeof(int));
-	assert(left != NULL);
-	int *right = malloc((net->maxId + 1)*sizeof(int));
-	assert(right != NULL);
-	char *use = malloc((net->maxId + 1) * sizeof(char));
-	assert(use != NULL);
-	int lNum, rNum;
-
-	int i,j;
-	int STEP_END = -1;
-	*useRate = 0;
-	*sameRate = 0;
-	*cleanRate = 0;
-	*avesp = 0;
-	for (i=0; i<net->maxId + 1; ++i) {
-		//printf("complete: %.4f%%\r", (double)i*100/(net->maxId + 1));fflush(stdout);
-		for (j=0; j<net->maxId + 1; ++j) {
-			sp[j] = 0;
-			use[j] = -1;
-		}
-		sp[i] = -1;
-		lNum = 0;
-		for (j = 0; j < net->count[i]; ++j) {
-			int to = net->edges[i][j];
-			left[lNum++] = to;
-			sp[to] = 1;
-			use[to] = 0;
-		}
-		if (i < air->maxId + 1) {
-			for (j = 0; j < air->count[i]; ++j) {
-				int to = air->edges[i][j];
-				left[lNum++] = to;
-				sp[to] = 1;
-				use[to] = 1;
-			}
-		}
-		spath04_core_iiNet(sp, use, &left, &right, &lNum, &rNum, net, air, &STEP_END);
-		sp[i] = 0;
-		for (j = 0; j < net->maxId + 1; ++j) {
-			if (1 == use[j]) {
-				++(*useRate);
-			}
-			else if (2 == use[j]) {
-				++(*sameRate);
-			}
-			else if (0 == use[j]) {
-				++(*cleanRate);
-			}
-			*avesp += sp[j];
-		}
-	}
-
-	free(left);
-	free(right);
-	free(sp);
-	free(use);
-	double all = (double)(net->maxId + 1)*net->maxId;
-	*useRate /= all;
-	*sameRate /= all;
-	*cleanRate /= all;
-	*avesp /= all;
-}
-
-*/
-
-//this spath06 is for unweighted_undirected base and weighted_undirected air network.
-//to find gini of two net: base and air.
-static void set_spAspall_spath_avesp_gini_undirect_unweight_Net(int *sp, char *stage,  int **left, int **right, int *lNum, int *rNum, struct Net *net, double *spall) {
-	int i,j;
-	int STEP = 1;
-	memset(stage, 0 ,sizeof(char)*(net->maxId + 1));
 	while (*lNum) {
 		++STEP;
 		*rNum = 0;
@@ -1040,77 +810,95 @@ static void set_spAspall_spath_avesp_gini_undirect_unweight_Net(int *sp, char *s
 			int id = (*left)[i];
 			for (j=0; j<net->degree[id]; ++j) {
 				int neigh = net->edges[id][j];
-				if (sp[neigh] == 0) {
-					spall[neigh] += spall[id];
-					if (stage[neigh] == 0) {
-						stage[neigh] = 1;
-						(*right)[(*rNum)++] = neigh;
-					}
+				sp[neigh] = dmin(sp[neigh], sp[id] + net->weight[id][j]);
+				if (sp[neigh] < STEP + 1.0 && gs[neigh] == 0) {
+					gs[neigh] = 1;
+					(*right)[(*rNum)++] = neigh;
+				}
+				else if (sp[neigh] >= STEP + 1.0 && gs[neigh] == 0 && ups[neigh] == 0) {
+					upCSlist[upCSlistNum++] = neigh;
+					ups[neigh] = 1;
 				}
 			}
 		}
-		for (j = 0; j < *rNum; ++j) {
-			sp[(*right)[j]] = STEP;
-			stage[(*right)[j]] = 0;
+		for (i = 0; i <upCSlistNum; ) {
+			int id = upCSlist[i];
+			if (gs[id] == 1) {
+				ups[id] = 0;
+				upCSlist[i] = upCSlist[--upCSlistNum];
+			}
+			else if(sp[id]<STEP+1) {
+				gs[id] = 1;
+				(*right)[(*rNum)++] = id;
+				upCSlist[i] = upCSlist[--upCSlistNum];
+				ups[id] = 0;
+			}
+			else {
+				++i;
+			}
 		}
 		int *tmp = *left;
 		*left = *right;
 		*right = tmp;
 		*lNum = *rNum;
+
+		for (i = 0; i < *lNum; ++i) {
+			int id = (*left)[i];
+			int s = 0;
+			for (j = 0; j < net->degree[id]; ++j) {
+				int neigh = net->edges[id][j];
+				if (gs[neigh]==1 && fabs(sp[id] - sp[neigh] - net->weight[id][j]) < ES) {
+					spall[id] += spall[neigh];
+					s = 1;
+				}
+				else if (gs[neigh]==-1 && fabs(sp[id] - net->weight[id][j]) < ES) {
+					spall[id]++;
+					s=1;
+				}
+			}
+			if (s == 0) {
+				isError("should not arrive here. s = 0");
+			}
+		}
 	}
 }
-static void set_edgesAttr_spath_avesp_gini_undirect_unweight_Net(int source, int *sp, char *stage, int **left, int **right, int *lNum, int *rNum, struct Net *net, double *spall) {
+static void set_edgesAttr_spath_avesp_gini_undirect_1upweight_Net(int source, double *sp, double *spall, signed char *stage, int **left, int **right, int *lNum, int *rNum, struct Net *net) {
 	int i,j,k;
-	*rNum = 0;
-	memset(stage, 0 ,sizeof(char)*(net->maxId + 1));
 	for (i = 0; i < net->maxId + 1; ++i) {
-		int step = sp[i];
+		if (sp[i] < 0.5) continue;
 		double aij = spall[i];
-		if (step == 1) {
-			net->edgesAttr[i][net->edgesMatrix.pp[i][source]] += 1;
-			net->edgesAttr[source][net->edgesMatrix.pp[source][i]] += 1;
-		}
-		else if (step > 1) {
-			*lNum = 0;
-			(*left)[(*lNum)++] = i;
-			while (step != 1) {
-				step--;
-				*rNum = 0;
-
-				for (k=0; k<*lNum; ++k) {
-					int id = (*left)[k];
-					for (j=0; j<net->degree[id]; ++j) {
-						int neigh = net->edges[id][j];
-						if (sp[neigh] == step) {
-							net->edgesAttr[id][net->edgesMatrix.pp[id][neigh]] += spall[neigh]/aij;
-							net->edgesAttr[neigh][net->edgesMatrix.pp[neigh][id]] += spall[neigh]/aij;
-							if (stage[neigh] == 0) {
-								stage[neigh] = 1;
-								(*right)[(*rNum)++] = neigh;
-							}
+		*lNum = 0;
+		(*left)[(*lNum)++] = i;
+		while (*lNum) {
+			*rNum = 0;
+			for (k=0; k<*lNum; ++k) {
+				int id = (*left)[k];
+				for (j=0; j<net->degree[id]; ++j) {
+					int neigh = net->edges[id][j];
+					if (fabs(sp[neigh] + net->weight[id][j] - sp[id]) < ES) {
+						net->edgesAttr[id][net->edgesMatrix.pp[id][neigh]] += spall[neigh]/aij;
+						net->edgesAttr[neigh][net->edgesMatrix.pp[neigh][id]] += spall[neigh]/aij;
+						if (stage[neigh] == 0) {
+							stage[neigh] = 1;
+							(*right)[(*rNum)++] = neigh;
 						}
 					}
 				}
-
-				for (k = 0; k < *rNum; ++k) {
-					int id = (*right)[k];
-					stage[id] = 0;	
-				}
-
-				int *tmp = *left;
-				*left = *right;
-				*right = tmp;
-				*lNum = *rNum;
 			}
-			for (k=0; k<*lNum; ++k) {
-				int id = (*left)[k];
-				net->edgesAttr[id][net->edgesMatrix.pp[id][source]] += 1/aij;
-				net->edgesAttr[source][net->edgesMatrix.pp[source][id]] += 1/aij;
+
+			for (k = 0; k < *rNum; ++k) {
+				int id = (*right)[k];
+				stage[id] = 0;	
 			}
+
+			int *tmp = *left;
+			*left = *right;
+			*right = tmp;
+			*lNum = *rNum;
 		}
 	}
 }
-static double calculate_gini_spath_avesp_gini_undirect_unweight_Net(struct Net *net) {
+static double calculate_gini_spath_avesp_gini_undirect_1upweight_Net(struct Net *net) {
 	int i,j;
 	int m,n;
 	double diff = 0.0;
@@ -1136,9 +924,9 @@ static double calculate_gini_spath_avesp_gini_undirect_unweight_Net(struct Net *
 	double G = diff/(2*E*total/**Tij*/);
 	return G;
 }
-void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, double *gini) {
-	if (net->directStatus == NS_DIRECTED || net->weight != NULL) {
-		isError("net should be undirected and unweight");
+void spath_avesp_gini_undirect_1upweight_Net(struct Net *net, double *avesp, double *gini) {
+	if (net->directStatus != NS_UNDIRECTED || net->weight == NULL) {
+		isError("the net should be undirected and weighted.");
 	}
 	if (net->edgesAttr == NULL) {
 		isError("gini calculation need edgesAttr element.");
@@ -1146,41 +934,56 @@ void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, doub
 	if (net->edgesMatrix.sign == NS_NON_VALID) {
 		set_option_edgesMatrix_Net(net);
 	}
-	int *sp = smalloc((net->maxId + 1)*sizeof(int));
+	double *sp = smalloc((net->maxId + 1)*sizeof(double));
+	double *spall = smalloc((net->maxId + 1)*sizeof(double));
 	int *left = smalloc((net->maxId + 1)*sizeof(int));
 	int *right = smalloc((net->maxId + 1)*sizeof(int));
-	double *spall = smalloc((net->maxId + 1) * sizeof(double));
-	char *stage = smalloc((net->maxId + 1) * sizeof(char));
-	int lNum, rNum;
+	int *upCSlist = smalloc((net->maxId + 1)*sizeof(int));
+	signed char *gs = smalloc((net->maxId + 1) * sizeof(signed char));
+	signed char *ups = scalloc((net->maxId + 1) , sizeof(signed char));
+	signed char *stage = scalloc((net->maxId + 1) , sizeof(signed char));
+	int lNum, rNum, upCSlistNum;
 
+	int i,j,k;
 	*avesp = 0;
 	*gini = 0;
-	int i,j;
 	for (i=0; i<net->maxId; ++i) {
 		for (j=0; j<net->maxId + 1; ++j) {
-			sp[j] = 0;
+			sp[j] = INT_MAX;
 			spall[j] = 0;
+			gs[j] = 0;
 		}
-		sp[i] = -1;
+		gs[i] = sp[i] = -1;
 		lNum = 0;
-		for (j = 0; j < net->degree[i]; ++j) {
-			int to = net->edges[i][j];
-			left[lNum++] = to;
-			sp[to] = 1;
-			++spall[to];
+		upCSlistNum = 0;
+		for (k = 0; k < net->degree[i]; ++k) {
+			int to = net->edges[i][k];
+			sp[to] = net->weight[i][k];
+			if (sp[to] < 2.0 && gs[to] == 0) {
+				left[lNum++] = to;
+				gs[to] = 1;
+				spall[to]++;
+			}
+			else {
+				upCSlist[upCSlistNum++] = to;
+				ups[to] = 1;
+			}
 		}
-		set_spAspall_spath_avesp_gini_undirect_unweight_Net(sp, stage, &left, &right, &lNum, &rNum, net, spall);
+		set_spAspall_spath_avesp_gini_undirect_1upweight_Net(sp, spall, gs, upCSlist, ups, upCSlistNum, &left, &right, &lNum, &rNum, net);
 		for (j = i+1; j < net->maxId + 1; ++j) {
 			*avesp += sp[j];
 		}
-		set_edgesAttr_spath_avesp_gini_undirect_unweight_Net(i, sp, stage, &left, &right, &lNum, &rNum, net, spall);
+		sp[i] = 0;
+		spall[i] = 1;
+		set_edgesAttr_spath_avesp_gini_undirect_1upweight_Net(i, sp, spall, stage, &left, &right, &lNum, &rNum, net);
 	}
 
-	free(left);
-	free(right);
-	free(sp);
-	free(spall);
-	free(stage);
-	*avesp /= (double)(net->maxId + 1)*net->maxId/2;
-	*gini = calculate_gini_spath_avesp_gini_undirect_unweight_Net(net);
+	free(left); free(right);
+	free(upCSlist);
+	free(sp); free(gs); free(ups); free(stage);
+	double ij = (double)(net->maxId + 1)*net->maxId/2;
+	*avesp /= ij;
+	*gini = calculate_gini_spath_avesp_gini_undirect_1upweight_Net(net);
 }
+/********************************************************************************************************/
+
