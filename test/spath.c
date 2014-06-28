@@ -326,7 +326,7 @@ START_TEST (test_spath_avesp_gini_undirect_1upweight_Net)
 		int L = 5+get_i31_MTPR()%35;
 		N = L*L;
 		test_spath_avesp_gini_undirect_1upweight_Net_core(D_12, N, &avesp, &avesp_dj);
-		printf("ud,uw,a,g => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
+		printf("ud,1w,a,g => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
 		ck_assert(fabs(avesp - avesp_dj) < ES);
 	}
 }
