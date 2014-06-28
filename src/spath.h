@@ -7,13 +7,14 @@ double dijkstra_avesp_undirected_weighted_Net(struct Net *net);
 
 int *spath_1A_undirect_unweight_Net(struct Net *net, int originId);
 void spath_1A_step_undirect_unweight_Net(struct Net *net, int originId, int step, int *Num, int **ret);
-void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp);
 
+void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp);
 void spath_avesp_coupling_undirect_unweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling);
 void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, double *gini);
 
-void spath_avesp_undirect_1upweight_Net(struct Net *base, struct Net *air, double *avesp);
+void spath_avesp_undirect_1upweight_Net(struct Net *net, double *avesp);
 void spath_avesp_coupling_undirect_1upweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling);
+
 /*
  * standard shortest path algorithm.
  */
