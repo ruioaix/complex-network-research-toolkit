@@ -1,4 +1,5 @@
 #include <check.h>
+#include <time.h>
 #include "spath.h"
 #include "mtprand.h"
 #include "../research/tdpotn/common.h"
@@ -37,17 +38,21 @@ static test_spath_avesp_undirect_unweight_Net_core(\
 	free_LineFile(baself);
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
-	printtb("dj");
+	clock_t t;
+	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
-	printte("dj");
+	t=clock()-t;
+	double dj_time_taken = (double)t/CLOCKS_PER_SEC;
 	free_Net(addnet);
 
 	addnet = create_Net(addlf);
 	addnet->duplicatepairsStatus = NS_NON_DUPPAIRS;
 	addnet->connectnessStatus = NS_CNNTNESS;
-	printtb("ud,uw,a,-");
+	t=clock();
 	spath_avesp_undirect_unweight_Net(addnet, avesp);
-	printte("ud,uw,a,-");
+	t=clock()-t;
+	double local_time_taken = (double)t/CLOCKS_PER_SEC;
+	printf("dijkstra_avesp_undirected_weighted_Net: %fs, spath_avesp_undirect_unweight_Net: %fs\n", dj_time_taken, local_time_taken);
 	free_Net(addnet);
 	free_LineFile(addlf);
 }
@@ -92,9 +97,11 @@ static test_spath_avesp_coupling_undirect_unweight_Net_core(\
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 	struct Net *air = create_Net(airlf);
 	double coupling;
-	printtb("ud,uw,a,c");
+	clock_t t;
+	t=clock();
 	spath_avesp_coupling_undirect_unweight_Net(base, air, avesp, &coupling);
-	printte("ud,uw,a,c");
+	t=clock()-t;
+	double local_time_taken = (double)t/CLOCKS_PER_SEC;
 	free_Net(base);
 	free_Net(air);
 
@@ -103,9 +110,11 @@ static test_spath_avesp_coupling_undirect_unweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
-	printtb("dj");
+	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
-	printte("dj");
+	t=clock()-t;
+	double dj_time_taken = (double)t/CLOCKS_PER_SEC;
+	printf("dijkstra_avesp_undirected_weighted_Net: %fs, spath_avesp_coupling_undirect_unweight_Net: %fs\n", dj_time_taken, local_time_taken);
 	free_Net(addnet);
 }
 
@@ -164,15 +173,19 @@ static void test_spath_avesp_gini_undirect_unweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
-	printtb("dj");
+	clock_t t;
+	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
-	printte("dj");
+	t=clock()-t;
+	double dj_time_taken = (double)t/CLOCKS_PER_SEC;
 	double gini;
 	double **wt = addnet->weight;
 	addnet->weight = NULL;
-	printtb("ud,uw,a,g");
+	t=clock();
 	spath_avesp_gini_undirect_unweight_Net(addnet, avesp, &gini);
-	printte("ud,uw,a,g");
+	t=clock()-t;
+	double local_time_taken = (double)t/CLOCKS_PER_SEC;
+	printf("dijkstra_avesp_undirected_weighted_Net: %fs, spath_avesp_gini_undirect_unweight_Net: %fs\n", dj_time_taken, local_time_taken);
 	addnet->weight = wt;
 	free_Net(addnet);
 }
@@ -219,13 +232,17 @@ static void test_spath_avesp_undirect_1upweight_Net_core(\
 	free_LineFile(baself);
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
-	printtb("ud,1w,a,-");
+	clock_t t;
+	t=clock();
 	spath_avesp_undirect_1upweight_Net(addnet, avesp);
-	printte("ud,1w,a,-");
+	t=clock()-t;
+	double local_time_taken = (double)t/CLOCKS_PER_SEC;
 	free_LineFile(addlf);
-	printtb("dj");
+	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
-	printte("dj");
+	t=clock()-t;
+	double dj_time_taken = (double)t/CLOCKS_PER_SEC;
+	printf("dijkstra_avesp_undirected_weighted_Net: %fs, spath_avesp_undirect_1upweight_Net: %fs\n", dj_time_taken, local_time_taken);
 	free_Net(addnet);
 }
 
@@ -267,9 +284,11 @@ static void test_spath_avesp_coupling_undirect_1upweight_Net_core(\
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 	struct Net *air = create_weighted_Net(airlf);
 	double coupling;
-	printtb("ud,1w,a,c");
+	clock_t t;
+	t=clock();
 	spath_avesp_coupling_undirect_1upweight_Net(base, air, avesp, &coupling);
-	printte("ud,1w,a,c");
+	t=clock()-t;
+	double local_time_taken = (double)t/CLOCKS_PER_SEC;
 	free_Net(base);
 	free_Net(air);
 
@@ -278,9 +297,11 @@ static void test_spath_avesp_coupling_undirect_1upweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
-	printtb("dj");
+	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
-	printte("dj");
+	t=clock()-t;
+	double dj_time_taken = (double)t/CLOCKS_PER_SEC;
+	printf("dijkstra_avesp_undirected_weighted_Net: %fs, spath_avesp_coupling_undirect_1upweight_Net: %fs\n", dj_time_taken, local_time_taken);
 	free_Net(addnet);
 }
 
@@ -338,13 +359,17 @@ static void test_spath_avesp_gini_undirect_1upweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
-	printtb("dj");
+	clock_t t;
+	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
-	printte("dj");
+	t=clock()-t;
+	double dj_time_taken = (double)t/CLOCKS_PER_SEC;
 	double gini;
-	printtb("ud,1w,a,g");
+	t=clock();
 	spath_avesp_gini_undirect_1upweight_Net(addnet, avesp, &gini);
-	printte("ud,1w,a,g");
+	t=clock()-t;
+	double local_time_taken = (double)t/CLOCKS_PER_SEC;
+	printf("dijkstra_avesp_undirected_weighted_Net: %fs, spath_avesp_gini_undirect_1upweight_Net: %fs\n", dj_time_taken, local_time_taken);
 	free_Net(addnet);
 }
 
