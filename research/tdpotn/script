@@ -92,7 +92,7 @@ do
 			do
 				currentTask=$(qstat -cb | grep xiaor | wc -l)
 				echo "current running task Num: $currentTask"
-				while [ $currentTask -ge 50 ]
+				while [ $currentTask -ge 30 ]
 				do
 					echo "wait 20s.."
 					sleep 20s
