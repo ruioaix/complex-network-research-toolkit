@@ -9,8 +9,9 @@ if [ "$#" -ne "2" ]; then
 elif [ "$1" != "theta" ] && [ "$1" != "lambda" ]; then
 	echo "wrong param name, usage: \"$0 theta exec_file_name\" or \"$0 lambda exec_file_name\""
 	exit -1
-elif [ -f "$2" ]; then
+elif [ ! -f "$2" ]; then
 	echo "\"$2\" don't exist";
+	exit -1
 fi
 exec_name=$2
 
@@ -87,7 +88,7 @@ do
 	do
 		for param in $param_scope
 		do
-			for seed in {1..100}
+			for seed in {1..20}
 			do
 				currentTask=$(qstat -cb | grep xiaor | wc -l)
 				echo "current running task Num: $currentTask"
