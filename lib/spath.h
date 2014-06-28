@@ -1,6 +1,7 @@
 #ifndef CNRT_SPATH_H
 #define CNRT_SPATH_H
 
+
 #include "net.h"
 double *dijkstra_1A_undirected_weighted_Net(struct Net *net, int nid);
 double dijkstra_avesp_undirected_weighted_Net(struct Net *net);

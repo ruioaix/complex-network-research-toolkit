@@ -15,7 +15,7 @@ int main(void) {
 
 
 
-	srunner_set_log (sr, "test.log");
+	srunner_set_log (sr, "/tmp/Test.log");
 	srunner_run_all(sr, CK_VERBOSE);
 
 	int number_failed = srunner_ntests_failed(sr);

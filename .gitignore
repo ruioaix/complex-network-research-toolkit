@@ -38,6 +38,7 @@ research/tdpotn/unweight_avesp_gini
 research/tdpotn/weight_avesp_coupling
 research/tdpotn/weight_avesp_gini
 src/libcnrt.a
+lib/libcnrt.a
 research/onion/BR
 research/onion/hs
 research/onion/topk
@@ -51,6 +52,7 @@ toolkit/bippaper
 toolkit/dsinfo
 toolkit/serial
 test/test
+tests/check_lib_research
 
 cnrt.tar.gz
 tags

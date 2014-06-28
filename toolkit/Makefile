@@ -2,8 +2,8 @@ sources := $(wildcard *.c)
 toolkits := $(notdir $(basename $(sources)))
 topexec := $(addprefix ../toolkit-,$(toolkits))
 
-headers := -I ../src
-libcnrt := ../src/libcnrt.a
+headers := -I ../lib
+libcnrt := ../lib/libcnrt.a
 extralibs := -lm
 
 .PHONY : all clean
@@ -21,8 +21,8 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 %.d : %.c
-	@$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$;                      \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@;     \
+	@$(CC) -M $(CPPFLAGS) $(headers) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
 clean :

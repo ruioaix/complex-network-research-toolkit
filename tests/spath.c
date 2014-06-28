@@ -37,13 +37,17 @@ static test_spath_avesp_undirect_unweight_Net_core(\
 	free_LineFile(baself);
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
+	printtb("dj");
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	printte("dj");
 	free_Net(addnet);
 
 	addnet = create_Net(addlf);
 	addnet->duplicatepairsStatus = NS_NON_DUPPAIRS;
 	addnet->connectnessStatus = NS_CNNTNESS;
+	printtb("ud,uw,a,-");
 	spath_avesp_undirect_unweight_Net(addnet, avesp);
+	printte("ud,uw,a,-");
 	free_Net(addnet);
 	free_LineFile(addlf);
 }
@@ -88,7 +92,9 @@ static test_spath_avesp_coupling_undirect_unweight_Net_core(\
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 	struct Net *air = create_Net(airlf);
 	double coupling;
+	printtb("ud,uw,a,c");
 	spath_avesp_coupling_undirect_unweight_Net(base, air, avesp, &coupling);
+	printte("ud,uw,a,c");
 	free_Net(base);
 	free_Net(air);
 
@@ -97,7 +103,9 @@ static test_spath_avesp_coupling_undirect_unweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
+	printtb("dj");
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	printte("dj");
 	free_Net(addnet);
 }
 
@@ -156,11 +164,15 @@ static void test_spath_avesp_gini_undirect_unweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
+	printtb("dj");
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	printte("dj");
 	double gini;
 	double **wt = addnet->weight;
 	addnet->weight = NULL;
+	printtb("ud,uw,a,g");
 	spath_avesp_gini_undirect_unweight_Net(addnet, avesp, &gini);
+	printte("ud,uw,a,g");
 	addnet->weight = wt;
 	free_Net(addnet);
 }
@@ -207,9 +219,13 @@ static void test_spath_avesp_undirect_1upweight_Net_core(\
 	free_LineFile(baself);
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
+	printtb("ud,1w,a,-");
 	spath_avesp_undirect_1upweight_Net(addnet, avesp);
+	printte("ud,1w,a,-");
 	free_LineFile(addlf);
+	printtb("dj");
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	printte("dj");
 	free_Net(addnet);
 }
 
@@ -251,7 +267,9 @@ static void test_spath_avesp_coupling_undirect_1upweight_Net_core(\
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 	struct Net *air = create_weighted_Net(airlf);
 	double coupling;
+	printtb("ud,1w,a,c");
 	spath_avesp_coupling_undirect_1upweight_Net(base, air, avesp, &coupling);
+	printte("ud,1w,a,c");
 	free_Net(base);
 	free_Net(air);
 
@@ -260,7 +278,9 @@ static void test_spath_avesp_coupling_undirect_1upweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
+	printtb("dj");
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	printte("dj");
 	free_Net(addnet);
 }
 
@@ -318,9 +338,13 @@ static void test_spath_avesp_gini_undirect_1upweight_Net_core(\
 	free_LineFile(airlf);
 	struct Net *addnet = create_weighted_Net(addlf);
 	free_LineFile(addlf);
+	printtb("dj");
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
+	printte("dj");
 	double gini;
+	printtb("ud,1w,a,g");
 	spath_avesp_gini_undirect_1upweight_Net(addnet, avesp, &gini);
+	printte("ud,1w,a,g");
 	free_Net(addnet);
 }
 

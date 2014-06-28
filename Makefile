@@ -39,4 +39,4 @@ dist :
 	tar zcvf cnrt_$(time).tar.gz $(lib) $(resh) $(tlkt) $(checkdir) Makefile .git
 
 check : $(checkdir)
-	@./tests/test
+	@./tests/check_lib_research

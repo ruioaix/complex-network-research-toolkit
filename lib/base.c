@@ -9,6 +9,16 @@ void print_time(void) {
 	printm("time: %s", ctime(&t)); 
 	fflush(stdout);
 }
+void printtb(char *info) {
+	time_t t=time(NULL); 
+	printf("%s begin: %s", info, ctime(&t)); 
+	fflush(stdout);
+}
+void printte(char *info) {
+	time_t t=time(NULL); 
+	printf("%s end: %s", info, ctime(&t)); 
+	fflush(stdout);
+}
 void print_label(int i) {
 	printf("xxxx==%d==xxxx\n", i);
 	fflush(stdout);
