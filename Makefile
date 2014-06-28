@@ -1,7 +1,7 @@
 src := src
 resh := research
 tlkt := toolkit
-checkdir := test
+checkdir := tests
 
 resh_sources := $(wildcard $(resh)/*/*.c)
 resh_dirs := $(sort $(dir $(resh_sources)))
