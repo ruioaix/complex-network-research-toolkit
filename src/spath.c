@@ -980,7 +980,8 @@ void spath_avesp_gini_undirect_1upweight_Net(struct Net *net, double *avesp, dou
 
 	free(left); free(right);
 	free(upCSlist);
-	free(sp); free(gs); free(ups); free(stage);
+	free(sp); free(spall);
+	free(gs); free(ups); free(stage);
 	double ij = (double)(net->maxId + 1)*net->maxId/2;
 	*avesp /= ij;
 	*gini = calculate_gini_spath_avesp_gini_undirect_1upweight_Net(net);
