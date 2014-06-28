@@ -9,6 +9,10 @@
 #define ES  0.0000000000000001
 #define LOOPNUM  3
 
+static void printff(int D_12, int N, double avesp, double avesp_dj) {
+	printf(" => D_12:%-2d, N:%-5d, avesp:%-15.10f, avesp_dj:%-15.10f\n", D_12, N, avesp, avesp_dj);
+}
+
 static test_spath_avesp_undirect_unweight_Net_core(\
 		int D_12, int N, double *avesp, double *avesp_dj) {
 
@@ -55,7 +59,8 @@ START_TEST (test_spath_avesp_undirect_unweight_Net)
 		int L = 5+get_i31_MTPR()%35;
 		N = L*L;
 		test_spath_avesp_undirect_unweight_Net_core(D_12, N, &avesp, &avesp_dj);
-		printf("ud,uw,a,- => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
+		printf("ud,uw,a,-");
+		printff(D_12, N, avesp, avesp_dj);
 		ck_assert(fabs(avesp - avesp_dj) < ES);
 	}
 
@@ -107,7 +112,8 @@ START_TEST (test_spath_avesp_coupling_undirect_unweight_Net)
 		int L = 5+get_i31_MTPR()%35;
 		N = L*L;
 		test_spath_avesp_coupling_undirect_unweight_Net_core(D_12, N, &avesp, &avesp_dj);
-		printf("ud,uw,a,c => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
+		printf("ud,uw,a,c");
+		printff(D_12, N, avesp, avesp_dj);
 		ck_assert(fabs(avesp - avesp_dj) < ES);
 	}
 
@@ -170,7 +176,8 @@ START_TEST (test_spath_avesp_gini_undirect_unweight_Net)
 		int L = 5+get_i31_MTPR()%35;
 		N = L*L;
 		test_spath_avesp_gini_undirect_unweight_Net_core(D_12, N, &avesp, &avesp_dj);
-		printf("ud,uw,a,g => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
+		printf("ud,uw,a,g");
+		printff(D_12, N, avesp, avesp_dj);
 		ck_assert(fabs(avesp - avesp_dj) < ES);
 	}
 }
@@ -217,7 +224,8 @@ START_TEST (test_spath_avesp_undirect_1upweight_Net)
 		int L = 5+get_i31_MTPR()%35;
 		N = L*L;
 		test_spath_avesp_undirect_1upweight_Net_core(D_12, N, &avesp, &avesp_dj);
-		printf("ud,1w,a,- => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
+		printf("ud,1w,a,-");
+		printff(D_12, N, avesp, avesp_dj);
 		ck_assert(fabs(avesp - avesp_dj) < ES);
 	}
 }
@@ -267,7 +275,8 @@ START_TEST (test_spath_avesp_coupling_undirect_1upweight_Net)
 		int L = 5+get_i31_MTPR()%35;
 		N = L*L;
 		test_spath_avesp_coupling_undirect_1upweight_Net_core(D_12, N, &avesp, &avesp_dj);
-		printf("ud,1w,a,c => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
+		printf("ud,1w,a,c");
+		printff(D_12, N, avesp, avesp_dj);
 		ck_assert(fabs(avesp - avesp_dj) < ES);
 	}
 }
@@ -326,7 +335,8 @@ START_TEST (test_spath_avesp_gini_undirect_1upweight_Net)
 		int L = 5+get_i31_MTPR()%35;
 		N = L*L;
 		test_spath_avesp_gini_undirect_1upweight_Net_core(D_12, N, &avesp, &avesp_dj);
-		printf("ud,1w,a,g => avesp:\t%f\t,avesp_dj:\t%f\n", avesp, avesp_dj);
+		printf("ud,1w,a,g");
+		printff(D_12, N, avesp, avesp_dj);
 		ck_assert(fabs(avesp - avesp_dj) < ES);
 	}
 }
