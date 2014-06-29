@@ -181,34 +181,6 @@ struct LineFile * line1d_DS(int N, enum DS_STATUS cc, enum DS_STATUS dd) {
 	return file;
 }
 
-void parts45_DS(char *filename, long linesNum, int in, int dn, int cn, int ln, int ccn) {
-	printgfb();
-	FILE *fp = sfopen(filename, "w");
-	long i;
-	int j;
-	set_timeseed_MTPR();
-	for (i = 0; i < linesNum; ++i) {
-		for (j = 0; j < in; ++j) {
-			fprintf(fp, "%d\t", (int)get_i31_MTPR());
-		}
-		for (j = 0; j < dn; ++j) {
-			fprintf(fp, "%f\t", get_d01_MTPR() + get_i31_MTPR()%100000);
-		}
-		for (j = 0; j < cn; ++j) {
-			fprintf(fp, "%d\t", (int)get_i31_MTPR()%128);
-		}
-		for (j = 0; j < ln; ++j) {
-			fprintf(fp, "%ld\t", get_i31_MTPR());
-		}
-		for (j = 0; j < ccn; ++j) {
-			fprintf(fp, "%d%c%d\t", (int)get_i31_MTPR(), (int)get_i31_MTPR()%26 + 65, (int)get_i31_MTPR()%128);
-		}
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
-	printgfe();
-}
-
 /**
  * this function generate a ER random network.
  * N is the nodes number, it has to be larger than 9.(actually it should be larger than 100, that make more sence)

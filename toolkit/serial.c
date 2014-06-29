@@ -1,7 +1,6 @@
 #include "linefile.h"
 #include "hash.h"
 #include "base.h"
-#include "bip.h"
 #include <stdio.h>
 
 int main(int argc, char **argv)

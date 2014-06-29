@@ -1,6 +1,5 @@
 #include "base.h"
 #include "linefile.h"
-#include "sort.h"
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
