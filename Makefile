@@ -7,6 +7,7 @@ resh_sources := $(wildcard $(resh)/*/*.c)
 resh_dirs := $(sort $(dir $(resh_sources)))
 resh_dirsname := $(patsubst $(resh)/%/,%,$(resh_dirs))
 
+onion :
 lib :
 tdpotn :
 all :
