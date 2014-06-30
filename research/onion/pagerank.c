@@ -26,7 +26,12 @@ int main(int argc, char **argv) {
 			for (k = 0; k < net->indegree[j]; ++k) {
 				int neigh = net->inedges[j][k];
 				int outdg = net->degree[neigh];
-				pr += d*pgrk[neigh]/outdg;
+				if (outdg == 0) {
+					pr += d/(net->maxId + 1);
+				}
+				else {
+					pr += d*pgrk[neigh]/outdg;
+				}
 			}
 			pgrk[j] = pr;
 		}
