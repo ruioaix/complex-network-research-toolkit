@@ -58,7 +58,7 @@ void divide_Bip(struct Bip *bip, double rate, struct LineFile **small_part, stru
 
 //if target == 1, then calculate i1(mostly could be user)'s similarity.
 //if target == 2, then calculate i2(mostly could be item)'s similarity.
-struct LineFile *similarity_CF_half_Bip(struct HalfBip *hbip, int other_half_maxId);
+struct LineFile *similarity_CF_HalfBip(struct HalfBip *hbip, int other_half_maxId);
 //struct LineFile *mass_similarity_Bip(struct Bip *bipi1, struct Bip *bipi2);
 
 

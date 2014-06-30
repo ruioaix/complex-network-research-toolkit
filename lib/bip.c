@@ -246,7 +246,7 @@ void divide_Bip(struct Bip *bip, double rate, struct LineFile **small, struct Li
 	printgfe();
 }
 
-struct LineFile *similarity_half_Bip(struct HalfBip *hbip, int other_half_maxId) {
+struct LineFile *similarity_CF_HalfBip(struct HalfBip *hbip, int other_half_maxId) {
 	int maxId = hbip->maxId;
 	int _maxId = other_half_maxId;
 	int *degree = hbip->degree;
