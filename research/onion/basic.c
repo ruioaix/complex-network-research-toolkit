@@ -22,22 +22,22 @@ int main(int argc, char **argv)
 	set_timeseed_MTPR();
 	
 	char *netfilename;
-	double HNBI_param, RENBI_param, hybrid_param; 
+	//double HNBI_param, RENBI_param, hybrid_param; 
 	int loopNum;
 	if (argc == 1) {
-		netfilename = "/tmp/movielens_2c";
+		netfilename = "../Downloads/movielens_2c.txt";
 		loopNum = 2;
-		HNBI_param = -0.8;
-		RENBI_param= -0.75;
-		hybrid_param = 0.2;
+		//HNBI_param = -0.8;
+		//RENBI_param= -0.75;
+		//hybrid_param = 0.2;
 	}
 	if (argc == 6) {
 		netfilename = argv[1];
 		char *pEnd;
 		loopNum = strtol(argv[2], &pEnd, 10);
-		HNBI_param = strtod(argv[3], &pEnd);
-		RENBI_param= strtod(argv[4], &pEnd);
-		hybrid_param = strtod(argv[5], &pEnd);
+		//HNBI_param = strtod(argv[3], &pEnd);
+		//RENBI_param= strtod(argv[4], &pEnd);
+		//hybrid_param = strtod(argv[5], &pEnd);
 	}
 
 	//divide file into two part: train and test.
