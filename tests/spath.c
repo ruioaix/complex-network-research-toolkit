@@ -37,7 +37,7 @@ static test_spath_avesp_undirect_unweight_Net_core(\
 	struct LineFile *addlf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *addnet = create_weighted_Net(addlf);
+	struct Net *addnet = create_Net(addlf);
 	clock_t t;
 	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
@@ -108,7 +108,7 @@ static test_spath_avesp_coupling_undirect_unweight_Net_core(\
 	struct LineFile *addlf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *addnet = create_weighted_Net(addlf);
+	struct Net *addnet = create_Net(addlf);
 	free_LineFile(addlf);
 	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
@@ -157,7 +157,7 @@ static void test_spath_avesp_gini_undirect_unweight_Net_core(\
 		weight[i] = 1.0;
 	}
 	baself->d1 = weight;
-	struct Net *base = create_weighted_Net(baself);
+	struct Net *base = create_Net(baself);
 	base->duplicatepairsStatus = NS_NON_DUPPAIRS;
 
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
@@ -171,7 +171,7 @@ static void test_spath_avesp_gini_undirect_unweight_Net_core(\
 	struct LineFile *addlf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *addnet = create_weighted_Net(addlf);
+	struct Net *addnet = create_Net(addlf);
 	free_LineFile(addlf);
 	clock_t t;
 	t=clock();
@@ -223,7 +223,7 @@ static void test_spath_avesp_undirect_1upweight_Net_core(\
 		weight[i] = 1.0;
 	}
 	baself->d1 = weight;
-	struct Net *base = create_weighted_Net(baself);
+	struct Net *base = create_Net(baself);
 	base->duplicatepairsStatus = NS_NON_DUPPAIRS;
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 	free_Net(base);
@@ -231,7 +231,7 @@ static void test_spath_avesp_undirect_1upweight_Net_core(\
 	struct LineFile *addlf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *addnet = create_weighted_Net(addlf);
+	struct Net *addnet = create_Net(addlf);
 	clock_t t;
 	t=clock();
 	spath_avesp_undirect_1upweight_Net(addnet, avesp);
@@ -279,10 +279,10 @@ static void test_spath_avesp_coupling_undirect_1upweight_Net_core(\
 		weight[i] = 1.0;
 	}
 	baself->d1 = weight;
-	struct Net *base = create_weighted_Net(baself);
+	struct Net *base = create_Net(baself);
 	base->duplicatepairsStatus = NS_NON_DUPPAIRS;
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
-	struct Net *air = create_weighted_Net(airlf);
+	struct Net *air = create_Net(airlf);
 	double coupling;
 	clock_t t;
 	t=clock();
@@ -295,7 +295,7 @@ static void test_spath_avesp_coupling_undirect_1upweight_Net_core(\
 	struct LineFile *addlf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *addnet = create_weighted_Net(addlf);
+	struct Net *addnet = create_Net(addlf);
 	free_LineFile(addlf);
 	t=clock();
 	*avesp_dj = dijkstra_avesp_undirected_weighted_Net(addnet);
@@ -343,7 +343,7 @@ static void test_spath_avesp_gini_undirect_1upweight_Net_core(\
 		weight[i] = 1.0;
 	}
 	baself->d1 = weight;
-	struct Net *base = create_weighted_Net(baself);
+	struct Net *base = create_Net(baself);
 	base->duplicatepairsStatus = NS_NON_DUPPAIRS;
 
 	struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
@@ -357,7 +357,7 @@ static void test_spath_avesp_gini_undirect_1upweight_Net_core(\
 	struct LineFile *addlf = add_LineFile(airlf, baself);
 	free_LineFile(baself);
 	free_LineFile(airlf);
-	struct Net *addnet = create_weighted_Net(addlf);
+	struct Net *addnet = create_Net(addlf);
 	free_LineFile(addlf);
 	clock_t t;
 	t=clock();

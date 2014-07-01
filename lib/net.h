@@ -124,8 +124,8 @@ void free_Net(struct Net *net);
 #include "linefile.h"
 struct Net *create_Net(struct LineFile * file);
 struct Net *create_directed_Net(struct LineFile * file);
-struct Net *create_weighted_Net(struct LineFile * file);
-struct Net *create_directed_weighted_Net(struct LineFile * file);
+//struct Net *create_weighted_Net(struct LineFile * file);
+//struct Net *create_directed_weighted_Net(struct LineFile * file);
 
 //generate the Matrix according to edges element.
 //may be there will be a inedgesMatrix element later.

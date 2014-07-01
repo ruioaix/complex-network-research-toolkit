@@ -28,7 +28,7 @@ void free_Net(struct Net *net) {
 		free(net->inedges);
 	}
 	
-	//free weight
+	//free weight&inweight;
 	if (net->weight != NULL) {
 		for(i=0; i<net->maxId+1; ++i) {
 			free(net->weight[i]);
@@ -42,7 +42,7 @@ void free_Net(struct Net *net) {
 		}
 	}
 
-	//free edgesAttr
+	//free edgesAttr&inedgesAttr
 	if (net->edgesAttr != NULL) {
 		for(i=0; i<net->maxId+1; ++i) {
 			free(net->edgesAttr[i]);
@@ -105,7 +105,6 @@ static struct Net *create_Net_init(long edgesNum, \
 	net->indegreeMin.value = indegreeMin;
 
 	net->avesp.sign = NS_NON_VALID;
-
 	net->connectnessStatus = connectnessStatus;
 	net->duplicatepairsStatus = duplicatepairsStatus;
 
@@ -335,16 +334,18 @@ struct Net *create_Net(struct LineFile * lf) {
 
 	int degreeMax, degreeMin;
 	int **edges;
+	double **weight = NULL;
 	double **edgesAttr = NULL;
+	double *wgt = lf->d1;
 	double *eda = lf->d2;
-	create_Net_undirected_edges_weight_edgesAttr(lf, maxId, degree, NULL, eda, &edges, NULL, &edgesAttr, &degreeMax, &degreeMin);
+	create_Net_undirected_edges_weight_edgesAttr(lf, maxId, degree, wgt, eda, &edges, &weight, &edgesAttr, &degreeMax, &degreeMin);
 	printgf("get degreeMax: %d, degreeMin: %d; and alloc memory and fill edges.\n", degreeMax, degreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
 			degree, NULL, \
 			edges, NULL, \
-			NULL, NULL, \
+			weight, NULL, \
 			edgesAttr, NULL, 
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
@@ -373,17 +374,19 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 	int degreeMax, degreeMin;
 	int indegreeMax, indegreeMin;
 	int **edges, **inedges;
+	double *wgt = lf->d1;
+	double **weight = NULL, **inweight= NULL;
 	double *eda = lf->d2;
 	double **edgesAttr = NULL, **inedgesAttr = NULL;
-	create_Net_directed_edges_weight_edgesAttr(lf, maxId, degree, indegree, NULL, eda, \
-			&edges, &inedges, NULL, NULL, &edgesAttr, &inedgesAttr, &degreeMax, &degreeMin, &indegreeMax, &indegreeMin);
+	create_Net_directed_edges_weight_edgesAttr(lf, maxId, degree, indegree, wgt, eda, \
+			&edges, &inedges, &weight, &inweight, &edgesAttr, &inedgesAttr, &degreeMax, &degreeMin, &indegreeMax, &indegreeMin);
 	printgf("get degreeMax: %d, degreeMin: %d, indegreeMax: %d, indegreeMin: %d; and alloc memory and fill edges.\n", degreeMax, degreeMin, indegreeMax, indegreeMin);
 
 	struct Net *net = create_Net_init(lf->linesNum, \
 			maxId, minId, idNum, \
 			degree, indegree, \
 			edges, inedges, \
-			NULL, NULL, \
+			weight, inweight, \
 			edgesAttr, inedgesAttr, \
 			NS_VALID, degreeMax, \
 			NS_VALID, degreeMin, \
@@ -397,6 +400,7 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 	return net;
 }
 
+#if 0
 struct Net *create_weighted_Net(struct LineFile * lf) {
 	printgfb();
 	create_Net_basic_lf_check(lf);
@@ -478,6 +482,7 @@ struct Net *create_directed_weighted_Net(struct LineFile * lf) {
 	printgfe();
 	return net;
 }
+#endif
 
 /*
 void print_iiNet(struct iiNet *net, char *filename) {

@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
 		//the similarity is get from traini1
 		struct LineFile *similarity_file = similarity_CF_HalfBip(train->right, train->left->maxId);
-		struct Net *train_right_Sim = create_weighted_Net(similarity_file);
+		struct Net *train_right_Sim = create_Net(similarity_file);
 		free_LineFile(similarity_file);
 
 		//recommendation
