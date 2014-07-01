@@ -39,11 +39,11 @@ struct netOption_ipp{
  * if net is undirected,
  * 		NULL == indegree == inedges == inweight.
  *
- * when net is undirected, each edge is stored twice.
+ * when net is undirected, each edge is stored twice in "edges" element.
  * 		an edge between 34 and 22, there are edges[34][x] = 22 and edges[22][y] = 34. 
  *
- * when net is directed, each edge is stored only once in edges, and  stored another time in inedges.
- * 		an edge frome 34 to 22, there is edges[34][x] = 22, but edges[22][y] = 34 maybe not existed(depends on whether there is an edge from 22 to 34.
+ * when net is directed, each edge is stored only once in "edges" element, and  stored another time in "inedges" element.
+ * 		an edge from 34 to 22, there is edges[34][x] = 22, but edges[22][y] = 34 maybe not existed(depends on whether there is an edge from 22 to 34.)
  * 		but inedge[22][z] = 34 is existed.
  *
  * if weight != NULL, then the Net is weighted.
