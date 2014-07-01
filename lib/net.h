@@ -116,16 +116,12 @@ void free_Net(struct Net *net);
 
 //LineFile is another core structure, more basic.
 /*
- * create_Net is undirected and unweighted.
- * create_directed_Net is directed and unweighted.
- * create_weighted_Net is undirected and weighted.
- * create_directed_weighted_Net is directed and weighted.
+ * create_Net is undirected, wighted or not depends on file->d1 is available or not. file->d2 decide the edgesAttr.
+ * create_directed_Net is directed, other same as above.
  */
 #include "linefile.h"
 struct Net *create_Net(struct LineFile * file);
 struct Net *create_directed_Net(struct LineFile * file);
-//struct Net *create_weighted_Net(struct LineFile * file);
-//struct Net *create_directed_weighted_Net(struct LineFile * file);
 
 //generate the Matrix according to edges element.
 //may be there will be a inedgesMatrix element later.
