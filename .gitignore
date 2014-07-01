@@ -32,6 +32,7 @@ robust-*
 toolkit-*
 toolkit/clean_duplicate
 research/onion/basic
+research/onion/try
 research/onion/recmd_paper
 research/onion/pagerank
 research/tdpotn/coupling

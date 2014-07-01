@@ -87,8 +87,8 @@ struct Bip *create_Bip(const struct LineFile * const lf) {
 	set_half_Bip(lf->linesNum, lf->i2, lf->i1, bip->right);
 
 	//fill Bip and return.
-	printgf("left : Max: %5d, Min: %5d, Num: %5d, degreeMax: %5ld, degreeMin: %5ld, edgesNum: %5ld\n", bip->left->maxId, bip->left->minId, bip->left->idNum, bip->left->degreeMax, bip->left->degreeMin, bip->left->edgesNum);
-	printgf("right: Max: %5d, Min: %5d, Num: %5d, degreeMax: %5ld, degreeMin: %5ld, edgesNum: %5ld\n", bip->right->maxId, bip->right->minId, bip->right->idNum, bip->right->degreeMax, bip->right->degreeMin, bip->right->edgesNum);
+	printgf("left : Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld\n", bip->left->maxId, bip->left->minId, bip->left->idNum, bip->left->degreeMax, bip->left->degreeMin, bip->edgesNum);
+	printgf("right: Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld\n", bip->right->maxId, bip->right->minId, bip->right->idNum, bip->right->degreeMax, bip->right->degreeMin, bip->edgesNum);
 
 	printgfe();
 	return bip;
