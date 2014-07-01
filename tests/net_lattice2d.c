@@ -21,7 +21,7 @@ START_TEST (test_net_ds_lattice2d_cycle_direct)
 	ck_assert_int_eq(net->inweight, NULL);
 	ck_assert_int_eq(net->edgesAttr, NULL);
 	ck_assert_int_eq(net->inedgesAttr, NULL);
-	ck_assert_int_eq(net->directStatus, NS_DIRECTED);
+	ck_assert(net->inedges != NULL);
 	ck_assert_int_eq(net->connectnessStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->duplicatepairsStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->degreeMax.sign, NS_VALID);
@@ -114,7 +114,7 @@ START_TEST (test_net_ds_lattice2d_uncycle_direct)
 	ck_assert_int_eq(net->inweight, NULL);
 	ck_assert_int_eq(net->edgesAttr, NULL);
 	ck_assert_int_eq(net->inedgesAttr, NULL);
-	ck_assert_int_eq(net->directStatus, NS_DIRECTED);
+	ck_assert(net->inedges != NULL);
 	ck_assert_int_eq(net->connectnessStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->duplicatepairsStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->degreeMax.sign, NS_VALID);
@@ -191,7 +191,7 @@ START_TEST (test_net_ds_lattice2d_cycle_undirect)
 	ck_assert_int_eq(net->inweight, NULL);
 	ck_assert_int_eq(net->edgesAttr, NULL);
 	ck_assert_int_eq(net->inedgesAttr, NULL);
-	ck_assert_int_eq(net->directStatus, NS_UNDIRECTED);
+	ck_assert(net->inedges == NULL);
 	ck_assert_int_eq(net->connectnessStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->duplicatepairsStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->degreeMax.sign, NS_VALID);
@@ -279,7 +279,7 @@ START_TEST (test_net_ds_lattice2d_uncycle_undirect)
 	ck_assert_int_eq(net->inweight, NULL);
 	ck_assert_int_eq(net->edgesAttr, NULL);
 	ck_assert_int_eq(net->inedgesAttr, NULL);
-	ck_assert_int_eq(net->directStatus, NS_UNDIRECTED);
+	ck_assert(net->inedges == NULL);
 	ck_assert_int_eq(net->connectnessStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->duplicatepairsStatus, NS_NOTSURE);
 	ck_assert_int_eq(net->degreeMax.sign, NS_VALID);

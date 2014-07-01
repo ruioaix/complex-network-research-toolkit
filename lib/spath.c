@@ -29,7 +29,7 @@ static double ** dijkstra_setasp_undirected_weighted_Net(struct Net *net) {
 	return asp;
 }
 double *dijkstra_1A_undirected_weighted_Net(struct Net *net, int nid) {
-	if (net->weight == NULL || net->directStatus == NS_DIRECTED) {
+	if (net->weight == NULL || net->inedges != NULL) {
 		isError("the net should be weighted and undirected.");
 	}
 	if (nid < 0 || nid > net->maxId) {
@@ -71,7 +71,7 @@ double *dijkstra_1A_undirected_weighted_Net(struct Net *net, int nid) {
 	return sp;
 }
 double dijkstra_avesp_undirected_weighted_Net(struct Net *net) {
-	if (net->weight == NULL || net->directStatus == NS_DIRECTED) {
+	if (net->weight == NULL || net->inedges == NULL) {
 		isError("the net should be weighted and undirected.");
 	}
 	double **asp = dijkstra_setasp_undirected_weighted_Net(net);
@@ -155,7 +155,7 @@ int *spath_1A_undirect_unweight_Net(struct Net *net, int originId) {
 	if (originId<net->minId || originId>net->maxId) {
 		isError("originId is not a valid vertex id");
 	}
-	if (net->directStatus != NS_UNDIRECTED || net->weight != NULL) {
+	if (net->inedges != NULL || net->weight != NULL) {
 		isError("the net is not an undirected or not an unweighted network");
 	}
 	int *sp = calloc(net->maxId + 1, sizeof(int));
@@ -178,7 +178,7 @@ void spath_1A_step_undirect_unweight_Net(struct Net *net, int originId, int step
 	if (originId<net->minId || originId>net->maxId) {
 		isError("originId is not a valid vertex id");
 	}
-	if (net->directStatus != NS_UNDIRECTED || net->weight != NULL) {
+	if (net->inedges != NULL || net->weight != NULL) {
 		isError("the net is not an undirected or not an unweighted network");
 	}
 	int *sp = calloc(net->maxId + 1, sizeof(int));
@@ -196,7 +196,7 @@ void spath_1A_step_undirect_unweight_Net(struct Net *net, int originId, int step
 	*ret = left;
 }
 void spath_avesp_undirect_unweight_Net(struct Net *net, double *avesp) {
-	if (net->directStatus != NS_UNDIRECTED || net->weight != NULL) {
+	if (net->inedges != NULL || net->weight != NULL) {
 		isError("the net is not an undirected or not an unweighted network");
 	}
 	if (net->connectnessStatus != NS_CNNTNESS ) {
@@ -283,10 +283,10 @@ static void core_spath_avesp_coupling_undirect_unweight_Net(int *sp, char *stage
 }
 //the vertices in air is a subset of the vertices in base.
 void spath_avesp_coupling_undirect_unweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling) {
-	if (base->directStatus != NS_UNDIRECTED || base->weight != NULL) {
+	if (base->inedges != NULL || base->weight != NULL) {
 		isError("the base net is not undirected or not unweighted.");
 	}
-	if (air->directStatus != NS_UNDIRECTED || air->weight != NULL) {
+	if (air->inedges != NULL || air->weight != NULL) {
 		isError("the air net is not undirected or not unweighted.");
 	}
 	int *sp = smalloc((base->maxId + 1)*sizeof(int));
@@ -454,7 +454,7 @@ static double calculate_gini_spath_avesp_gini_undirect_unweight_Net(struct Net *
 	return G;
 }
 void spath_avesp_gini_undirect_unweight_Net(struct Net *net, double *avesp, double *gini) {
-	if (net->directStatus == NS_DIRECTED || net->weight != NULL) {
+	if (net->inedges != NULL || net->weight != NULL) {
 		isError("net should be undirected and unweight");
 	}
 	if (net->edgesAttr == NULL) {
@@ -556,7 +556,7 @@ static void core_spath_avesp_undirect_1upweight_Net(double *sp, signed char *gs,
 	}
 }
 void spath_avesp_undirect_1upweight_Net(struct Net *net, double *avesp) {
-	if (net->directStatus != NS_UNDIRECTED || net->weight == NULL) {
+	if (net->inedges != NULL || net->weight == NULL) {
 		isError("the net should be undirected and weighted.");
 	}
 	double *sp = smalloc((net->maxId + 1)*sizeof(double));
@@ -724,10 +724,10 @@ static void core_spath_avesp_coupling_undirect_1upweight_Net(double *sp, signed 
 	}
 }
 void spath_avesp_coupling_undirect_1upweight_Net(struct Net *base, struct Net *air, double *avesp, double *coupling) {
-	if (base->directStatus != NS_UNDIRECTED || base->weight == NULL) {
+	if (base->inedges != NULL|| base->weight == NULL) {
 		isError("the base net should be undirected and weighted.");
 	}
-	if (air->directStatus != NS_UNDIRECTED || air->weight == NULL) {
+	if (air->inedges != NULL || air->weight == NULL) {
 		isError("the air net should be undirected and weighted.");
 	}
 	double *sp = smalloc((base->maxId + 1)*sizeof(double));
@@ -925,7 +925,7 @@ static double calculate_gini_spath_avesp_gini_undirect_1upweight_Net(struct Net 
 	return G;
 }
 void spath_avesp_gini_undirect_1upweight_Net(struct Net *net, double *avesp, double *gini) {
-	if (net->directStatus != NS_UNDIRECTED || net->weight == NULL) {
+	if (net->inedges != NULL || net->weight == NULL) {
 		isError("the net should be undirected and weighted.");
 	}
 	if (net->edgesAttr == NULL) {

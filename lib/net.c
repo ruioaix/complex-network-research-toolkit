@@ -78,7 +78,6 @@ static struct Net *create_Net_init(long edgesNum, \
 		enum NET_STATUS dmin, int degreeMin, \
 		enum NET_STATUS idmax, int indegreeMax, \
 		enum NET_STATUS idmin, int indegreeMin, \
-		enum NET_STATUS directStatus, \
 		enum NET_STATUS connectnessStatus, \
 		enum NET_STATUS duplicatepairsStatus) 
 { 
@@ -107,7 +106,6 @@ static struct Net *create_Net_init(long edgesNum, \
 
 	net->avesp.sign = NS_NON_VALID;
 
-	net->directStatus = directStatus;
 	net->connectnessStatus = connectnessStatus;
 	net->duplicatepairsStatus = duplicatepairsStatus;
 
@@ -352,7 +350,6 @@ struct Net *create_Net(struct LineFile * lf) {
 			NS_VALID, degreeMin, \
 			NS_NON_VALID, -1, \
 			NS_NON_VALID, -1, \
-			NS_UNDIRECTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 	printgf("return Net.\n");
@@ -392,7 +389,6 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 			NS_VALID, degreeMin, \
 			NS_VALID, indegreeMax, \
 			NS_VALID, indegreeMin, \
-			NS_DIRECTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 
@@ -434,7 +430,6 @@ struct Net *create_weighted_Net(struct LineFile * lf) {
 			NS_VALID, degreeMin, \
 			NS_NON_VALID, -1, \
 			NS_NON_VALID, -1, \
-			NS_UNDIRECTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 	printgf("return Net.\n");
@@ -477,7 +472,6 @@ struct Net *create_directed_weighted_Net(struct LineFile * lf) {
 			NS_VALID, degreeMin, \
 			NS_VALID, indegreeMax, \
 			NS_VALID, indegreeMin, \
-			NS_DIRECTED, \
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 	printgf("return Net.\n");

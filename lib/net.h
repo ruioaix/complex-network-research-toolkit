@@ -3,8 +3,6 @@
 
 enum NET_STATUS {
 	NS_NON_VALID, NS_VALID,
-	NS_DIRECTED, NS_UNDIRECTED,
-	NS_WEIGHTED, NS_UNWEIGHTED,
 	NS_DUPPAIRS, NS_NON_DUPPAIRS, 
 	NS_CNNTNESS, NS_NON_CNNTNESS, 
 	NS_NOTSURE
@@ -48,30 +46,31 @@ struct netOption_ipp{
  *
  * if weight != NULL, then the Net is weighted.
  * if weight == NULL, then the Net is unweighted.
- * it's quite clear, so I don't need to set a weightStatus.
- * but this is not suit for directStatus.
- * because even in a directed net, edges element can store all the informations.
- * so inedges element is not essential, thus I can not check the value of inedges to decide whether the net is directed or not.
+ * if inedges != NULL, then the Net is directed.
+ * if inedges == NULL, then the Net is undirected.
+ * 		thus, there are some other rules:
+ * 		1, if weight != NULL and inedges != NULL, then inweight must not be NULL.
+ * 		2, same inedgesAttr.
  *
  */
 struct Net{
 	//the number of vertices.
-	int idNum; //essential
+	int idNum; 
 	//the maximum and minimum id of the vertices.
 	//the scope of ids is [0, ∞), but the minId doesn't have to be 0.
 	//"maxId - minId + 1" doen't have to be "idNum", hole is acceptable.
-	int maxId; //essential
-	int minId; //essential
+	int maxId; 
+	int minId; 
 	//the number of edges.
-	long edgesNum; //essential
+	long edgesNum; 
 	//degree[11] means the degree of the vertex whose id is 11.
-	int *degree; //essential
-	//indegree maybe NULL even in a directed net, it's not essential
+	int *degree; 
+	//indegree will be NULL in a undirected net.
 	int *indegree;
 	//edges[23][2] means the id of the third neighbour of the vertex whose id is 23.
 	//edges[23] doesn't have to be a sorted array.
 	int **edges; //essential
-	//inedges maybe NULL even in a directed net, it's not essential
+	//inedges will be NULL in a undirected net
 	int **inedges;
 	//same structure to edges.
 	//the values are got from d1 of LineFile.
@@ -83,9 +82,6 @@ struct Net{
 	double **edgesAttr;
 	double **inedgesAttr;
 	
-	//directStatus == NS_UNDIRECTED, undirect.
-	//directStatus == NS_DIRECTED, direct.
-	enum NET_STATUS directStatus;
 	//connectnessStatus == NS_NON_CNNTNESS, not fully connected.
 	//connectnessStatus == NS_CNNTNESS, fully connected.
 	//connectnessStatus == NS_NOTSURE, not sure whether the net is fully connected or not.
