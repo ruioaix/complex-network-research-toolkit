@@ -767,3 +767,44 @@ void set_status_duplicatepairs_Net(struct Net *net) {
 	}
 	printgfe();
 }
+
+void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplicatefilename) {
+	printgfb();
+	int i,j,k;
+	int *place = smalloc((net->maxId+1)*sizeof(int));
+	for (k=0; k<net->maxId + 1; ++k) {
+		place[k] = -1;
+	}
+	long dpairsNum=0;
+	FILE *fpc = NULL, *fpd = NULL;
+	for (j=0; j<net->maxId+1; ++j) {
+		for (i=0; i < net->degree[j]; ++i) {
+			int neigh = net->edges[j][i];
+			if (place[neigh] == -1) {
+				place[neigh] = 1;
+				if (fpc == NULL) {
+					fpc = sfopen(cleanfilename, "w");
+				}
+				fprintf(fpc, "%d\t%d\n", j, neigh);
+			}
+			else {
+				if (fpd == NULL) {
+					fpd = sfopen(duplicatefilename, "w");
+				}
+				fprintf(fpd, "duplicate pairs %ld:\t%d\t%d\n", ++dpairsNum, j, neigh);
+			}
+		}
+		for (i = 0; i < net->degree[j]; ++i) {
+			int neigh = net->edges[j][i];
+			place[neigh] = -1;
+		}
+	}
+	if (fpc != NULL) fclose(fpc);
+	if (fpd != NULL) fclose(fpd);
+
+	free(place);
+	if (dpairsNum) {
+		printm("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\nclean net file has been output to %s.\n", duplicatefilename, cleanfilename);
+	}
+	printgfe();
+}

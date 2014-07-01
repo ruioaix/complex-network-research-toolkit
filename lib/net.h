@@ -140,6 +140,7 @@ void set_status_connectness_Net(struct Net *net);
 //if there is no duplicatepairs in edges element, then no duplicatepairs
 //in the entire net.
 void set_status_duplicatepairs_Net(struct Net *net);
+void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplicatefilename);
 
 /*
 struct Net *read_direct_Net(char *netfilename);

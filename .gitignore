@@ -29,6 +29,8 @@ tdpotn-*
 score-*
 test-*
 robust-*
+toolkit-*
+toolkit/clean_duplicate
 research/onion/basic
 research/onion/recmd_paper
 research/onion/pagerank
