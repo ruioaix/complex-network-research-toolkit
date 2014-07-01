@@ -803,7 +803,10 @@ void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplic
 
 	free(place);
 	if (dpairsNum) {
-		printm("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\nclean net file has been output to %s.\n", duplicatefilename, cleanfilename);
+		printf("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\nclean net file has been output to %s.\n", duplicatefilename, cleanfilename);
+	}
+	else {
+		printf("perfect network");
 	}
 	printgfe();
 }
