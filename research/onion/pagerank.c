@@ -20,14 +20,14 @@ int main(int argc, char **argv) {
 	int noOutlinksNum = 0;
 	double d = 0.15;
 	int i, j, k;
-	for (i = 1; i < net->maxId + 1; ++i) {
+	for (i = 0; i < net->maxId + 1; ++i) {
 		pgrk[i] = 1.0;
 		if (net->degree[i] == 0) {
 			noOutlinks[noOutlinksNum++] = i;
 		}
 	}
 	for (i = 0; i < loopNum; ++i) {
-		for (j = 1; j < net->maxId + 1; ++j) {
+		for (j = 0; j < net->maxId + 1; ++j) {
 			double pr = d;
 			for (k = 0; k < net->indegree[j]; ++k) {
 				int neigh = net->inedges[j][k];
@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 			}
 			for (k = 0; k < noOutlinksNum; ++k) {
 				int id = noOutlinks[k];
-				pr += (1-d)*pgrk[id]/(net->maxId);
+				pr += (1-d)*pgrk[id]/(net->maxId+1);
 			}
 			pgrk_swap[j] = pr;
 		}
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 		pgrk_swap = tmp;
 	}
 	double total = 0;
-	for (i = 1; i < net->maxId + 1; ++i) {
+	for (i = 0; i < net->maxId + 1; ++i) {
 		//if (net->degree[i] == 0 && net->indegree[i] == 0) continue; 
 		printf("%.15f\n", pgrk[i]);
 		total += pgrk[i];
