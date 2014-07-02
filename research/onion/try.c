@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
 		total += classic[i];
 	}
 	printf("%f\n", total);
+	free(classic);
 
 	struct LineFile *simlf = similarity_linkboth_CN_directed_Net(net);
 	struct Net *simnet= create_Net(simlf);
@@ -46,6 +47,7 @@ int main(int argc, char **argv) {
 		total += pgrk[i];
 	}
 	printf("%f\n", total);
+	free(pgrk);
 
 	free_LineFile(simlf);
 	free_Net(simnet);
