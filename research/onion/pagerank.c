@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
+	//struct LineFile *lf = create_LineFile("/tmp/polblogs", 1, 1, -1);
 	struct LineFile *lf = create_LineFile("/tmp/leadership_data", 1, 1, -1);
 	struct Net *net = create_directed_Net(lf);
 
@@ -15,7 +16,7 @@ int main(int argc, char **argv) {
 	for (i = 0; i < net->maxId + 1; ++i) {
 		total += pgrk[i];
 	}
-	printf("%f\n", total);
+	printf("%.17f\n", total);
 
 	free(pgrk);
 	free_LineFile(lf);

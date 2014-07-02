@@ -1,23 +1,24 @@
 #include "pgrk.h"
 #include "base.h"
+#include <stdlib.h>
 #include <math.h>
 
 double *pagerank(struct Net *net, double c) {
+	printgfb();
 	double *pgrk = smalloc((net->maxId + 1)*sizeof(double));
-	int *noOutlinks = smalloc((net->maxId + 1)*sizeof(int));
-	int noOutlinksNum = 0;
 	char *sign = scalloc((net->maxId + 1), sizeof(char));
+	double od0Source = 0;
+	double initOutlinkSource = (1-c)*1.0/(net->maxId + 1);
 	int i, j, k;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		pgrk[i] = 1.0;
 		if (net->degree[i] == 0) {
-			noOutlinks[noOutlinksNum++] = i;
+			od0Source += initOutlinkSource;
 		}
 	}
 	int loopNum = 0;
 	int getright = 0;
-	double precision = 0.0000000000001;
-	printf("%d\n", noOutlinksNum);
+	double precision = 1E-17;
 	while(1) {
 		for (j = 0; j < net->maxId + 1; ++j) {
 			double pr = c;
@@ -26,24 +27,23 @@ double *pagerank(struct Net *net, double c) {
 				int outdg = net->degree[neigh];
 				pr += (1-c)*pgrk[neigh]/outdg;
 			}
-			for (k = 0; k < noOutlinksNum; ++k) {
-				int id = noOutlinks[k];
-				pr += (1-c)*pgrk[id]/(net->maxId+1);
+			pr += od0Source;
+			if (fabs(pgrk[j] - pr) < precision && sign[j] != 4) {
+				++sign[j];
+				if (sign[j] == 4) ++getright;
 			}
-			if (fabs(pgrk[j] - pr) < precision && sign[j] == 0) {
-				sign[j] = 1;
-				++getright;
+			if (net->degree[j] == 0) {
+				od0Source += (1-c)*(pr-pgrk[j])/(net->maxId + 1);
 			}
 			pgrk[j] = pr;
-			//printf("j:%d\n", j);
 		}
 		if (getright == net->maxId + 1) {
 			break;
 		}
 		++loopNum;
-		printf("%d\t%d\n", loopNum, getright);
 	}
-	printf("%d\n", loopNum);
-
+	printgf("loopNum: %d\n", loopNum);
+	free(sign);
+	printgfe();
 	return pgrk;
 }
