@@ -26,21 +26,33 @@ int main(int argc, char **argv) {
 	struct Net *net = create_directed_Net(lf);
 	free_LineFile(lf);
 
-	double *classic = pagerank(net, 0.15);
+	//double *classic = pagerank(net, 0.15);
 	double total = 0;
 	int i;
-	for (i = 0; i < net->maxId + 1; ++i) {
-		total += classic[i];
-	}
-	printf("%f\n", total);
-	free(classic);
+	//for (i = 0; i < net->maxId + 1; ++i) {
+	//	total += classic[i];
+	//}
+	//printf("%f\n", total);
+	//free(classic);
 
-	struct LineFile *simlf = similarity_linkboth_CN_directed_Net(net);
+	struct LineFile *simlf = similarity_linkin_CN_directed_Net(net);
 	struct Net *simnet= create_Net(simlf);
 	delete_duplicatepairs_Net(simnet);
 
-	double theta = 0.1;
+	double theta = 1;
 	onion_pgrk_simnet_weight_normalize(simnet, theta);
+
+	int j;
+	for (i = 0; i < simnet->maxId + 1; ++i) {
+		double tmp = 0;
+		for (j = 0; j < simnet->degree[i]; ++j) {
+			tmp += simnet->weight[i][j];
+		}
+		if (fabs(tmp -1) > 1E-7 && tmp != 0) {
+			printf("%.17f\n", tmp);
+			isError("xxx");
+		}
+	}
 
 	double *pgrk = simpagerank(net, 0.15, simnet);
 	total = 0;
