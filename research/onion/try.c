@@ -3,6 +3,7 @@
 #include "base.h"
 #include "pgrk.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 static void onion_pgrk_simnet_weight_normalize(struct Net *net, double theta) {
