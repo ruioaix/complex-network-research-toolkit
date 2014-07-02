@@ -813,10 +813,60 @@ void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplic
 	printgfe();
 }
 
-struct LineFile *similarity_CN_Net(struct Net *net) {
+void delete_duplicatepairs_Net(struct Net *net) {
 	printgfb();
 	if (net->inedges != NULL) isError("net should be undirected.");
-	int MSTEP = 100000000;
+	int i,j,k;
+	int *place = smalloc((net->maxId+1)*sizeof(int));
+	for (k=0; k<net->maxId + 1; ++k) {
+		place[k] = -1;
+	}
+	for (j=0; j<net->maxId+1; ++j) {
+		for (i=0; i < net->degree[j]; ) {
+			int neigh = net->edges[j][i];
+			if (place[neigh] == -1) {
+				place[neigh] = 1;
+				++i;
+			}
+			else {
+				net->edges[j][i] = net->edges[j][--(net->degree[j])];
+				if (net->weight != NULL) {
+					net->weight[j][i] = net->weight[j][net->degree[j]];
+				}
+				if (net->edgesAttr != NULL) {
+					net->edgesAttr[j][i] = net->edgesAttr[j][net->degree[j]];
+				}
+			}
+		}
+		for (i = 0; i < net->degree[j]; ++i) {
+			int neigh = net->edges[j][i];
+			place[neigh] = -1;
+		}
+	}
+	free(place);
+
+	int degreeMax = 0, degreeMin = INT_MAX;
+	net->edgesNum = 0;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		int degree = net->degree[i];
+		net->edgesNum += degree;
+		degreeMax = degreeMax > degree ? degreeMax : degree;
+		degreeMin = degreeMin < degree ? degreeMin : degree;
+	}
+	net->edgesNum /= 2;
+	net->degreeMax.sign = NS_VALID;
+	net->degreeMax.value = degreeMax;
+	net->degreeMin.sign = NS_VALID;
+	net->degreeMin.value = degreeMin;
+	net->duplicatepairsStatus = NS_NON_DUPPAIRS;
+	printgfe();
+}
+
+
+struct LineFile *similarity_linkout_CN_directed_Net(struct Net *net) {
+	printgfb();
+	if (net->inedges == NULL) isError("net should be directed.");
+	int MSTEP = 100000;
 	int *id1 = smalloc(MSTEP*sizeof(int));
 	int *id2 = smalloc(MSTEP*sizeof(int));
 	double *sim = smalloc(MSTEP*sizeof(double));
@@ -826,18 +876,19 @@ struct LineFile *similarity_CN_Net(struct Net *net) {
 	int i,j,k;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		if (net->degree[i] == 0) continue;
-		int an = 0;
 		for (j = 0; j < net->degree[i]; ++j) {
 			int neigh = net->edges[i][j];
 			sign[neigh] = 1;
 		}
-		an += net->degree[i];
-		for (j = i+1; j < net->maxId + 1; ++j) {
+		for (j = 0; j < net->degree[i]; ++j) {
+			int id = net->edges[i][j];
+			if (net->degree[id] == 0) continue;
 			int cn = 0;
-			for (k = 0; k < net->degree[j]; ++k) {
-				int neigh = net->edges[j][k];
-				if (sign[neigh] == 1) { ++cn; }
-				else { ++an; }
+			int an = net->degree[i];
+			for (k = 0; k < net->degree[id]; ++k) {
+				int neigh = net->edges[id][k];
+				if (sign[neigh] == 1) ++cn;
+				else ++an;
 			}
 			if (linesNum == memNum) {
 				id1 = srealloc(id1, (memNum+MSTEP)*sizeof(int));
@@ -847,7 +898,7 @@ struct LineFile *similarity_CN_Net(struct Net *net) {
 			}
 			if (cn != 0) {
 				id1[linesNum] = i;
-				id2[linesNum] = j;
+				id2[linesNum] = id;
 				sim[linesNum] = (double)cn/an;
 				++linesNum;
 			}
@@ -857,6 +908,7 @@ struct LineFile *similarity_CN_Net(struct Net *net) {
 			sign[neigh] = 0;
 		}
 	}
+	free(sign);
 
 	struct LineFile *lf = create_LineFile(NULL);
 	lf->i1 = id1;
@@ -865,6 +917,143 @@ struct LineFile *similarity_CN_Net(struct Net *net) {
 	lf->linesNum = linesNum;
 	lf->memNum = memNum;
 	lf->filename = "similarity_CN_Net";
+	printgfe();
+	return lf;
+}
+
+struct LineFile *similarity_linkin_CN_directed_Net(struct Net *net) {
 	printgfb();
+	if (net->inedges == NULL) isError("net should be directed.");
+	int MSTEP = 100000;
+	int *id1 = smalloc(MSTEP*sizeof(int));
+	int *id2 = smalloc(MSTEP*sizeof(int));
+	double *sim = smalloc(MSTEP*sizeof(double));
+	long linesNum = 0, memNum=MSTEP;
+	char *sign = scalloc(net->maxId + 1, sizeof(char));
+
+	int i,j,k;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		//I will calculate the similarity of the two nodes which are in a link.
+		//if A and B is not connected directly, I will not calculate similarity of A&B.
+		//i is one vertex of edges.
+		//id is the other vertex of edges.
+		if (net->indegree[i] == 0) continue;
+		for (j = 0; j < net->indegree[i]; ++j) {
+			int neigh = net->inedges[i][j];
+			sign[neigh] = 1;
+		}
+		for (j = 0; j < net->indegree[i]; ++j) {
+			int id = net->inedges[i][j];
+			if (net->indegree[id] == 0) continue;
+			int cn = 0;
+			int an = net->indegree[i];
+			for (k = 0; k < net->indegree[id]; ++k) {
+				int neigh = net->inedges[id][k];
+				if (sign[neigh] == 1) ++cn;
+				else  ++an;
+			}
+			if (linesNum == memNum) {
+				id1 = srealloc(id1, (memNum+MSTEP)*sizeof(int));
+				id2 = srealloc(id2, (memNum+MSTEP)*sizeof(int));
+				sim = srealloc(sim, (memNum+MSTEP)*sizeof(double));
+				memNum += MSTEP;
+			}
+			if (cn != 0) {
+				id1[linesNum] = i;
+				id2[linesNum] = id;
+				sim[linesNum] = (double)cn/an;
+				++linesNum;
+			}
+		}
+		for (j = 0; j < net->indegree[i]; ++j) {
+			int neigh = net->inedges[i][j];
+			sign[neigh] = 0;
+		}
+	}
+	free(sign);
+
+	struct LineFile *lf = create_LineFile(NULL);
+	lf->i1 = id1;
+	lf->i2 = id2;
+	lf->d1 = sim;
+	lf->linesNum = linesNum;
+	lf->memNum = memNum;
+	lf->filename = "similarity_CN_Net";
+	printgfe();
+	return lf;
+}
+
+struct LineFile *similarity_linkboth_CN_directed_Net(struct Net *net) {
+	printgfb();
+	if (net->inedges == NULL) isError("net should be directed.");
+	int MSTEP = 100000;
+	int *id1 = smalloc(MSTEP*sizeof(int));
+	int *id2 = smalloc(MSTEP*sizeof(int));
+	double *sim = smalloc(MSTEP*sizeof(double));
+	long linesNum = 0, memNum=MSTEP;
+	char *sign = scalloc(net->maxId + 1, sizeof(char));
+
+	int i,j,k;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		//I will calculate the similarity of the two nodes which are in a link.
+		//if A and B is not connected directly, I will not calculate similarity of A&B.
+		//i is one vertex of edges.
+		//id is the other vertex of edges.
+		if (net->degree[i] == 0 && net->indegree[i] == 0) continue;
+		for (j = 0; j < net->degree[i]; ++j) {
+			int neigh = net->edges[i][j];
+			sign[neigh] = 1;
+		}
+		for (j = 0; j < net->indegree[i]; ++j) {
+			int neigh = net->inedges[i][j];
+			sign[neigh] = 1;
+		}
+		for (j = 0; j < net->degree[i]; ++j) {
+			int id = net->edges[i][j];
+			if (net->degree[id] == 0 && net->indegree[id] == 0) continue;
+			int cn = 0;
+			int an = net->indegree[i] + net->degree[i];
+			for (k = 0; k < net->indegree[id]; ++k) {
+				int neigh = net->inedges[id][k];
+				if (sign[neigh] == 1) ++cn;
+				else ++an;
+			}
+			for (k = 0; k < net->degree[id]; ++k) {
+				int neigh = net->edges[id][k];
+				if (sign[neigh] == 1) ++cn;
+				else  ++an;
+			}
+			if (linesNum == memNum) {
+				id1 = srealloc(id1, (memNum+MSTEP)*sizeof(int));
+				id2 = srealloc(id2, (memNum+MSTEP)*sizeof(int));
+				sim = srealloc(sim, (memNum+MSTEP)*sizeof(double));
+				memNum += MSTEP;
+			}
+			if (cn != 0) {
+				id1[linesNum] = i;
+				id2[linesNum] = id;
+				sim[linesNum] = (double)cn/an;
+				++linesNum;
+			}
+		}
+		for (j = 0; j < net->degree[i]; ++j) {
+			int neigh = net->edges[i][j];
+			sign[neigh] = 0;
+		}
+		for (j = 0; j < net->indegree[i]; ++j) {
+			int neigh = net->inedges[i][j];
+			sign[neigh] = 0;
+		}
+	}
+	free(sign);
+
+	struct LineFile *lf = create_LineFile(NULL);
+	lf->i1 = id1;
+	lf->i2 = id2;
+	lf->d1 = sim;
+	lf->linesNum = linesNum;
+	lf->memNum = memNum;
+	lf->filename = "similarity_CN_Net";
+	printgfe();
 	return lf;
 }
