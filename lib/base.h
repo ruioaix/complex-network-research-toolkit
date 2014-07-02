@@ -54,7 +54,8 @@
 #if VERBOSE_LEVEL >= 3
 #undef printgf
 #define printgf(format, ...) do {\
-		printf("[level 3] %s =>> ", __func__);\
+		printf("[level 3] ");\
+		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 } while(0)
 #if VERBOSE_LEVEL >= 4
@@ -69,13 +70,15 @@
 #if VERBOSE_LEVEL >= 5
 #undef printsf
 #define printsf(format, ...) do {\
-		printf("[level 5] %s =>> ", __func__);\
+		printf("[level 5] ");\
+		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 } while(0)
 #if VERBOSE_LEVEL >= 6
 #undef printlp
 #define printlp(format, ...) do {\
-		printf("[level 6] %s =>> ", __func__);\
+		printf("[level 6] ");\
+		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 } while(0)
 #endif

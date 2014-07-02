@@ -784,7 +784,9 @@ void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplic
 				if (fpc == NULL) {
 					fpc = sfopen(cleanfilename, "w");
 				}
-				fprintf(fpc, "%d\t%d\n", j, neigh);
+				if (neigh > j) {
+					fprintf(fpc, "%d\t%d\n", j, neigh);
+				}
 			}
 			else {
 				if (fpd == NULL) {
@@ -809,4 +811,60 @@ void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplic
 		printf("perfect network");
 	}
 	printgfe();
+}
+
+struct LineFile *similarity_CN_Net(struct Net *net) {
+	printgfb();
+	if (net->inedges != NULL) isError("net should be undirected.");
+	int MSTEP = 100000000;
+	int *id1 = smalloc(MSTEP*sizeof(int));
+	int *id2 = smalloc(MSTEP*sizeof(int));
+	double *sim = smalloc(MSTEP*sizeof(double));
+	long linesNum = 0, memNum=MSTEP;
+	char *sign = scalloc(net->maxId + 1, sizeof(char));
+
+	int i,j,k;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		if (net->degree[i] == 0) continue;
+		int an = 0;
+		for (j = 0; j < net->degree[i]; ++j) {
+			int neigh = net->edges[i][j];
+			sign[neigh] = 1;
+		}
+		an += net->degree[i];
+		for (j = i+1; j < net->maxId + 1; ++j) {
+			int cn = 0;
+			for (k = 0; k < net->degree[j]; ++k) {
+				int neigh = net->edges[j][k];
+				if (sign[neigh] == 1) { ++cn; }
+				else { ++an; }
+			}
+			if (linesNum == memNum) {
+				id1 = srealloc(id1, (memNum+MSTEP)*sizeof(int));
+				id2 = srealloc(id2, (memNum+MSTEP)*sizeof(int));
+				sim = srealloc(sim, (memNum+MSTEP)*sizeof(double));
+				memNum += MSTEP;
+			}
+			if (cn != 0) {
+				id1[linesNum] = i;
+				id2[linesNum] = j;
+				sim[linesNum] = (double)cn/an;
+				++linesNum;
+			}
+		}
+		for (j = 0; j < net->degree[i]; ++j) {
+			int neigh = net->edges[i][j];
+			sign[neigh] = 0;
+		}
+	}
+
+	struct LineFile *lf = create_LineFile(NULL);
+	lf->i1 = id1;
+	lf->i2 = id2;
+	lf->d1 = sim;
+	lf->linesNum = linesNum;
+	lf->memNum = memNum;
+	lf->filename = "similarity_CN_Net";
+	printgfb();
+	return lf;
 }

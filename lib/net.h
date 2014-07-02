@@ -134,6 +134,9 @@ void set_status_connectness_Net(struct Net *net);
 void set_status_duplicatepairs_Net(struct Net *net);
 void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplicatefilename);
 
+//common neighbour, undirected net.
+struct LineFile *similarity_CN_Net(struct Net *net);
+
 /*
 struct Net *read_direct_Net(char *netfilename);
 struct Net *read_undirect_Net(char *netfilename);
