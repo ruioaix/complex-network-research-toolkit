@@ -135,10 +135,12 @@ void set_status_duplicatepairs_Net(struct Net *net);
 void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplicatefilename);
 void delete_duplicatepairs_Net(struct Net *net);
 
-//common neighbour, undirected net.
+//common neighbour, directed net.
 struct LineFile *similarity_linkout_CN_directed_Net(struct Net *net);
 struct LineFile *similarity_linkin_CN_directed_Net(struct Net *net);
 struct LineFile *similarity_linkboth_CN_directed_Net(struct Net *net);
+//common neighbour, undirected net.
+struct LineFile *similarity_CN_Net(struct Net *net);
 
 /*
 struct Net *read_direct_Net(char *netfilename);

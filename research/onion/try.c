@@ -25,39 +25,51 @@ static void onion_pgrk_simnet_weight_normalize(struct Net *net, double theta) {
 int main(int argc, char **argv) {
 	struct LineFile *lf = create_LineFile("/tmp/leadership_data", 1, 1, -1);	
 	struct Net *net = create_directed_Net(lf);
+
+	struct Net *sn = create_Net(lf);
 	free_LineFile(lf);
+	delete_duplicatepairs_Net(sn);
+	struct LineFile *sim1 = similarity_CN_Net(sn);
+	struct Net *sim2 = create_Net(sim1);
+	delete_duplicatepairs_Net(sim2);
 
-
-
-	double *classic = pagerank(net, 0.15);
+	//double *classic = pagerank(net, 0.15);
 	double total = 0;
 	int i;
-	int *id = smalloc((net->maxId + 1) * sizeof(int));
-	int outNum = 0;
-	for (i = 0; i < net->maxId + 1; ++i) {
-		if (net->degree[i]) ++outNum;
-	}
-	printf("%d\n", outNum);
-	for (i = 0; i < net->maxId + 1; ++i) {
-		total += classic[i];
-		id[i] = i;
-	}
-	qsort_di_desc(classic, 0, net->maxId, id);
-	for (i = 0; i < 50; ++i) {
-		printf("%d\t%d\n", i, id[i]);
-		fflush(stdout);
-	}
-	printf("%f\n", total);
-	fflush(stdout);
-	free(classic);
+	//printf("%d\t%d\n", sim2->maxId, net->maxId);
+	//assert(sn->maxId == net->maxId);
+	////return 0;
+	//for (i = 0; i < sim2->maxId + 1; ++i) {
+	//	if (sim2->degree[i] != net->degree[i]) {
+	//		printf("xx: %d\t%d\t%d\n", i, sim2->degree[i], net->degree[i]);
+	//	}
+	//}
+	//int *id = smalloc((net->maxId + 1) * sizeof(int));
+	//int outNum = 0;
+	//for (i = 0; i < net->maxId + 1; ++i) {
+	//	if (net->degree[i]) ++outNum;
+	//}
+	//printf("%d\n", outNum);
+	//for (i = 0; i < net->maxId + 1; ++i) {
+	//	//total += classic[i];
+	//	id[i] = i;
+	//}
+	//printf("%f\n", total);
+	//fflush(stdout);
+	////qsort_di_desc(classic, 0, net->maxId, id);
+	//for (i = 0; i < 50; ++i) {
+	//	printf("%d\t%d\n", i, id[i]);
+	//	fflush(stdout);
+	//}
+	////free(classic);
 
-	struct LineFile *simlf = similarity_linkout_CN_directed_Net(net);
-	struct Net *simnet= create_directed_Net(simlf);
-	outNum = 0;
-	for (i = 0; i < simnet->maxId + 1; ++i) {
-		if (simnet->degree[i]) ++outNum;
-	}
-	printf("%d\n", outNum);
+	//struct LineFile *simlf = similarity_linkout_CN_directed_Net(net);
+	//struct Net *simnet= create_directed_Net(simlf);
+	//outNum = 0;
+	//for (i = 0; i < simnet->maxId + 1; ++i) {
+	//	if (simnet->degree[i]) ++outNum;
+	//}
+	//printf("%d\n", outNum);
 	
 	//clean_duplicatepairs_Net(simnet, "1", "2");
 	//delete_duplicatepairs_Net(simnet);

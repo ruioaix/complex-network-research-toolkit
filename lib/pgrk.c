@@ -6,8 +6,9 @@
 double *pagerank(struct Net *net, double c) {
 	printgfb();
 	double *pgrk = smalloc((net->maxId + 1)*sizeof(double));
+	double *pgrk_swap = smalloc((net->maxId + 1)*sizeof(double));
 	char *sign = scalloc((net->maxId + 1), sizeof(char));
-	double od0Source = 0;
+	double od0Source = 0, od0Source_swap;
 	double initOutlinkSource = (1-c)*1.0/(net->maxId + 1);
 	int i, j, k;
 	for (i = 0; i < net->maxId + 1; ++i) {
@@ -16,9 +17,10 @@ double *pagerank(struct Net *net, double c) {
 			od0Source += initOutlinkSource;
 		}
 	}
+	od0Source_swap = od0Source;
 	int loopNum = 0;
 	int getright = 0;
-	double precision = 1E-17;
+	double precision = 1E-12;
 	while(1) {
 		for (j = 0; j < net->maxId + 1; ++j) {
 			double pr = c;
@@ -33,17 +35,23 @@ double *pagerank(struct Net *net, double c) {
 				if (sign[j] == 4) ++getright;
 			}
 			if (net->degree[j] == 0) {
-				od0Source += (1-c)*(pr-pgrk[j])/(net->maxId + 1);
+				od0Source_swap += (1-c)*(pr-pgrk[j])/(net->maxId + 1);
 			}
-			pgrk[j] = pr;
+			pgrk_swap[j] = pr;
 		}
+		double *tmp = pgrk;
+		pgrk = pgrk_swap;
+		pgrk_swap = tmp;
+		od0Source = od0Source_swap;
 		if (getright == net->maxId + 1) {
 			break;
 		}
 		++loopNum;
+		printgf("loopNum: %d\tgetright: %d\n", loopNum, getright);
 	}
 	printgf("loopNum: %d\n", loopNum);
 	free(sign);
+	free(pgrk_swap);
 	printgfe();
 	return pgrk;
 }
@@ -60,8 +68,9 @@ static double find_sim(struct Net *simnet, int from, int to) {
 double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 	printgfb();
 	double *pgrk = smalloc((net->maxId + 1)*sizeof(double));
+	double *pgrk_swap = smalloc((net->maxId + 1)*sizeof(double));
 	char *sign = scalloc((net->maxId + 1), sizeof(char));
-	double od0Source = 0;
+	double od0Source = 0, od0Source_swap;
 	double initOutlinkSource = (1-c)*1.0/(net->maxId + 1);
 	int i, j, k;
 	for (i = 0; i < net->maxId + 1; ++i) {
@@ -71,9 +80,10 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 			od0Source += initOutlinkSource;
 		}
 	}
+	od0Source_swap = od0Source;
 	int loopNum = 0;
 	int getright = 0;
-	double precision = 1E-7;
+	double precision = 1E-10;
 	while(1) {
 		for (j = 0; j < net->maxId + 1; ++j) {
 			double pr = c;
@@ -89,10 +99,14 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 			}
 			//if (net->degree[j] == 0) {
 			if (j > simnet->maxId || simnet->degree[j] == 0) {
-				od0Source += (1-c)*(pr-pgrk[j])/(net->maxId + 1);
+				od0Source_swap += (1-c)*(pr-pgrk[j])/(net->maxId + 1);
 			}
-			pgrk[j] = pr;
+			pgrk_swap[j] = pr;
 		}
+		double *tmp = pgrk;
+		pgrk = pgrk_swap;
+		pgrk_swap = tmp;
+		od0Source = od0Source_swap;
 		if (getright == net->maxId + 1) {
 			break;
 		}
@@ -100,6 +114,7 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 		printgf("loopNum: %d\tgetright: %d\n", loopNum, getright);
 	}
 	free(sign);
+	free(pgrk_swap);
 	printgfe();
 	return pgrk;
 }
