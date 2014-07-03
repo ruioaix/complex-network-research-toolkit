@@ -151,8 +151,8 @@ static void create_Net_undirect_degree_idNum(struct LineFile *lf, int maxId, \
 
 static void create_Net_direct_degree_idNum(struct LineFile *lf, int maxId, \
 		int **degree, int **indegree ,int *idNum) {
-	*degree=calloc(maxId+1, sizeof(int)); assert(degree!=NULL);
-	*indegree=calloc(maxId+1, sizeof(int)); assert(indegree!=NULL);
+	*degree=scalloc(maxId+1, sizeof(int)); 
+	*indegree=scalloc(maxId+1, sizeof(int));
 
 	long i;
 	for(i=0; i<lf->linesNum; ++i) {

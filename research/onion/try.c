@@ -2,6 +2,7 @@
 #include "net.h"
 #include "base.h"
 #include "pgrk.h"
+#include "utilities.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -26,18 +27,45 @@ int main(int argc, char **argv) {
 	struct Net *net = create_directed_Net(lf);
 	free_LineFile(lf);
 
-	//double *classic = pagerank(net, 0.15);
+
+
+	double *classic = pagerank(net, 0.15);
 	double total = 0;
 	int i;
-	//for (i = 0; i < net->maxId + 1; ++i) {
-	//	total += classic[i];
-	//}
-	//printf("%f\n", total);
-	//free(classic);
+	int *id = smalloc((net->maxId + 1) * sizeof(int));
+	int outNum = 0;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		if (net->degree[i]) ++outNum;
+	}
+	printf("%d\n", outNum);
+	for (i = 0; i < net->maxId + 1; ++i) {
+		total += classic[i];
+		id[i] = i;
+	}
+	qsort_di_desc(classic, 0, net->maxId, id);
+	for (i = 0; i < 50; ++i) {
+		printf("%d\t%d\n", i, id[i]);
+		fflush(stdout);
+	}
+	printf("%f\n", total);
+	fflush(stdout);
+	free(classic);
 
-	struct LineFile *simlf = similarity_linkin_CN_directed_Net(net);
-	struct Net *simnet= create_Net(simlf);
-	delete_duplicatepairs_Net(simnet);
+	struct LineFile *simlf = similarity_linkout_CN_directed_Net(net);
+	struct Net *simnet= create_directed_Net(simlf);
+	outNum = 0;
+	for (i = 0; i < simnet->maxId + 1; ++i) {
+		if (simnet->degree[i]) ++outNum;
+	}
+	printf("%d\n", outNum);
+	
+	//clean_duplicatepairs_Net(simnet, "1", "2");
+	//delete_duplicatepairs_Net(simnet);
+	for (i = 0; i < simnet->maxId + 1; ++i) {
+		if (simnet->degree[i] > net->degree[i]) {
+			printf("xx: %d\t%d\t%d\n", i, simnet->degree[i], net->degree[i]);
+		}
+	}
 
 	double theta = 1;
 	onion_pgrk_simnet_weight_normalize(simnet, theta);
@@ -58,8 +86,13 @@ int main(int argc, char **argv) {
 	total = 0;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		total += pgrk[i];
+		id[i] = i;
 	}
-	printf("%f\n", total);
+	printf("%f\n", total);fflush(stdout);
+	qsort_di_desc(pgrk, 0, net->maxId, id);
+	for (i = 0; i < 50; ++i) {
+		printf("%d\t%d\n", i, id[i]);
+	}
 	free(pgrk);
 
 	free_LineFile(simlf);

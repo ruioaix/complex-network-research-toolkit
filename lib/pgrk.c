@@ -66,13 +66,14 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 	int i, j, k;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		pgrk[i] = 1.0;
-		if (net->degree[i] == 0) {
+		//if (net->degree[i] == 0) {
+		if (i > simnet->maxId || simnet->degree[i] == 0) {
 			od0Source += initOutlinkSource;
 		}
 	}
 	int loopNum = 0;
 	int getright = 0;
-	double precision = 1E-17;
+	double precision = 1E-7;
 	while(1) {
 		for (j = 0; j < net->maxId + 1; ++j) {
 			double pr = c;
@@ -86,7 +87,8 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 				++sign[j];
 				if (sign[j] == 4) ++getright;
 			}
-			if (net->degree[j] == 0) {
+			//if (net->degree[j] == 0) {
+			if (j > simnet->maxId || simnet->degree[j] == 0) {
 				od0Source += (1-c)*(pr-pgrk[j])/(net->maxId + 1);
 			}
 			pgrk[j] = pr;
