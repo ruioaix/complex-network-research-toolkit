@@ -23,16 +23,22 @@ static void onion_pgrk_simnet_weight_normalize(struct Net *net, double theta) {
 }
 
 int main(int argc, char **argv) {
+	//the net.
 	struct LineFile *lf = create_LineFile("/tmp/leadership_data", 1, 1, -1);	
 	struct Net *net = create_directed_Net(lf);
 
-	struct Net *sn = create_Net(lf);
+	//the simnet.
+	struct Net *tmp = create_Net(lf);
 	free_LineFile(lf);
-	delete_duplicatepairs_Net(sn);
-	struct LineFile *sim1 = similarity_CN_Net(sn);
-	struct Net *sim2 = create_Net(sim1);
-	delete_duplicatepairs_Net(sim2);
+	delete_duplicatepairs_Net(tmp);
+	struct LineFile *simlf = similarity_CN_Net(tmp);
+	struct Net *simnet = create_Net(simlf);
 
+	double *pgrk = simpagerank(net, 0.15, simnet);
+
+	return 0;
+
+	/*
 	//double *classic = pagerank(net, 0.15);
 	double total = 0;
 	int i;
@@ -94,7 +100,6 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	double *pgrk = simpagerank(net, 0.15, simnet);
 	total = 0;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		total += pgrk[i];
@@ -110,5 +115,7 @@ int main(int argc, char **argv) {
 	free_LineFile(simlf);
 	free_Net(simnet);
 	free_Net(net);
+	*/
 	return 0;
+
 }
