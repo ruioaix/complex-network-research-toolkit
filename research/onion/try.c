@@ -23,6 +23,7 @@ static void onion_pgrk_simnet_weight_normalize(struct Net *net, double theta) {
 }
 
 int main(int argc, char **argv) {
+	int i;
 	//the net.
 	struct LineFile *lf = create_LineFile("/tmp/leadership_data", 1, 1, -1);	
 	struct Net *net = create_directed_Net(lf);
@@ -31,10 +32,26 @@ int main(int argc, char **argv) {
 	struct Net *tmp = create_Net(lf);
 	free_LineFile(lf);
 	delete_duplicatepairs_Net(tmp);
-	struct LineFile *simlf = similarity_CN_Net(tmp);
-	struct Net *simnet = create_Net(simlf);
+	assert(tmp->maxId == net->maxId);
+	struct LineFile *simlf = similarity_CN_Net(tmp, net);
+	struct Net *simnet = create_directed_Net(simlf);
+	//delete_duplicatepairs_Net(simnet);
+	//for (i = 0; i < net->degree[225763]; ++i) {
+	//	printf("%d\t%d\n", 225763, net->edges[225763][i]);
+	//}
+	//printf("%ld\t%ld\n", simnet->edgesNum, net->edgesNum);
+	//for (i = 0; i < simnet->degree[225763]; ++i) {
+	//	printf("%d\t%d\n", 225763, simnet->edges[225763][i]);
+	//}
+	for (i = 0; i < simnet->maxId + 1; ++i) {
+		if (simnet->degree[i] > net->degree[i]) {
+			printf("xx: %d\t%d\t%d\n", i, simnet->degree[i], net->degree[i]);
+		}
+	}
+	onion_pgrk_simnet_weight_normalize(simnet, 1);
 
 	double *pgrk = simpagerank(net, 0.15, simnet);
+	free(pgrk);
 
 	return 0;
 

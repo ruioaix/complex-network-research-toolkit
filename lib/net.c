@@ -362,6 +362,7 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 	printgfb();
 	create_Net_basic_lf_check(lf);
 
+	printgf("get edgesNum: %ld\n", lf->linesNum);
 	int maxId, minId;
 	create_Net_maxId_minId(lf, &maxId, &minId);
 	printgf("get maxId: %d, minId: %d\n", maxId, minId);
@@ -1060,7 +1061,7 @@ struct LineFile *similarity_linkboth_CN_directed_Net(struct Net *net) {
 	return lf;
 }
 
-struct LineFile *similarity_CN_Net(struct Net *net) {
+struct LineFile *similarity_CN_Net(struct Net *net, struct Net *acc) {
 	if (net->inedges != NULL) isError("net should be undirected.");
 	int MSTEP = 100000;
 	int *id1 = smalloc(MSTEP*sizeof(int));
@@ -1070,15 +1071,17 @@ struct LineFile *similarity_CN_Net(struct Net *net) {
 	char *sign = scalloc(net->maxId + 1, sizeof(char));
 
 	int i,j,k;
-	for (i = 0; i < net->maxId + 1; ++i) {
-		if (net->degree[i] == 0) continue;
+	//I only need the similarity between nodes which are in acc and has output links.
+	//acc is directed. net is undirected;
+	for (i = 0; i < acc->maxId + 1; ++i) {
+		if (acc->degree[i] == 0 || net->degree[i] == 0) continue;
 		for (j = 0; j < net->degree[i]; ++j) {
 			int neigh = net->edges[i][j];
 			sign[neigh] = 1;
 		}
-		for (j = 0; j < net->degree[i]; ++j) {
-			int id = net->edges[i][j];
-			if (net->degree[id] == 0 || i>id ) continue;
+		for (j = 0; j < acc->degree[i]; ++j) {
+			int id = acc->edges[i][j];
+			if (acc->degree[id] == 0 || net->degree[id] == 0) continue;
 			int cn = 0;
 			int an = net->degree[i];
 			for (k = 0; k < net->degree[id]; ++k) {

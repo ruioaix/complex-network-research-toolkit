@@ -140,7 +140,7 @@ struct LineFile *similarity_linkout_CN_directed_Net(struct Net *net);
 struct LineFile *similarity_linkin_CN_directed_Net(struct Net *net);
 struct LineFile *similarity_linkboth_CN_directed_Net(struct Net *net);
 //common neighbour, undirected net.
-struct LineFile *similarity_CN_Net(struct Net *net);
+struct LineFile *similarity_CN_Net(struct Net *net, struct Net *acc);
 
 /*
 struct Net *read_direct_Net(char *netfilename);

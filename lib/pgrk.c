@@ -83,8 +83,8 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 	od0Source_swap = od0Source;
 	int loopNum = 0;
 	int getright = 0;
-	double precision = 1E-10;
-	while(1) {
+	double precision = 1E-7;
+	while(1 && loopNum < 200) {
 		for (j = 0; j < net->maxId + 1; ++j) {
 			double pr = c;
 			for (k = 0; k < net->indegree[j]; ++k) {
@@ -116,5 +116,10 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 	free(sign);
 	free(pgrk_swap);
 	printgfe();
+	double total=0;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		total += pgrk[i];
+	}
+	printf("simpagerank: %f\n", total);
 	return pgrk;
 }
