@@ -1119,3 +1119,83 @@ struct LineFile *similarity_CN_Net(struct Net *net, struct Net *acc) {
 	printgfe();
 	return lf;
 }
+
+int *sir_spread_scope_Net(struct Net *net, double lambda, int *initInfect, int initInfectNum) {
+	int *degree = net->indegree;
+	int **edges = net->inedges;
+	double aveindegree = (double)net->edgesNum/(net->maxId + 1);
+	double possr = 1.0/aveindegree;
+	printf("%f\n", possr);
+	set_timeseed_MTPR();
+	//0=clean, 1=infected, 2=recovered.
+	char *sign = scalloc(net->maxId+1, sizeof(char));
+	int *left = smalloc((net->maxId+1) * sizeof(int));
+	int *right = smalloc((net->maxId+1) * sizeof(int));
+	int *step_scope = scalloc((net->maxId+1), sizeof(int));
+	int lNum = 0, rNum = 0;
+	int i;
+	long xx = 0;
+	for (i = 0; i < net->maxId + 1; ++i) {
+		xx += degree[i];	
+	}
+	printf("%ld\t%ld\n", xx, net->maxId + 1);
+	for (i = 0; i < initInfectNum; ++i) {
+		sign[initInfect[i]] = 1;	
+		left[lNum++] = initInfect[i];
+	}
+	int stepNum = 0;
+	step_scope[stepNum++] = 0;
+	step_scope[stepNum] = initInfectNum;
+
+
+	int j;
+	while (lNum) {
+		//for (i = 0; i < lNum; ++i) {
+		//	printf("%d\t%d\n", i, left[i]);
+		//}
+		++stepNum;
+		step_scope[stepNum] = step_scope[stepNum-1];
+		rNum = 0;
+
+		for (i=0; i<lNum; ++i) {
+			int id = left[i];
+			if (degree[id] == 0) {
+				//printf("%d\n", id);
+				continue;
+			}
+			//int index = get_i31_MTPR()%degree[id];
+			for (j=0; j<degree[id]; ++j) {
+				int neigh = edges[id][j];
+				if (sign[neigh] != 0) continue;
+				double poss = get_d01_MTPR();
+				if (poss < lambda) {
+					//int neigh = edges[id][index];
+					sign[neigh] = 1;
+					right[rNum++] = neigh;
+					++(step_scope[stepNum]);
+					break;
+				}
+			}
+			double poss = get_d01_MTPR();
+			if (poss < possr) 
+				sign[id] = 2;
+			else {
+				right[rNum++] = id;
+			}
+		}
+		int *tmp = left;
+		left = right;
+		right = tmp;
+		lNum = rNum;
+		int kk=0;
+		for (i = 0; i < net->maxId + 1; ++i) {
+			if (sign[i] != 0) ++kk;
+		}
+		printf("kk: %d\t%d\n", kk, step_scope[stepNum]);
+	}
+
+	free(left);
+	free(right);
+	free(sign);
+	return step_scope;
+}

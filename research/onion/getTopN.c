@@ -22,7 +22,7 @@ static void onion_pgrk_simnet_weight_normalize(struct Net *net, double theta) {
 	}
 }
 
-#define N 50
+#define N 100
 
 int main(int argc, char **argv) {
 	int i;
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 	free_Net(tmp);
 	struct Net *simnet = create_directed_Net(simlf);
 	free_LineFile(simlf);
-	onion_pgrk_simnet_weight_normalize(simnet, 1);
+	onion_pgrk_simnet_weight_normalize(simnet, 0);
 
 	double *spgrk = simpagerank(net, 0.15, simnet);
 	for (i = 0; i < net->maxId + 1; ++i) {
@@ -67,5 +67,6 @@ int main(int argc, char **argv) {
 	free(spgrk);
 
 	free_Net(net);
+	free(id);
 	return 0;
 }

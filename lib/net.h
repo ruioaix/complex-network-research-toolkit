@@ -142,23 +142,7 @@ struct LineFile *similarity_linkboth_CN_directed_Net(struct Net *net);
 //common neighbour, undirected net.
 struct LineFile *similarity_CN_Net(struct Net *net, struct Net *acc);
 
-/*
-struct Net *read_direct_Net(char *netfilename);
-struct Net *read_undirect_Net(char *netfilename);
-void write_Net(struct Net *net, char *filename);
-
-int delete_vertex_Net(struct Net *net, int vid);
-//if vid contain some vextices which are non-existed in net, these vextices are ignored.
-int delete_vertices_Net(struct Net *net, int *vid, int number);
-int delete_edge_Net(struct Net *net, int v1, int v2);
-//if v1&v2 contain some edges which are not existed in net, then these edges are ignored.
-//only delete available edges. so allow multi-same edges.
-int delete_edges_Net(struct Net *net, int *v1, int *v2, int number);
-
-//if you can not make sure whether there are any duplicatepairs or not, you can use this
-//function to make sure net is clean.
-void delete_duplicatepairs_Net(struct Net *net);
-void check_connectness_Net(struct Net *net);
-*/
+//spread for onion-simpagerank.
+int *sir_spread_scope_Net(struct Net *net, double lambda, int *initInfect, int initInfectNum);
 
 #endif
