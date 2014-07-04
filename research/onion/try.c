@@ -22,11 +22,24 @@ static void onion_pgrk_simnet_weight_normalize(struct Net *net, double theta) {
 	}
 }
 
+#define N 50
+
 int main(int argc, char **argv) {
 	int i;
 	//the net.
 	struct LineFile *lf = create_LineFile("/tmp/leadership_data", 1, 1, -1);	
 	struct Net *net = create_directed_Net(lf);
+
+	double *pgrk = pagerank(net, 0.15);
+	int *id = smalloc((net->maxId + 1)*sizeof(int));
+	//qsort_di_desc(pgrk, 0, net->maxId, id);
+	maxN_di_select(pgrk, net->maxId + 1, N, id);
+	FILE *fp = sfopen("/tmp/pgrk_result_0.15", "w");
+	for (i = 0; i < N; ++i) {
+		fprintf(fp, "%d\t%d\t%f\n", i, id[i], pgrk[i]);
+	}
+	fclose(fp);
+	free(pgrk);
 
 	//the simnet.
 	struct Net *tmp = create_Net(lf);
@@ -34,105 +47,25 @@ int main(int argc, char **argv) {
 	delete_duplicatepairs_Net(tmp);
 	assert(tmp->maxId == net->maxId);
 	struct LineFile *simlf = similarity_CN_Net(tmp, net);
+	free_Net(tmp);
 	struct Net *simnet = create_directed_Net(simlf);
-	//delete_duplicatepairs_Net(simnet);
-	//for (i = 0; i < net->degree[225763]; ++i) {
-	//	printf("%d\t%d\n", 225763, net->edges[225763][i]);
-	//}
-	//printf("%ld\t%ld\n", simnet->edgesNum, net->edgesNum);
-	//for (i = 0; i < simnet->degree[225763]; ++i) {
-	//	printf("%d\t%d\n", 225763, simnet->edges[225763][i]);
-	//}
-	for (i = 0; i < simnet->maxId + 1; ++i) {
-		if (simnet->degree[i] > net->degree[i]) {
-			printf("xx: %d\t%d\t%d\n", i, simnet->degree[i], net->degree[i]);
-		}
-	}
+	free_LineFile(simlf);
 	onion_pgrk_simnet_weight_normalize(simnet, 1);
 
-	double *pgrk = simpagerank(net, 0.15, simnet);
-	free(pgrk);
-
-	return 0;
-
-	/*
-	//double *classic = pagerank(net, 0.15);
-	double total = 0;
-	int i;
-	//printf("%d\t%d\n", sim2->maxId, net->maxId);
-	//assert(sn->maxId == net->maxId);
-	////return 0;
-	//for (i = 0; i < sim2->maxId + 1; ++i) {
-	//	if (sim2->degree[i] != net->degree[i]) {
-	//		printf("xx: %d\t%d\t%d\n", i, sim2->degree[i], net->degree[i]);
-	//	}
-	//}
-	//int *id = smalloc((net->maxId + 1) * sizeof(int));
-	//int outNum = 0;
-	//for (i = 0; i < net->maxId + 1; ++i) {
-	//	if (net->degree[i]) ++outNum;
-	//}
-	//printf("%d\n", outNum);
-	//for (i = 0; i < net->maxId + 1; ++i) {
-	//	//total += classic[i];
-	//	id[i] = i;
-	//}
-	//printf("%f\n", total);
-	//fflush(stdout);
-	////qsort_di_desc(classic, 0, net->maxId, id);
-	//for (i = 0; i < 50; ++i) {
-	//	printf("%d\t%d\n", i, id[i]);
-	//	fflush(stdout);
-	//}
-	////free(classic);
-
-	//struct LineFile *simlf = similarity_linkout_CN_directed_Net(net);
-	//struct Net *simnet= create_directed_Net(simlf);
-	//outNum = 0;
-	//for (i = 0; i < simnet->maxId + 1; ++i) {
-	//	if (simnet->degree[i]) ++outNum;
-	//}
-	//printf("%d\n", outNum);
-	
-	//clean_duplicatepairs_Net(simnet, "1", "2");
-	//delete_duplicatepairs_Net(simnet);
-	for (i = 0; i < simnet->maxId + 1; ++i) {
-		if (simnet->degree[i] > net->degree[i]) {
-			printf("xx: %d\t%d\t%d\n", i, simnet->degree[i], net->degree[i]);
-		}
-	}
-
-	double theta = 1;
-	onion_pgrk_simnet_weight_normalize(simnet, theta);
-
-	int j;
-	for (i = 0; i < simnet->maxId + 1; ++i) {
-		double tmp = 0;
-		for (j = 0; j < simnet->degree[i]; ++j) {
-			tmp += simnet->weight[i][j];
-		}
-		if (fabs(tmp -1) > 1E-7 && tmp != 0) {
-			printf("%.17f\n", tmp);
-			isError("xxx");
-		}
-	}
-
-	total = 0;
+	double *spgrk = simpagerank(net, 0.15, simnet);
 	for (i = 0; i < net->maxId + 1; ++i) {
-		total += pgrk[i];
 		id[i] = i;
 	}
-	printf("%f\n", total);fflush(stdout);
-	qsort_di_desc(pgrk, 0, net->maxId, id);
-	for (i = 0; i < 50; ++i) {
-		printf("%d\t%d\n", i, id[i]);
-	}
-	free(pgrk);
-
-	free_LineFile(simlf);
+	maxN_di_select(spgrk, net->maxId + 1, N, id);
+	//qsort_di_desc(spgrk, 0, net->maxId, id);
 	free_Net(simnet);
-	free_Net(net);
-	*/
-	return 0;
+	fp = sfopen("/tmp/spgrk_result_0.15", "w");
+	for (i = 0; i < N; ++i) {
+		fprintf(fp, "%d\t%d\t%f\n", i, id[i], spgrk[i]);
+	}
+	fclose(fp);
+	free(spgrk);
 
+	free_Net(net);
+	return 0;
 }

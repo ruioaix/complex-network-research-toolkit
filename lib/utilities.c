@@ -477,3 +477,26 @@ void qsort_li_desc(long s[], int l, int r, int in[])
 		qsort_li_desc(s, i + 1, r, in);
 	}
 }
+
+void maxN_di_select(double s[], int slen, int N, int *id) {
+	int i,j;
+	for (i = 0; i < slen; ++i) {
+		id[i] = i;
+	}
+	for (j = 0; j < N; ++j) {
+		double max = -1;
+		int mid = -1;
+		for (i = j; i < slen; ++i) {
+			if (max < s[i]) {
+				max = s[i];
+				mid = i;
+			}
+		}
+		s[mid] = s[j];
+		s[j] = max;
+
+		int tmp = id[mid];
+		id[mid] = id[j];
+		id[j] = tmp;
+	}
+}

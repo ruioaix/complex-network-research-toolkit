@@ -16,4 +16,6 @@ void qsort_di_asc(double s[], int l, int r, int in[]);
 void qsort_iid_asc(int s[], int l, int r, int in[], double in1[]);
 void qsort_li_desc(long s[], int l, int r, int in[]);
 
+void maxN_di_select(double s[], int slen, int N, int *id);
+
 #endif
