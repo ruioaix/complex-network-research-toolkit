@@ -20,6 +20,7 @@ int main(int argc, char **argv)
 	int j;
 	for (j = 0; j < net->maxId + 1; ++j) {
 		fprintf(fp, "%d\t%d\n", j, get_index_HT(ht1, j));
+		if (j != get_index_HT(ht1, j) + 1) isError("xx");
 	}
 	fclose(fp);
 
