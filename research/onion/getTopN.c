@@ -27,7 +27,7 @@ static void onion_pgrk_simnet_weight_normalize(struct Net *net, double theta) {
 int main(int argc, char **argv) {
 	int i;
 	//the net.
-	struct LineFile *lf = create_LineFile("/tmp/leadership_data", 1, 1, -1);	
+	struct LineFile *lf = create_LineFile("/home/rui/data/delicious_leadership/leadership_data", 1, 1, -1);	
 	struct Net *net = create_directed_Net(lf);
 
 	double *pgrk = pagerank(net, 0.15);

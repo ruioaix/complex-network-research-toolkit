@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	if (argc != 3) isError("argc");
 	struct LineFile *lf = create_LineFile(argv[1], 1, 1, -1);
-	struct Net *net = create_Net(lf);
+	struct Net *net = create_directed_Net(lf);
 	struct HT *ht1 = create_HT(100000000);
 	long i;
 	for (i = 0; i < lf->linesNum; ++i) {
