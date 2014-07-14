@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
 	if (net->connectnessStatus != NS_CNNTNESS) isError("not connectness");
 	double avesp;
 	spath_avesp_undirect_unweight_Net(net, &avesp);
+	printf("%f\n", avesp);
 	free_LineFile(lf);
 	free_Net(net);
 	return 0;
