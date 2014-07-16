@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "base.h"
 #include "net.h"
 #include "mtprand.h"
@@ -49,6 +50,8 @@ int main (int argc, char **argv) {
 		double alpha = kk * 0.1;
 
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
+		free(airlf->d1);
+		airlf->d1 = NULL;
 		struct Net *air = create_Net(airlf);
 		printlp("air: Max: %d, Min: %d, idNum: %d, edgesNum: %ld\n", \
 				air->maxId, air->minId, air->idNum, air->edgesNum);

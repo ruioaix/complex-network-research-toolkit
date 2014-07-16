@@ -1138,7 +1138,7 @@ int *sir_spread_scope_Net(struct Net *net, double lambda, int *initInfect, int i
 	for (i = 0; i < net->maxId + 1; ++i) {
 		xx += degree[i];	
 	}
-	printf("%ld\t%ld\n", xx, net->maxId + 1);
+	//printf("%ld\t%ld\n", xx, net->maxId + 1);
 	for (i = 0; i < initInfectNum; ++i) {
 		sign[initInfect[i]] = 1;	
 		left[lNum++] = initInfect[i];

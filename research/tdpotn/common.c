@@ -126,8 +126,11 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 		}
 		double dsplength = pow(splength, theta);
 		double tmp = totalL + dsplength;
-		if (tmp > limit) {
+		if (tmp > limit && idNum > 0) {
 			break;
+		}
+		else if (tmp > limit) {
+			continue;
 		}
 		int i1 = get_i31_MTPR()%(net->maxId + 1);
 		int lNum;
