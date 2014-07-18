@@ -847,7 +847,7 @@ void delete_duplicatepairs_Net(struct Net *net) {
 	free(place);
 
 	int degreeMax = 0, degreeMin = INT_MAX;
-	long old = net->edgesNum;
+	//long old = net->edgesNum;
 	net->edgesNum = 0;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		int degree = net->degree[i];
@@ -856,7 +856,7 @@ void delete_duplicatepairs_Net(struct Net *net) {
 		degreeMin = degreeMin < degree ? degreeMin : degree;
 	}
 	net->edgesNum /= 2;
-	printgf("old edgesNum: %ld, new edgesNum: %ld.\n", old, net->edgesNum);
+	//printgf("old edgesNum: %ld, new edgesNum: %ld.\n", old, net->edgesNum);
 	net->degreeMax.sign = NS_VALID;
 	net->degreeMax.value = degreeMax;
 	net->degreeMin.sign = NS_VALID;
