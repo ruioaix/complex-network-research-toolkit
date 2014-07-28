@@ -10,79 +10,49 @@
 //#define NDEBUG
 
 /****************VERBOSE LEVEL*******************************************************************/
-//VERBOSE_LEVEL has 7 values now, 0, 1, 2, 3, 4, 5, 6.
-//we have eight different print functions: 
-//		printm: used in main function, but because of the high level it has been used for warning and some special situation, like print_time();
-//		printgfb&printgfe: only be used at the beginning and end of the global functions.
-//		printgf: used in the global functions.
-//		printsfb&printsfe: only be used at the beginning and end of the static functions.
-//		printsf: used in the static functions.
-//		printlp: used in loop, e.g. for, while. loops in main functions and loops in static functions are all possible.
-//if VERBOSE_LEVEL == 1, only printm will output.
-//if VERBOSE_LEVEL == 2, printgfb&printgfe will output, too.
-//if VERBOSE_LEVEL == 3, printgf will output, too.
-//if VERBOSE_LEVEL == 4, printsfb&printsfe will output, too.
-//if VERBOSE_LEVEL == 5, printsf will output, too.
-//if VERBOSE_LEVEL == 6, printlp will output, too.
-//if VERBOSE_LEVEL == 0, all printxxx stop output.
+//LEVEL  0 : all functions defined here will be extended to ((void)0).
+//LEVEL 10 : printgf will output.
+//LEVEL 20 : printgf printsf will output.
+//LEVEL 30 : printgf printsf printgfl will output.
+//LEVEL 40 : printgf printsf printgfl printsfl will output.
 #define VERBOSE_LEVEL 0
-#define printm(format, ...) ((void)0)
-#define printgfb(format, ...) ((void)0)
-#define printgfe(format, ...) ((void)0)
 #define printgf(format, ...) ((void)0)
-#define printsfb(format, ...) ((void)0)
-#define printsfe(format, ...) ((void)0)
+#define printgfl(format, ...) ((void)0)
 #define printsf(format, ...) ((void)0)
-#define printlp(format, ...) ((void)0)
+#define printsfl(format, ...) ((void)0)
 
-#if VERBOSE_LEVEL >= 1
-#undef printm
-#define printm(format, ...) do {\
-		printf("[level 1] ");\
-		printf("%s ==> ", __func__);\
-		printf(format, ##__VA_ARGS__);\
-} while(0)
-#if VERBOSE_LEVEL >= 2
-#undef printgfb
-#define printgfb() do {\
-		printf("[level 2] %s =>> begin......\n", __func__);\
-} while(0)
-#undef printgfe
-#define printgfe() do {\
-		printf("[level 2] %s =>> ........end\n", __func__);\
-} while(0)
-#if VERBOSE_LEVEL >= 3
+#if VERBOSE_LEVEL >= 10
 #undef printgf
 #define printgf(format, ...) do {\
-		printf("[level 3] ");\
-		printf("%s ==> ", __func__);\
+		printf("[global function] ");\
+		printf("%s =>> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
+		printf("\n");\
 } while(0)
-#if VERBOSE_LEVEL >= 4
-#undef printsfb
-#define printsfb() do {\
-		printf("[level 4] %s =>> begin......\n", __func__);\
-} while(0)
-#undef printsfe
-#define printsfe() do {\
-		printf("[level 4] %s =>> ........end\n", __func__);\
-} while(0)
-#if VERBOSE_LEVEL >= 5
+#if VERBOSE_LEVEL >= 20
 #undef printsf
 #define printsf(format, ...) do {\
-		printf("[level 5] ");\
+		printf("[static function] ");\
 		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
+		printf("\n");\
 } while(0)
-#if VERBOSE_LEVEL >= 6
-#undef printlp
-#define printlp(format, ...) do {\
-		printf("[level 6] ");\
+#if VERBOSE_LEVEL >= 30
+#undef printgfl
+#define printgfl(format, ...) do {\
+		printf("[global function] ");\
 		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
+		printf("\n");\
 } while(0)
-#endif
-#endif
+#if VERBOSE_LEVEL >= 40
+#undef printsfl
+#define printsfl(format, ...) do {\
+		printf("[static function] ");\
+		printf("%s ==> ", __func__);\
+		printf(format, ##__VA_ARGS__);\
+		printf("\n");\
+} while(0)
 #endif
 #endif
 #endif

@@ -11,7 +11,6 @@
 
 //put i/d/sx 's address into i/d/slist
 static void set_list_LineFile(struct LineFile *lf) {
-	printsfb();
 	lf->ilist[0] = &(lf->i1);
 	lf->ilist[1] = &(lf->i2);
 	lf->ilist[2] = &(lf->i3);
@@ -41,11 +40,10 @@ static void set_list_LineFile(struct LineFile *lf) {
 	lf->slist[6] = &(lf->s7);
 	lf->slist[7] = &(lf->s8);
 	lf->slist[8] = &(lf->s9);
-	printsfe();
+	printsf("fill ilist&dlist&slist with the address of ix&dx&sx.");
 }
 //create an empty but completive LineFile.
 static struct LineFile *init_LineFile(void) {
-	printsfb();
 	struct LineFile *lf = smalloc(sizeof(struct LineFile));
 	lf->linesNum = 0;
 	lf->memNum = 0;
@@ -70,12 +68,11 @@ static struct LineFile *init_LineFile(void) {
 	for (i = 0; i < lf->sNum; ++i) {
 		*(lf->slist[i]) = NULL;
 	}
-	printsfe();
+	printsf("generate a valid empty LineFile struct and return.");
 	return lf;
 }
 //alloc memory according to typelist.
 static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
-	printsfb();
 	int ii = 0;
 	int di = 0;
 	int si = 0;
@@ -116,11 +113,10 @@ static void init_memory_LineFile(struct LineFile *lf, int vn, int *typelist) {
 		}
 	}
 	lf->memNum += LINES_STEP;
-	printsfe();
+	printsf("first time allocate memory according to typelist. now memNum is %ld, lf->linesNum is %ld.", lf->memNum, lf->linesNum);
 }
 //increase memory, not need typelist anymore, just check whether point is NULL or not.
 static void add_memory_LineFile(struct LineFile *lf) {
-	printsfb();
 	int ***ilist = lf->ilist;
 	double ***dlist = lf->dlist;
 	char ****slist = lf->slist;
@@ -141,7 +137,7 @@ static void add_memory_LineFile(struct LineFile *lf) {
 		}
 	}
 	lf->memNum += LINES_STEP;
-	printsfe();
+	printsf("increase memory, now memNum is %ld, linesNum is %ld.", lf->memNum, lf->linesNum);
 }
 static void set_buffer_LineFile(FILE *fp, char *buffer, int *lread) {
 	char *line = buffer;
