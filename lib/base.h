@@ -11,16 +11,27 @@
 
 /****************VERBOSE LEVEL*******************************************************************/
 //LEVEL  0 : all functions defined here will be extended to ((void)0).
-//LEVEL 10 : printgf will output.
-//LEVEL 20 : printgf printsf will output.
-//LEVEL 30 : printgf printsf printgfl will output.
-//LEVEL 40 : printgf printsf printgfl printsfl will output.
-#define VERBOSE_LEVEL 0
+//LEVEL  5 : printer will output.
+//LEVEL 10 : printer printgf will output.
+//LEVEL 20 : printer printgf printsf will output.
+//LEVEL 30 : printer printgf printsf printgfl will output.
+//LEVEL 40 : printer printgf printsf printgfl printsfl will output.
+#define VERBOSE_LEVEL 40
+#define printer(format, ...) ((void)0)
 #define printgf(format, ...) ((void)0)
 #define printgfl(format, ...) ((void)0)
 #define printsf(format, ...) ((void)0)
 #define printsfl(format, ...) ((void)0)
 
+#if VERBOSE_LEVEL >= 5
+#undef printer
+#define printer(format, ...) do {\
+		fflush(stdout);\
+		fprintf(stderr, "[error] ");\
+		fprintf(stderr, "%s =>> ", __func__);\
+		fprintf(stderr, format, ##__VA_ARGS__);\
+		fprintf(stderr, "\n");\
+} while(0)
 #if VERBOSE_LEVEL >= 10
 #undef printgf
 #define printgf(format, ...) do {\
@@ -57,6 +68,7 @@
 #endif
 #endif
 #endif
+#endif
 /********************************************************************************************************/
 
 
@@ -73,6 +85,7 @@ void print_label(int i);
 #include <stdio.h> //for FILE, perror, fprintf, stderr
 void iserror(char *format, ...);
 #define isError(format, ...) do {\
+		fflush(stdout);\
 		fprintf(stderr, "[ERROR]:\n\tfile: \"%s\", line: %d.\n\t%s =>> ", \
 				__FILE__, __LINE__, __func__);\
 		iserror(format, ##__VA_ARGS__);\

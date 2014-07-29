@@ -123,7 +123,6 @@ double dijkstra_avesp_undirected_weighted_Net(struct Net *net) {
 
 /******************1A&average shortest path for undirect unweight.***************************************/
 static void core_spath_1A_undirect_unweight_Net(int *sp, int **left, int **right, int *lNum, int *rNum, struct Net *net, int *STEP_END) {
-	printsfb();
 	int i,j;
 	int STEP = 0;
 	while (*lNum && STEP != *STEP_END) {
@@ -145,7 +144,6 @@ static void core_spath_1A_undirect_unweight_Net(int *sp, int **left, int **right
 		*right = tmp;
 		*lNum = *rNum;
 	}
-	printsfe();
 }
 //the returned sp's length is net->maxId + 1.
 //sp[x] = 0 means originId is not connected to x.

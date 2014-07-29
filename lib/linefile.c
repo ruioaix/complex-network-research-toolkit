@@ -146,7 +146,6 @@ static void set_buffer_LineFile(FILE *fp, char *buffer, int *lread) {
 		line += LINE_LENGTH;
 		++(*lread);
 	}
-	printlp("read %d lines into buffer.\n", *lread);
 }
 static void set_allparts_LineFile(char *buffer, char **allparts, int vn, int lread) {
 	int i,j;
@@ -159,7 +158,6 @@ static void set_allparts_LineFile(char *buffer, char **allparts, int vn, int lre
 		}
 		line += LINE_LENGTH;
 	}
-	printlp("distribute buffers into char *array, size: %d.\n", lread*vn);
 }
 static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist, int lread, int vn, char *isok) {
 	int ***ilist = lf->ilist;
@@ -182,7 +180,7 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 					if (p[j] != NULL) {
 						ip[j+lf->linesNum] = strtol(p[j], &pend, 10);
 						if (pend[0]!='\0') {
-							printm("wrong line: \"%s\" file, line: %ld, i%d part.\n", lf->filename, j+lf->linesNum, IL);
+							printer("wrong line: \"%s\" file, line: %ld, i%d part.\n", lf->filename, j+lf->linesNum, IL);
 							*isok = 0;
 						}
 					}
@@ -197,7 +195,7 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 					if (p[j] != NULL) {
 						dp[j+lf->linesNum] = strtod(p[j], &pend);
 						if (pend[0]!='\0') {
-							printm("wrong line: \"%s\" file, line: %ld, d%d part.\n", lf->filename, j+lf->linesNum, DL);
+							printer("wrong line: \"%s\" file, line: %ld, d%d part.\n", lf->filename, j+lf->linesNum, DL);
 							*isok = 0;
 						}
 					}
@@ -224,20 +222,18 @@ static void set_lf_LineFile(struct LineFile *lf, char **allparts, int *typelist,
 		}
 	}
 	lf->linesNum += lread;
-	printlp("already read in %ld lines.\n", lf->linesNum);
 }
 
-static char *typetype[] = {"int", "double", "char", "long", "c-string"};
+#if VERBOSE_LEVEL >= 10
+static char *typetype[] = {"int", "double", "c-string"};
+#endif
 
 struct LineFile *create_LineFile(char *filename, ...) {
-	printgfb();
-
 	//the return lf.
 	struct LineFile *lf = init_LineFile();
 
 	if (NULL == filename) {
-		printgf("NULL filename, return an empty linefile.\n");
-		printgfe();
+		printgf("NULL filename, return an empty linefile.");
 		return lf;
 	}
 
@@ -248,7 +244,6 @@ struct LineFile *create_LineFile(char *filename, ...) {
 	va_start(vl, filename);
 	int vn = 0, type = -2;
 	printgf("detected line style: ");
-	(void)typetype; //get rid of unused warning when VERBOSE_LEVEL is smaller than 3.
 	while (1 == (type = va_arg(vl, int)) || 2 == type || 3 == type) {
 		if (vn < argMax) {
 			typelist[vn++] = type;
@@ -258,13 +253,11 @@ struct LineFile *create_LineFile(char *filename, ...) {
 			isError("%s =>> too much args.", __func__);
 		}
 	}
-	printgf("\n");
 	va_end(vl);
 
 	if (0 == vn || type != -1) {
 		free(typelist);
-		printgf("not valid types, return an empty linefile.\n");
-		printgfe();
+		printgf("not valid types, return an empty linefile.");
 		return lf;
 	}
 	lf->filename = filename;
@@ -272,11 +265,10 @@ struct LineFile *create_LineFile(char *filename, ...) {
 	//check filename.
 	FILE *fp = sfopen(filename, "r");
 
-	printgf("open \"%s\" done.\n", filename);
+	printgf("open \"%s\" successfully.", filename);
 
 	//set lf memory with typelist.
 	init_memory_LineFile(lf, vn, typelist);
-	printgf("allocate the first piece of memory, now lf->memNum: %ld; lf->linesNum: %ld.\n", lf->memNum, lf->linesNum);
 
 	//buffer used to read file.
 	char isok = 1;
@@ -288,26 +280,24 @@ struct LineFile *create_LineFile(char *filename, ...) {
 		set_allparts_LineFile(buffer, allparts, vn, lread);
 		while (lf->linesNum + lread > lf->memNum) {
 			add_memory_LineFile(lf);
-			printgf("allocate another piece of memory, now lf->memNum: %ld; lf->linesNum: %ld.\n", lf->memNum, lf->linesNum);
 		}
 		set_lf_LineFile(lf, allparts, typelist, lread, vn, &isok);
 	}
-	printgf("totally read in %ld lines.\n", lf->linesNum);
+	printgf("totally read in %ld lines.", lf->linesNum);
 	free(typelist);
 	fclose(fp);
 	free(buffer);
 	free(allparts);
 
 	if (isok == 0 ) {
-		isError("%s =>> file \"%s\" has some non-valid lines.", __func__, filename);
+		isError("file \"%s\" has some non-valid lines.", filename);
 	} 
 
-	printgfe();
 	return lf;
 }
 
 void free_LineFile(struct LineFile *lf) {
-	printgfb();
+	printgf("free a struct LineFile named \"%s\".", lf->filename);
 	int i;
 	long j;
 	for (i = 0; i < lf->iNum; ++i) {
@@ -328,14 +318,11 @@ void free_LineFile(struct LineFile *lf) {
 	free(lf->dlist);
 	free(lf->slist);
 	free(lf);
-	printgfe();
 }
 
 void print_LineFile(struct LineFile *lf, char *filename) {
-	printgfb();
 	if (NULL == lf) {
 		printgf("lf == NULL, print nothing.\n");
-		printgfe();
 		return;
 	}
 	FILE *fp = sfopen(filename, "w");
@@ -363,15 +350,12 @@ void print_LineFile(struct LineFile *lf, char *filename) {
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
-	printgf("print LineFile into \"%s\".\n", filename);
-	printgfe();
+	printgf("print a struct LineFile named \"%s\" into \"%s\".\n", lf->filename, filename);
 }
 
 struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
-	printgfb();
 	if (lf1 == NULL || lf2 == NULL) {
 		printgf("lf1 or lf2 is NULL, return NULL.\n");
-		printgfe();
 		return NULL;
 	}
 
@@ -446,15 +430,14 @@ struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
 
 	lf->memNum = lf->linesNum;
 	lf->filename = "add_linefile";
-	printgfe();
+	printgf("add LF \"%s\" and LF \"%s\", get the new LF \"%s\"", lf1->filename, lf2->filename, lf->filename);
+	printgf("linesNum of LF \"%s\" is %ld and linesNum of LF \"%s\" is %ld, linesNum of the new LF \"%s\" is %ld", lf1->filename, lf1->linesNum, lf2->filename, lf2->linesNum, lf->filename, lf->linesNum);
 	return lf;
 }
 
 struct LineFile *clone_LineFile(struct LineFile *lf) {
-	printgfb();
 	if (lf == NULL) {
 		printgf("source LineFile is NULL, return NULL.\n");
-		printgfe();
 		return NULL;
 	}
 
@@ -500,6 +483,6 @@ struct LineFile *clone_LineFile(struct LineFile *lf) {
 
 	newlf->memNum = newlf->linesNum;
 	newlf->filename = "clone_linefile";
-	printgfe();
+	printgf("clone LF \"%s\", get new LF \"%s\"; linesNum in \"%s\" is %ld, linesNum in \"%s\" is %ld.", lf->filename, newlf->filename, lf->filename, lf->linesNum, newlf->filename, newlf->linesNum);
 	return newlf;
 }

@@ -10,7 +10,6 @@
 #include "spath.h"
 
 void free_Net(struct Net *net) {
-	printgfb();
 	//free degree&indegree.
 	free(net->degree); 
 	free(net->indegree);
@@ -65,7 +64,6 @@ void free_Net(struct Net *net) {
 	//free net
 	free(net); 
 	net = NULL;
-	printgfe();
 }
 
 static struct Net *create_Net_init(long edgesNum, \
@@ -320,7 +318,6 @@ static void create_Net_undirected_edges_weight_edgesAttr(struct LineFile *lf, in
 }
 
 struct Net *create_Net(struct LineFile * lf) {
-	printgfb();
 	create_Net_basic_lf_check(lf);
 
 	int maxId, minId;
@@ -354,12 +351,10 @@ struct Net *create_Net(struct LineFile * lf) {
 			NS_NOTSURE, \
 			NS_NOTSURE); 
 	printgf("return Net.\n");
-	printgfe();
 	return net;
 }
 
 struct Net *create_directed_Net(struct LineFile * lf) {
-	printgfb();
 	create_Net_basic_lf_check(lf);
 
 	printgf("get edgesNum: %ld\n", lf->linesNum);
@@ -397,7 +392,6 @@ struct Net *create_directed_Net(struct LineFile * lf) {
 			NS_NOTSURE); 
 
 	printgf("return Net.\n");
-	printgfe();
 	return net;
 }
 
@@ -707,7 +701,6 @@ void set_option_edgesMatrix_Net(struct Net *net) {
 }
 
 void set_status_connectness_Net(struct Net *net) {
-	printgfb();
 	int i;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		if (net->degree[i] != 0) {
@@ -724,11 +717,9 @@ void set_status_connectness_Net(struct Net *net) {
 	}
 	net->connectnessStatus = NS_CNNTNESS;
 	free(sp);
-	printgfe();
 }
 
 void set_status_duplicatepairs_Net(struct Net *net) {
-	printgfb();
 	int i,j,k;
 	int *place = malloc((net->maxId+1)*sizeof(int));
 	for (k=0; k<net->maxId + 1; ++k) {
@@ -759,17 +750,15 @@ void set_status_duplicatepairs_Net(struct Net *net) {
 	if (fp != NULL) fclose(fp);
 	free(place);
 	if (dpairsNum) {
-		printm("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\n", tmpdpfile);
+		printer("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\n", tmpdpfile);
 		net->duplicatepairsStatus = NS_DUPPAIRS;
 	}
 	else {
 		net->duplicatepairsStatus = NS_NON_DUPPAIRS;
 	}
-	printgfe();
 }
 
 void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplicatefilename) {
-	printgfb();
 	int i,j,k;
 	int *place = smalloc((net->maxId+1)*sizeof(int));
 	for (k=0; k<net->maxId + 1; ++k) {
@@ -806,16 +795,14 @@ void clean_duplicatepairs_Net(struct Net *net, char *cleanfilename, char *duplic
 
 	free(place);
 	if (dpairsNum) {
-		printf("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\nclean net file has been output to %s.\n", duplicatefilename, cleanfilename);
+		printer("the net has some duplicate pairs which have been output to %s file.\nyou can check that file.\nclean net file has been output to %s.\n", duplicatefilename, cleanfilename);
 	}
 	else {
 		printf("perfect network");
 	}
-	printgfe();
 }
 
 void delete_duplicatepairs_Net(struct Net *net) {
-	printgfb();
 	if (net->inedges != NULL) isError("net should be undirected.");
 	int i,j,k;
 	int *place = smalloc((net->maxId+1)*sizeof(int));
@@ -862,12 +849,10 @@ void delete_duplicatepairs_Net(struct Net *net) {
 	net->degreeMin.sign = NS_VALID;
 	net->degreeMin.value = degreeMin;
 	net->duplicatepairsStatus = NS_NON_DUPPAIRS;
-	printgfe();
 }
 
 
 struct LineFile *similarity_linkout_CN_directed_Net(struct Net *net) {
-	printgfb();
 	if (net->inedges == NULL) isError("net should be directed.");
 	int MSTEP = 100000;
 	int *id1 = smalloc(MSTEP*sizeof(int));
@@ -920,12 +905,10 @@ struct LineFile *similarity_linkout_CN_directed_Net(struct Net *net) {
 	lf->linesNum = linesNum;
 	lf->memNum = memNum;
 	lf->filename = "similarity_CN_Net";
-	printgfe();
 	return lf;
 }
 
 struct LineFile *similarity_linkin_CN_directed_Net(struct Net *net) {
-	printgfb();
 	if (net->inedges == NULL) isError("net should be directed.");
 	int MSTEP = 100000;
 	int *id1 = smalloc(MSTEP*sizeof(int));
@@ -982,12 +965,10 @@ struct LineFile *similarity_linkin_CN_directed_Net(struct Net *net) {
 	lf->linesNum = linesNum;
 	lf->memNum = memNum;
 	lf->filename = "similarity_CN_Net";
-	printgfe();
 	return lf;
 }
 
 struct LineFile *similarity_linkboth_CN_directed_Net(struct Net *net) {
-	printgfb();
 	if (net->inedges == NULL) isError("net should be directed.");
 	int MSTEP = 100000;
 	int *id1 = smalloc(MSTEP*sizeof(int));
@@ -1057,7 +1038,6 @@ struct LineFile *similarity_linkboth_CN_directed_Net(struct Net *net) {
 	lf->linesNum = linesNum;
 	lf->memNum = memNum;
 	lf->filename = "similarity_CN_Net";
-	printgfe();
 	return lf;
 }
 
@@ -1116,7 +1096,6 @@ struct LineFile *similarity_CN_Net(struct Net *net, struct Net *acc) {
 	lf->linesNum = linesNum;
 	lf->memNum = memNum;
 	lf->filename = "similarity_CN_Net";
-	printgfe();
 	return lf;
 }
 

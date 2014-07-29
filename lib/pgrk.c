@@ -4,7 +4,6 @@
 #include <math.h>
 
 double *pagerank(struct Net *net, double c) {
-	printgfb();
 	double *pgrk = smalloc((net->maxId + 1)*sizeof(double));
 	double *pgrk_swap = smalloc((net->maxId + 1)*sizeof(double));
 	char *sign = scalloc((net->maxId + 1), sizeof(char));
@@ -52,7 +51,6 @@ double *pagerank(struct Net *net, double c) {
 	printgf("loopNum: %d\n", loopNum);
 	free(sign);
 	free(pgrk_swap);
-	printgfe();
 	return pgrk;
 }
 
@@ -66,7 +64,6 @@ static double find_sim(struct Net *simnet, int from, int to) {
 }
 
 double *simpagerank(struct Net *net, double c, struct Net *simnet) {
-	printgfb();
 	double *pgrk = smalloc((net->maxId + 1)*sizeof(double));
 	double *pgrk_swap = smalloc((net->maxId + 1)*sizeof(double));
 	char *sign = scalloc((net->maxId + 1), sizeof(char));
@@ -115,7 +112,6 @@ double *simpagerank(struct Net *net, double c, struct Net *simnet) {
 	}
 	free(sign);
 	free(pgrk_swap);
-	printgfe();
 	double total=0;
 	for (i = 0; i < net->maxId + 1; ++i) {
 		total += pgrk[i];

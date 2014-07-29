@@ -7,7 +7,6 @@
 #include "spath.h"
 
 void tdpotn_argcv(int argc, char **argv, int *D_12, int *N, int *seed, int *limitN, double *theta, double *lambda) {
-	printgfb();
 	if (argc == 7) {
 		char *p;
 		*D_12 = strtol(argv[1], &p, 10);
@@ -28,11 +27,9 @@ void tdpotn_argcv(int argc, char **argv, int *D_12, int *N, int *seed, int *limi
 	else {
 		isError("wrong args");
 	}
-	printgfe();
 }
 
 struct LineFile * tdpotn_lf(int D_12, int N) {
-	printgfb();
 	struct LineFile *file;
 	if (1 == D_12) {
 		file = line1d_DS(N, DS_CYCLE, DS_NON_DIRECT);
@@ -43,12 +40,10 @@ struct LineFile * tdpotn_lf(int D_12, int N) {
 	else {
 		isError("wrong D_12 type");
 	}
-	printgfe();
 	return file;
 }
 
 static void tdpotn_get_all_degree(int *sp, int N, int **alld, int *alldNum, double **p_alld, double alpha) {
-	printsfb();
 	int *ddis = calloc(N, sizeof(int));
 
 	int i;
@@ -80,11 +75,9 @@ static void tdpotn_get_all_degree(int *sp, int N, int **alld, int *alldNum, doub
 	for (i=1; i<*alldNum; ++i) {
 		(*p_alld)[i] += (*p_alld)[i-1];
 	}
-	printsfe();
 }
 
 struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, double theta, double lambda) {
-	printgfb();
 	if (theta < 0.5) isError("theta should be [0.5, +00)");
 
 	double **weight_tmp = net->weight;
@@ -142,7 +135,7 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 			int min = i1<i2?i1:i2;
 			int max = i1>i2?i1:i2;
 			if (hash1[min + 2*max] && hash2[min + max] && hash3[min*2 + max]) {
-				printlp("not lucky, drop on same positon. try again.\n");
+				//printlp("not lucky, drop on same positon. try again.\n");
 				badluck ++;
 				free(left);
 				continue;
@@ -174,7 +167,6 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	lf->filename = "air";
 	net->weight = weight_tmp;
 
-	printgfe();
 	return lf;
 }
 

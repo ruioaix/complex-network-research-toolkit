@@ -56,10 +56,9 @@ int main (int argc, char **argv) {
 
 		struct LineFile *airlf = tdpotn_create_air(base, alpha, limitN, theta, lambda);
 		struct Net *air = create_Net(airlf);
-		printlp("air: Max: %d, Min: %d, idNum: %d, edgesNum: %ld\n", \
-				air->maxId, air->minId, air->idNum, air->edgesNum);
-		if (air->degreeMax.sign == NS_VALID) printlp("degreMax: %d\n", air->degreeMax.value);
-		if (air->degreeMin.sign == NS_VALID) printlp("degreMin: %d\n", air->degreeMin.value);
+		//printlp("air: Max: %d, Min: %d, idNum: %d, edgesNum: %ld\n", air->maxId, air->minId, air->idNum, air->edgesNum);
+		//if (air->degreeMax.sign == NS_VALID) printlp("degreMax: %d\n", air->degreeMax.value);
+		//if (air->degreeMin.sign == NS_VALID) printlp("degreMin: %d\n", air->degreeMin.value);
 		free_LineFile(airlf);
 		double avesp=0, coupling=0;
 		spath_avesp_coupling_undirect_1upweight_Net(base, air, &avesp, &coupling);

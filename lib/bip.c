@@ -72,7 +72,6 @@ static void set_half_Bip(long linesNum, int *half, int *other_half, struct HalfB
 }
 
 struct Bip *create_Bip(const struct LineFile * const lf) {
-	printgfb();
 	if (lf == NULL || lf->i1 == NULL || lf->i2 == NULL || lf->linesNum < 1) {
 		isError("LineFile is not valid.");
 	}
@@ -90,7 +89,6 @@ struct Bip *create_Bip(const struct LineFile * const lf) {
 	printgf("left : Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld\n", bip->left->maxId, bip->left->minId, bip->left->idNum, bip->left->degreeMax, bip->left->degreeMin, bip->edgesNum);
 	printgf("right: Max: %5d, Min: %5d, Num: %5d, degreeMax: %5d, degreeMin: %5d, edgesNum: %5ld\n", bip->right->maxId, bip->right->minId, bip->right->idNum, bip->right->degreeMax, bip->right->degreeMin, bip->edgesNum);
 
-	printgfe();
 	return bip;
 }
 
@@ -128,7 +126,6 @@ static struct HalfBip *clone_half_Bip(struct HalfBip *hbip) {
 }
 
 struct Bip * clone_Bip(struct Bip *bip) {
-	printgfb();
 	if (bip->edgesNum < 1) {
 		isError("when clone, the origin bip should be valid");
 	}
@@ -159,7 +156,6 @@ void print_Bip(struct Bip *bip, char *filename) {
  * the second is always the large one.
 */
 void divide_Bip(struct Bip *bip, double rate, struct LineFile **small, struct LineFile **big) {
-	printgfb();
 	if (rate <=0 || rate >= 1) {
 		isError("wrong rate: %f.\n", rate);
 	}
@@ -243,7 +239,6 @@ void divide_Bip(struct Bip *bip, double rate, struct LineFile **small, struct Li
 	(*small)->filename = "testset";
 
 	printgf("rate: %.3f, big file's linesNum: %ld, small file's linesNum: %ld.\n", rate, line2, line1);
-	printgfe();
 }
 
 struct LineFile *similarity_CF_HalfBip(struct HalfBip *hbip, int other_half_maxId) {
