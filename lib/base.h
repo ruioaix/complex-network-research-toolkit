@@ -10,12 +10,12 @@
 //#define NDEBUG
 
 /****************VERBOSE LEVEL*******************************************************************/
-//LEVEL  0 : all functions defined here will be extended to ((void)0).
-//LEVEL  5 : printer will output.
-//LEVEL 10 : printer printgf will output.
-//LEVEL 20 : printer printgf printsf will output.
-//LEVEL 30 : printer printgf printsf printgfl will output.
-//LEVEL 40 : printer printgf printsf printgfl printsfl will output.
+//LEVEL <   5 : all functions defined here will be extended to ((void)0).
+//LEVEL >=  5 : printer will output.
+//LEVEL >= 10 : printer printgf will output.
+//LEVEL >= 20 : printer printgf printsf will output.
+//LEVEL >= 30 : printer printgf printsf printgfl will output.
+//LEVEL >= 40 : printer printgf printsf printgfl printsfl will output.
 #define VERBOSE_LEVEL 40
 #define printer(format, ...) ((void)0)
 #define printgf(format, ...) ((void)0)
