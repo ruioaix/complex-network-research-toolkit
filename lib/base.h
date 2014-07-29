@@ -35,7 +35,7 @@
 #if VERBOSE_LEVEL >= 10
 #undef printgf
 #define printgf(format, ...) do {\
-		printf("[global function] ");\
+		printf("[global] ");\
 		printf("%s =>> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 		printf("\n");\
@@ -43,7 +43,7 @@
 #if VERBOSE_LEVEL >= 20
 #undef printsf
 #define printsf(format, ...) do {\
-		printf("[static function] ");\
+		printf("[static] ");\
 		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 		printf("\n");\
@@ -51,7 +51,7 @@
 #if VERBOSE_LEVEL >= 30
 #undef printgfl
 #define printgfl(format, ...) do {\
-		printf("[global function] ");\
+		printf("[global] ");\
 		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 		printf("\n");\
@@ -59,7 +59,7 @@
 #if VERBOSE_LEVEL >= 40
 #undef printsfl
 #define printsfl(format, ...) do {\
-		printf("[static function] ");\
+		printf("[static] ");\
 		printf("%s ==> ", __func__);\
 		printf(format, ##__VA_ARGS__);\
 		printf("\n");\

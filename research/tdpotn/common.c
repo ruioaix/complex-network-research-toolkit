@@ -156,7 +156,7 @@ struct LineFile *tdpotn_create_air(struct Net * net, double alpha, int limitN, d
 	free(hash3);
 	free(p_alld);
 	free(alld);
-	printgf("badluck: %d, NumofAddedLinks: %d\n", badluck, idNum);
+	printgf("badluck: %d, NumofAddedLinks: %d", badluck, idNum);
 
 	struct LineFile *lf = create_LineFile(NULL);
 	lf->i1 = id1;
