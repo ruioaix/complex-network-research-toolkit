@@ -61,7 +61,7 @@ struct LineFile {
  *
  * if the first argument is "NULL", or
  * if the last argument is not "-1", or
- * if any of the "int" arguments between the first and the last arguments is not belong to {1, 2, 3, 4, 5}, or
+ * if any of the "int" arguments (in the above example, the "int" arguments are 1,2,1,2) between the first and the last arguments is not belong to {1, 2, 3}, or
  * if the number of the "int" arguments is zero.
  * then create_LineFile will return a empty but compete LineFile which can be used in free_LineFile(lf);
  * non-int type arguments are ignored.

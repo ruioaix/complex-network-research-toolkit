@@ -42,12 +42,22 @@ static void set_list_LineFile(struct LineFile *lf) {
 	lf->slist[8] = &(lf->s9);
 	printsf("fill ilist&dlist&slist with the address of ix&dx&sx.");
 }
+
+static void set_filename_LineFile(struct LineFile *lf, char *filename) {
+	int len = strlen(filename)+1;
+	char *fn = smalloc(len);
+	memcpy(fn, filename, len);
+	free(lf->filename);
+	lf->filename = fn;
+}
+
 //create an empty but completive LineFile.
 static struct LineFile *init_LineFile(void) {
 	struct LineFile *lf = smalloc(sizeof(struct LineFile));
 	lf->linesNum = 0;
 	lf->memNum = 0;
-	lf->filename = "NewEmptyLF";
+	lf->filename = NULL;
+	set_filename_LineFile(lf, "free-valid");
 
 	lf->iNum = 9;
 	lf->dNum = 9;
@@ -68,7 +78,7 @@ static struct LineFile *init_LineFile(void) {
 	for (i = 0; i < lf->sNum; ++i) {
 		*(lf->slist[i]) = NULL;
 	}
-	printsf("generate a valid empty LineFile struct and return.");
+	printsf("generate a empty free-valid LineFile struct and return.");
 	return lf;
 }
 //alloc memory according to typelist.
@@ -233,7 +243,7 @@ struct LineFile *create_LineFile(char *filename, ...) {
 	struct LineFile *lf = init_LineFile();
 
 	if (NULL == filename) {
-		printgf("NULL filename, return an empty linefile.");
+		printgf("filename == NULL, return an empty free-valid linefile.");
 		return lf;
 	}
 
@@ -247,7 +257,7 @@ struct LineFile *create_LineFile(char *filename, ...) {
 	while (1 == (type = va_arg(vl, int)) || 2 == type || 3 == type) {
 		if (vn < argMax) {
 			typelist[vn++] = type;
-			printgf("%s ", typetype[type - 1]);
+			printgf("\ttype of column%d is \"%s\"", vn, typetype[type - 1]);
 		}
 		else {
 			isError("%s =>> too much args.", __func__);
@@ -257,10 +267,10 @@ struct LineFile *create_LineFile(char *filename, ...) {
 
 	if (0 == vn || type != -1) {
 		free(typelist);
-		printgf("not valid types, return an empty linefile.");
+		printgf("not valid types, return an empty free-valid linefile.");
 		return lf;
 	}
-	lf->filename = filename;
+	set_filename_LineFile(lf, filename);
 
 	//check filename.
 	FILE *fp = sfopen(filename, "r");
@@ -317,6 +327,7 @@ void free_LineFile(struct LineFile *lf) {
 	free(lf->ilist);
 	free(lf->dlist);
 	free(lf->slist);
+	free(lf->filename);
 	free(lf);
 }
 
@@ -429,7 +440,9 @@ struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
 	}
 
 	lf->memNum = lf->linesNum;
-	lf->filename = "add_linefile";
+	char addfn[1000];
+	sprintf(addfn, "%s+%s", lf1->filename, lf2->filename);
+	set_filename_LineFile(lf, addfn);
 	printgf("add LF \"%s\" and LF \"%s\", get the new LF \"%s\"", lf1->filename, lf2->filename, lf->filename);
 	printgf("linesNum of LF \"%s\" is %ld and linesNum of LF \"%s\" is %ld, linesNum of the new LF \"%s\" is %ld", lf1->filename, lf1->linesNum, lf2->filename, lf2->linesNum, lf->filename, lf->linesNum);
 	return lf;
@@ -482,7 +495,9 @@ struct LineFile *clone_LineFile(struct LineFile *lf) {
 	}
 
 	newlf->memNum = newlf->linesNum;
-	newlf->filename = "clone_linefile";
+	char addfn[1000];
+	sprintf(addfn, "clone_%s", lf->filename);
+	set_filename_LineFile(newlf, addfn);
 	printgf("clone LF \"%s\", get new LF \"%s\"; linesNum in \"%s\" is %ld, linesNum in \"%s\" is %ld.", lf->filename, newlf->filename, lf->filename, lf->linesNum, newlf->filename, newlf->linesNum);
 	return newlf;
 }

@@ -3,14 +3,12 @@
 /********************************************************************************************************/
 #include <time.h>
 void print_time(void) {
-#if VERBOSE_LEVEL >= 10
 	time_t t=time(NULL); 
-#endif
-	printgf("time: %s", ctime(&t)); 
+	printf("time: %s", ctime(&t)); 
 	fflush(stdout);
 }
 void print_label(int i) {
-	printgf("xxxx==%d==xxxx\n", i);
+	printf("xxxx==%d==xxxx\n", i);
 	fflush(stdout);
 }
 /********************************************************************************************************/
