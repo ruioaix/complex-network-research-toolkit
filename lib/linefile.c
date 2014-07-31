@@ -260,12 +260,13 @@ struct LineFile *create_LineFile(char *filename, ...) {
 			printgf("\ttype of column%d is \"%s\"", vn, typetype[type - 1]);
 		}
 		else {
-			isError("%s =>> too much args.", __func__);
+			break;
+			//isError("%s =>> too much args.", __func__);
 		}
 	}
 	va_end(vl);
 
-	if (0 == vn || type != -1) {
+	if (0 == vn || type != -1 || vn > argMax) {
 		free(typelist);
 		printgf("not valid types, return an empty free-valid linefile.");
 		return lf;
@@ -396,11 +397,11 @@ struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
 				(*(ilist[i]))[j+lf1->linesNum] = (*(ilist2[i]))[j];
 			}
 		}
-		else if (*(ilist1[i]) == NULL && *(ilist2[i]) == NULL) {
-		}
-		else {
-			isError("%s =>> lf1 and lf2 have different int Structures, can not add lf1 with lf2.\n", __func__);
-		}
+		//else if (*(ilist1[i]) == NULL && *(ilist2[i]) == NULL) {
+		//}
+		//else {
+		//	isError("%s =>> lf1 and lf2 have different int Structures, can not add lf1 with lf2.\n", __func__);
+		//}
 	}
 	for (i=0; i<lf->dNum; ++i) {
 		if (*(dlist1[i]) != NULL && *(dlist2[i]) != NULL) {
@@ -412,11 +413,11 @@ struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
 				(*(dlist[i]))[j+lf1->linesNum] = (*(dlist2[i]))[j];
 			}
 		}
-		else if (*(dlist1[i]) == NULL && *(dlist2[i]) == NULL) {
-		}
-		else {
-			isError("%s =>> lf1 and lf2 have different double Structures, can not add lf1 with lf2.\n", __func__);
-		}
+		//else if (*(dlist1[i]) == NULL && *(dlist2[i]) == NULL) {
+		//}
+		//else {
+		//	isError("%s =>> lf1 and lf2 have different double Structures, can not add lf1 with lf2.\n", __func__);
+		//}
 	}
 	for (i=0; i<lf->sNum; ++i) {
 		if (*(slist1[i]) != NULL && *(slist2[i]) != NULL) {
@@ -432,11 +433,11 @@ struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2) {
 				memcpy((*(slist[i]))[j+lf1->linesNum], (*(slist2[i]))[j], size*sizeof(char));
 			}
 		}
-		else if (*(slist1[i]) == NULL && *(slist2[i]) == NULL) {
-		}
-		else {
-			isError("%s =>> lf1 and lf2 have different c-string Structures, can not add lf1 with lf2.\n", __func__);
-		}
+		//else if (*(slist1[i]) == NULL && *(slist2[i]) == NULL) {
+		//}
+		//else {
+		//	isError("%s =>> lf1 and lf2 have different c-string Structures, can not add lf1 with lf2.\n", __func__);
+		//}
 	}
 
 	lf->memNum = lf->linesNum;

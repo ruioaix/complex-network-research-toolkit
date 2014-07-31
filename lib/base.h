@@ -16,7 +16,7 @@
 //LEVEL >= 20 : printer printgf printsf will output.
 //LEVEL >= 30 : printer printgf printsf printgfl will output.
 //LEVEL >= 40 : printer printgf printsf printgfl printsfl will output.
-#define VERBOSE_LEVEL 40
+#define VERBOSE_LEVEL 0
 #define printer(format, ...) ((void)0)
 #define printgf(format, ...) ((void)0)
 #define printgfl(format, ...) ((void)0)
