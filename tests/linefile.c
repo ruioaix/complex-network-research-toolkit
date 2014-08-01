@@ -666,10 +666,10 @@ END_TEST
 
 START_TEST (verify_clone_partcolumns)
 {
-	int *ia[9];
-	double *da[9];
-	char **sa[9];
-	test_linefile_generate_random_data(ia, da, sa);
+	int *ia[4];
+	double *da[3];
+	char **sa[7];
+	test_linefile_generate_random_data_Num(ia, da, sa, 4, 3, 7);
 	int i,j,z;
 
 	struct LineFile *lf = create_LineFile(NULL);
@@ -833,10 +833,10 @@ END_TEST
 
 START_TEST (add_partcolumns)
 {
-	int *ia[9];
-	double *da[9];
-	char **sa[9];
-	test_linefile_generate_random_data(ia, da, sa);
+	int *ia[4];
+	double *da[4];
+	char **sa[4];
+	test_linefile_generate_random_data_Num(ia, da, sa, 4, 4, 4);
 	int i,j,z;
 
 	struct LineFile *lf = create_LineFile(NULL);
@@ -847,10 +847,10 @@ START_TEST (add_partcolumns)
 	}
 	lf->linesNum = lf->memNum = LINESNUM;
 
-	int *ia_2[9];
-	double *da_2[9];
-	char **sa_2[9];
-	test_linefile_generate_random_data(ia_2, da_2, sa_2);
+	int *ia_2[4];
+	double *da_2[4];
+	char **sa_2[4];
+	test_linefile_generate_random_data_Num(ia_2, da_2, sa_2, 4, 4, 4);
 	struct LineFile *lf_2 = create_LineFile(NULL);
 	for (i = 0; i < 4; ++i) {
 		*(lf_2->ilist[i]) = ia_2[i];
