@@ -1,7 +1,7 @@
 /**
  * this file is used to read text file into struct LineFile.
  * struct LineFile has its limit. 
- * for now, at most, it can process a line with 9 int , 9 double, 9 char, 9 long, 9 string(char *), that means 45 parts in one line.
+ * for now, at most, it can process a line with 9 int , 9 double, 9 string(char *), that means 27 parts in one line.
  * lines will be seprated into parts with "\t", space, ":", "\n", ",".
  *
  * when you want to read a file, just use create_LineFile, with right parameters.
@@ -64,10 +64,10 @@ struct LineFile {
  * if any of the "int" arguments (in the above example, the "int" arguments are 1,2,1,2) between the first and the last arguments is not belong to {1, 2, 3}, or
  * if the number of the "int" arguments is zero.
  * then create_LineFile will return a empty but compete LineFile which can be used in free_LineFile(lf);
- * non-int type arguments are ignored.
  *
  */
 struct LineFile *create_LineFile(char * filename, ...);
+//set filename, not quite useful.
 void set_filename_LineFile(struct LineFile *lf, char *filename);
 /// free;
 void free_LineFile(struct LineFile *lf);
@@ -76,8 +76,11 @@ void free_LineFile(struct LineFile *lf);
 void print_LineFile(struct LineFile *lf, char *filename);
 
 //generate a new LineFile, simply join two LineFile.
+//if lf1 contain i1,i2,i3,d1,d2,s1,s2,s3,s4;
+//if lf2 contain i1,d1,d2,d3,s1,s2;
+//then newlf contain i1,d1,d2,s1,s2. (intersection)
 struct LineFile *add_LineFile(struct LineFile *lf1, struct LineFile *lf2);
+//return a same LF.
 struct LineFile *clone_LineFile(struct LineFile *lf);
-
 
 #endif
