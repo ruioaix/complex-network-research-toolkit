@@ -68,6 +68,7 @@ struct LineFile {
  *
  */
 struct LineFile *create_LineFile(char * filename, ...);
+void set_filename_LineFile(struct LineFile *lf, char *filename);
 /// free;
 void free_LineFile(struct LineFile *lf);
 
